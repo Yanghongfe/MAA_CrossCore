@@ -77,6 +77,10 @@
 
     _如果想要使用别的 [通用 UI](https://github.com/MaaXYZ/MaaFramework/#%E9%80%9A%E7%94%A8-ui)，请自行修改工作流的 [配置文件](/.github/workflows/install.yml)。_
 
+## 本机日常开发（MuMu）
+
+若使用 MuMu + MaaDebugger 在本机调试，请另阅 [本地开发手册](./local_dev.md)（含 ADB 路径、Extras 避坑、连接成功判定）。
+
 ## 常见问题
 
 请参考 [FAQ](./faq.md)。

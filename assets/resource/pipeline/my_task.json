@@ -1,12 +1,83 @@
 {
-    "MyTask1": {},
-    "MyTask2": {},
-    "MyTask3": {},
-    "MyTask4": {
-        "recognition": "Custom",
-        "custom_recognition": "my_reco_222",
-        "action": "Custom",
-        "custom_action": "my_action_111"
+    "点击游戏名称": {
+        "recognition": "OCR",
+        "expected": "交错战线",
+        "action": "Click",
+        "next": [
+            "点击开始游戏"
+        ]
     },
-    "OcrTask": {}
+    "点击开始游戏": {
+        "recognition": "OCR",
+        "expected": "开始游戏",
+        "action": "Click"
+    },
+    "点击X按键退出公告栏": {
+        "recognition": "TemplateMatch",
+        "template": "X_退出键_公告.png",
+        "action": "Click"
+    },
+    "点击签到": {
+        "recognition": "OCR",
+        "expected": "签到",
+        "action": "Click"
+    },
+    "点击空白继续": {
+        "recognition": "OCR",
+        "expected": "点击空白处继续",
+        "action": "Click"
+    },
+    "退出签到页面": {
+        "recognition": "TemplateMatch",
+        "template": "退出签到页面按键.png",
+        "action": "Click"
+    },
+    "通用退出按键": {
+        "recognition": "TemplateMatch",
+        "template": "X_礼包用退出按键.png",
+        "action": "Click"
+    },
+    "出击": {
+        "recognition": "OCR",
+        "expected": "出击",
+        "action": "Click"
+    },
+    "资源采集": {
+        "recognition": "OCR",
+        "expected": "资源采集",
+        "action": "Click"
+    },
+    "荒墟拾遗": {
+        "recognition": "OCR",
+        "expected": "荒墟拾遗",
+        "action": "Click"
+    },
+    "第五层": {
+        "recognition": "OCR",
+        "expected": "第5层",
+        "action": "Click"
+    },
+    "开始扫荡": {
+        "recognition": "OCR",
+        "expected": "扫荡",
+        "action": "Click"
+    },
+    // 这里要加条件判断 体力不够滑动不满
+    "拖满滑条（荒墟拾遗扫荡专用）": {
+        "recognition": "DirectHit",
+        "action": "Swipe",
+        "begin": [
+            300,
+            500,
+            100,
+            100
+        ],
+        "end": [
+            1094,
+            500,
+            100,
+            100
+        ],
+        "duration": 1000
+    }
 }

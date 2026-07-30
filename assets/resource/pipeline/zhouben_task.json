@@ -1,0 +1,86 @@
+{
+    "开始行动": {
+        "recognition": "OCR",
+        "expected": "开始行动",
+        "action": "Click",
+        "post_delay": 1500,
+        "next": [
+            "宙斯路线1",
+            "宙斯路线2"
+        ]
+    },
+    "宙斯路线1": {
+        "recognition": "TemplateMatch",
+        "template": "宙斯周本条件1.png",
+        "threshold": 0.7,
+        "action": "DoNothing",
+        "next": [
+            "周本点击1"
+        ]
+    },
+    "宙斯路线2": {
+        "recognition": "TemplateMatch",
+        "template": "宙斯周本条件2.png",
+        "threshold": 0.7,
+        "action": "DoNothing",
+        "next": [
+            "周本点击1"
+        ]
+    },
+    "周本点击1": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            537,
+            608
+        ]
+    },
+    "周本点击2": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            440,
+            387
+        ]
+    },
+    "周本点击3": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            440,
+            387
+        ]
+    },
+    "周本点击4": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            334,
+            264
+        ]
+    },
+    "周本点击5": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            524,
+            294
+        ]
+    },
+    "周本点击6": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            658,
+            214
+        ]
+    },
+    "点击（中左）": {
+        "recognition": "DirectHit",
+        "action": "Click",
+        "target": [
+            700,
+            400
+        ]
+    },
+}
