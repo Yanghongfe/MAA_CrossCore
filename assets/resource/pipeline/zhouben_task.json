@@ -1,5 +1,73 @@
 {
-    "开始行动": {
+    //周本专用任务链
+    "活动探索": {
+        "recognition": "OCR",
+        "expected": "活动探索",
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "碎星虚影"
+        ]
+    },
+    "碎星虚影": {
+        "recognition": "OCR",
+        "expected": "碎星虚影",
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "戈里刻虚影"
+        ]
+    },
+    "戈里刻虚影": {
+        "recognition": "OCR",
+        "expected": "戈里刻虚影",
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "拖满滑条"
+        ]
+    },
+    "拖满滑条": {
+        "recognition": "DirectHit",
+        "action": "Swipe",
+        "begin": [
+            600,
+            560,
+            100,
+            100
+        ],
+        "end": [
+            600,
+            200,
+            100,
+            100
+        ],
+        "duration": 2000,
+        "next": [
+            "选择宙斯"
+        ]
+    },
+    "选择宙斯": {
+        "recognition": "TemplateMatch",
+        "template": "宙斯.png",
+        "threshold": 0.7,
+        "action": "Click",
+        "post_delay": 4000,
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "开始战斗": {
+        "recognition": "OCR",
+        "expected": "开始战斗",
+        "action": "Click",
+        "post_delay": 4000,
+        "next": [
+            "开始周本行动"
+        ]
+    },
+    "开始周本行动": {
+        "doc": "周本入口：点开始行动后按宙斯条件分支，再依次点击1~6",
         "recognition": "OCR",
         "expected": "开始行动",
         "action": "Click",
@@ -10,19 +78,23 @@
         ]
     },
     "宙斯路线1": {
+        "doc": "认出条件1图 → 走点击链",
         "recognition": "TemplateMatch",
         "template": "宙斯周本条件1.png",
         "threshold": 0.7,
         "action": "DoNothing",
+        "post_delay": 1000,
         "next": [
             "周本点击1"
         ]
     },
     "宙斯路线2": {
+        "doc": "认出条件2图 → 走点击链",
         "recognition": "TemplateMatch",
         "template": "宙斯周本条件2.png",
         "threshold": 0.7,
         "action": "DoNothing",
+        "post_delay": 1000,
         "next": [
             "周本点击1"
         ]
@@ -33,6 +105,10 @@
         "target": [
             537,
             608
+        ],
+        "post_delay": 8000,
+        "next": [
+            "周本点击2"
         ]
     },
     "周本点击2": {
@@ -41,6 +117,10 @@
         "target": [
             440,
             387
+        ],
+        "post_delay": 8000,
+        "next": [
+            "周本点击3"
         ]
     },
     "周本点击3": {
@@ -49,6 +129,10 @@
         "target": [
             440,
             387
+        ],
+        "post_delay": 8000,
+        "next": [
+            "周本点击4"
         ]
     },
     "周本点击4": {
@@ -57,6 +141,10 @@
         "target": [
             334,
             264
+        ],
+        "post_delay": 8000,
+        "next": [
+            "周本点击5"
         ]
     },
     "周本点击5": {
@@ -65,6 +153,10 @@
         "target": [
             524,
             294
+        ],
+        "post_delay": 8000,
+        "next": [
+            "周本点击6"
         ]
     },
     "周本点击6": {
@@ -73,14 +165,29 @@
         "target": [
             658,
             214
+        ],
+        "post_delay": 8000,
+        "next": [
+            "点击空白处继续11"
+        ]
+    },
+    "点击空白处继续11": {
+        "recognition": "OCR",
+        "expected": "点击空白处继续",
+        "action": "Click",
+        "post_delay": 4000,
+        "next": [
+            "点击（中左）"
         ]
     },
     "点击（中左）": {
+        "doc": "备用节点，未接入主流程",
         "recognition": "DirectHit",
         "action": "Click",
         "target": [
             700,
             400
-        ]
+        ],
+        "post_delay": 1000
     }
 }
