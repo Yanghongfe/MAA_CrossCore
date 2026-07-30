@@ -8,22 +8,11 @@ env:
   MFAA_VERSION: ""
 
 on:
+  # 练习/日常开发不自动打包，避免 artifact 配额被打满。
+  # 需要发版时：打 v* tag，或在 Actions 里手动 Run workflow。
   push:
     tags:
       - "v*"
-    branches:
-      - "**"
-    paths:
-      - ".github/workflows/install.yml"
-      - "assets/**"
-      - "**.py"
-  pull_request:
-    branches:
-      - "**"
-    paths:
-      - ".github/workflows/install.yml"
-      - "assets/**"
-      - "**.py"
   workflow_dispatch:
 
 jobs:

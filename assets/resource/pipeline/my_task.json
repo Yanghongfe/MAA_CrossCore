@@ -62,8 +62,8 @@
         "expected": "扫荡",
         "action": "Click"
     },
-    // 这里要加条件判断 体力不够滑动不满
     "拖满滑条（荒墟拾遗扫荡专用）": {
+        "doc": "这里要加条件判断：体力不够时滑动不满",
         "recognition": "DirectHit",
         "action": "Swipe",
         "begin": [
