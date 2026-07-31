@@ -1,0 +1,73 @@
+{
+    "点击游戏名称": {
+        "recognition": "OCR",
+        "expected": "交错战线",
+        "action": "Click",
+        "post_delay": 20000,
+        "next": [
+            "点击开始游戏"
+        ]
+    },
+    "点击开始游戏": {
+        "recognition": "OCR",
+        "expected": "开始游戏",
+        "action": "Click",
+        "post_delay": 5000,
+        "next": [
+            "点击X按键"
+        ]
+    },
+    "点击X按键": {
+        "doc": "有 X 就点；点完再认，没有了再去签到",
+        "recognition": "TemplateMatch",
+        "template": "X_退出按键_通用.png",
+        "action": "Click",
+        "post_delay": 1000,
+        "next": [
+            "点击X按键",
+            "点击签到",
+            "出击"
+        ]
+    },
+    "点击签到": {
+        "recognition": "OCR",
+        "expected": "签到",
+        "action": "Click",
+        "post_delay": 1000,
+        "next": [
+            "点击空白继续"
+        ]
+    },
+    "点击空白继续": {
+        "recognition": "OCR",
+        "expected": "点击空白处继续",
+        "action": "Click",
+        "post_delay": 1000,
+        "next": [
+            "退出签到页面"
+        ]
+    },
+    "退出签到页面": {
+        "recognition": "TemplateMatch",
+        "template": "退出签到页面按键.png",
+        "action": "Click",
+        "post_delay": 1000,
+        "next": [
+            "通用退出按键"
+        ]
+    },
+    "通用退出按键": {
+        "recognition": "TemplateMatch",
+        "template": "X_礼包用退出按键.png",
+        "action": "Click",
+        "post_delay": 1000,
+        "next": [
+            "出击"
+        ]
+    },
+    "出击": {
+        "recognition": "OCR",
+        "expected": "出击",
+        "action": "Click"
+    }
+}
