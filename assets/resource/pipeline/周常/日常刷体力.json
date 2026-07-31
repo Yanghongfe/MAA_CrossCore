@@ -48,7 +48,7 @@
         "recognition": "TemplateMatch",
         "template": "返回上级按钮.png",
         "action": "Click",
-        "post_delay": 2000,
+        "post_delay": 2000
     },
     "次数+1": {
         "recognition": "TemplateMatch",
@@ -118,23 +118,4 @@
             "开始扫荡"
         ]
     }
-    // "拖满滑条（荒墟拾遗扫荡专用）": {
-    //     "doc": "这里要加条件判断：体力不够时滑动不满",
-    //     "recognition": "DirectHit",
-    //     "action": "Swipe",
-    //     "post_delay": 2000,
-    //     "begin": [
-    //         300,
-    //         500,
-    //         100,
-    //         100
-    //     ],
-    //     "end": [
-    //         1094,
-    //         500,
-    //         100,
-    //         100
-    //     ],
-    //     "duration": 1000
-    // }
 }
