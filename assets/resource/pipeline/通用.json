@@ -1,0 +1,7 @@
+{
+    "回到主菜单": {
+        "recognition": "TemplateMatch",
+        "template": "返回主菜单.png",
+        "action": "Click"
+    }
+}

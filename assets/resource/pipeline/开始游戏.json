@@ -3,7 +3,7 @@
         "recognition": "OCR",
         "expected": "交错战线",
         "action": "Click",
-        "post_delay": 20000,
+        "post_delay": 25000,
         "next": [
             "点击开始游戏"
         ]
@@ -12,7 +12,7 @@
         "recognition": "OCR",
         "expected": "开始游戏",
         "action": "Click",
-        "post_delay": 5000,
+        "post_delay": 10000,
         "next": [
             "点击X按键"
         ]
@@ -26,8 +26,11 @@
         "next": [
             "点击X按键",
             "点击签到",
-            "出击"
+            "初始页面"
         ]
+    },
+    "初始页面": {
+        "action": "DoNothing"
     },
     "点击签到": {
         "recognition": "OCR",
@@ -53,21 +56,7 @@
         "action": "Click",
         "post_delay": 1000,
         "next": [
-            "通用退出按键"
+            "点击X按键"
         ]
-    },
-    "通用退出按键": {
-        "recognition": "TemplateMatch",
-        "template": "X_礼包用退出按键.png",
-        "action": "Click",
-        "post_delay": 1000,
-        "next": [
-            "出击"
-        ]
-    },
-    "出击": {
-        "recognition": "OCR",
-        "expected": "出击",
-        "action": "Click"
     }
 }

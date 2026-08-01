@@ -1,5 +1,24 @@
 {
-    "资源采集": {
+    "日常任务出击": {
+        "recognition": "OCR",
+        "expected": "出击",
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "日常任务出击",
+            "资源采集1"
+        ]
+    },
+    "资源采集1": {
+        "recognition": "OCR",
+        "expected": "资源采集",
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "资源采集2"
+        ]
+    },
+    "资源采集2": {
         "recognition": "OCR",
         "expected": "资源采集",
         "action": "Click",
@@ -48,7 +67,11 @@
         "recognition": "TemplateMatch",
         "template": "返回上级按钮.png",
         "action": "Click",
-        "post_delay": 2000
+        "post_delay": 2000,
+        "next": [
+            "返回上级菜单",
+            "初始页面"
+        ]
     },
     "次数+1": {
         "recognition": "TemplateMatch",
@@ -63,7 +86,7 @@
     },
     "到10次了": {
         "recognition": "TemplateMatch",
-        "template": "满10次.png",
+        "template": "拉满了.png",
         "post_delay": 2000,
         "next": [
             "开始战斗(日常专用)"
@@ -72,7 +95,6 @@
     "体力到上限": {
         "recognition": "TemplateMatch",
         "template": "体力耗尽.png",
-        "action": "Click",
         "post_delay": 2000,
         "next": [
             "次数-1"
@@ -91,7 +113,7 @@
         "recognition": "OCR",
         "expected": "开始战斗",
         "action": "Click",
-        "post_delay": 4000,
+        "post_delay": 5000,
         "next": [
             "使用双倍体力",
             "空白点击"
@@ -107,7 +129,8 @@
         ]
     },
     "空白点击": {
-        "recognition": "DirectHit",
+        "recognition": "OCR",
+        "expected": "奖励",
         "action": "Click",
         "post_delay": 2000,
         "target": [
