@@ -1,1 +1,92 @@
+{
+  "agent": {
+    "agents": [],
+    "cardExpanded": false
+  },
+  "controller": {
+    "adbAddress": "127.0.0.1:16384",
+    "adbConfig": "{\"extras\":{\"mumu\":{\"enable\":true,\"index\":0,\"path\":\"D:/MuMu Player 12\"}}}",
+    "adbPath": "D:/MuMu Player 12/nx_main/adb.exe",
+    "controllerType": "adb",
+    "desktopClassFilter": "",
+    "desktopClassName": "",
+    "desktopHwnd": "",
+    "desktopScreencapMethod": "1",
+    "desktopWindowName": "",
+    "desktopWindowRegex": "",
+    "gamepadType": "0",
     "inputMethod": "Default",
+    "interfaceControllerName": "",
+    "playcoverAddress": "",
+    "playcoverUuid": "",
+    "screencapMethod": "EmulatorExtras",
+    "selectedAdbDevice": "MuMu安卓设备-MuMuPlayer v5+ (127.0.0.1:16384)",
+    "selectedDesktopWindow": "",
+    "win32KeyboardMethod": "1",
+    "win32MouseMethod": "1",
+    "wlrootSocketPath": ""
+  },
+  "debugWorkspaceSettings": {
+    "autoCollapseLeftTabsOnRunStart": true,
+    "checkPipeline": true,
+    "checkPipelineNotifyLevel": "ERROR",
+    "leftTabsCollapsed": false,
+    "preventResourceLoaded": true,
+    "watchResourceChange": true,
+    "watchResourceChangeInterval": 1000
+  },
+  "editorSettings": {
+    "fontSize": 15,
+    "maxHeight": 720,
+    "minHeight": 420
+  },
+  "lastCheck": 1785651156,
+  "resource": {
+    "activeProfileId": 0,
+    "profiles": [
+      {
+        "id": 0,
+        "name": "Default",
+        "paths": [
+          {
+            "enabled": true,
+            "id": 5,
+            "path": "E:\\GitHub\\MAA_Practice\\assets\\resource"
+          }
+        ],
+        "source": "manual"
+      }
+    ]
+  },
+  "shortcuts": {
+    "shortcuts": {
+      "task.startStop": {
+        "binding": "P",
+        "defaultBinding": "P",
+        "label": "Start / Stop Task"
+      }
+    }
+  },
+  "task": {
+    "interfaceLanguages": {},
+    "interfaceLocaleValues": {},
+    "interfaceTasks": [],
+    "manualOverrideJson": "{}",
+    "overrideJson": "{}",
+    "selectedEntry": "",
+    "selectedInputValues": [],
+    "selectedInterfaceLanguage": "",
+    "selectedInterfaceTaskName": "",
+    "selectedOptionCases": [],
+    "taskLaunchMode": "manual"
+  },
+  "taskDetailSettings": {
+    "nodePageSize": 20,
+    "reverseNodeOrder": true,
+    "showActionId": true,
+    "showRecoId": true
+  },
+  "updateSettings": {
+    "showPreRelease": false
+  }
+}
