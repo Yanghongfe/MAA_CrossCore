@@ -51,13 +51,13 @@
             ]
         }
     ],
-    // 可选的 agent 示例
-    // "agent": {
-    //     "child_exec": "python",
-    //     "child_args": [
-    //         "./agent/main.py"
-    //     ]
-    // },
+    // 自定义识别/动作需要 Agent（普通 Python 子进程，不是大模型）
+    "agent": {
+        "child_exec": "python",
+        "child_args": [
+            "./agent/main.py"
+        ]
+    },
     "task": [
         {
             "name": "启动游戏",

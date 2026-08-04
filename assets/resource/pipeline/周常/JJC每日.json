@@ -57,12 +57,12 @@
             "总队长.png",
             "男总队长.png",
             "红总队长.png",
-            "精2总队长"
+            "精2总队长.png"
         ],
         "action": "Click",
         "post_delay": 2000,
         "next": [
-            "开始jjc战斗",
+            "开始jjc战斗"
         ]
     },
     "开始jjc战斗": {
