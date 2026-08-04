@@ -6,9 +6,8 @@ const config: FullConfig = {
   interfacePath: 'assets/interface.json',
   check: {
     override: {
-      // 忽略 mpe-config 带来的报错
-      // ignore warning caused by mpe-config
-      // 'mpe-config': 'ignore'
+      // MPE 编辑器写入的 $__mpe_config_* 会报 warning；不忽略会导致 CI exit 1
+      'mpe-config': 'ignore'
     }
   }
 }
