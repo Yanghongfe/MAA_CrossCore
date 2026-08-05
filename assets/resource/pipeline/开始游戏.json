@@ -6,7 +6,8 @@
         "post_delay": 25000,
         "next": [
             "点击开始游戏"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "点击开始游戏": {
         "recognition": "OCR",
@@ -15,7 +16,8 @@
         "post_delay": 10000,
         "next": [
             "点击X按键"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "点击X按键": {
         "doc": "有 X 就点；点完再认，没有了再去签到",
@@ -27,10 +29,15 @@
             "点击X按键",
             "点击签到",
             "初始页面"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "初始页面": {
-        "action": "DoNothing"
+        "action": "DoNothing",
+        "post_delay": 1000,
+        "next": [
+            "一键_启动后进基地"
+        ]
     },
     "点击签到": {
         "recognition": "OCR",
@@ -39,7 +46,8 @@
         "post_delay": 1000,
         "next": [
             "点击空白继续"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "点击空白继续": {
         "recognition": "OCR",
@@ -48,7 +56,8 @@
         "post_delay": 1000,
         "next": [
             "退出签到页面"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "退出签到页面": {
         "recognition": "TemplateMatch",
@@ -57,6 +66,7 @@
         "post_delay": 1000,
         "next": [
             "点击X按键"
-        ]
+        ],
+        "pre_delay": 2000
     }
 }

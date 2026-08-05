@@ -6,7 +6,8 @@
         "post_delay": 2000,
         "next": [
             "碎星虚影"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "碎星虚影": {
         "recognition": "OCR",
@@ -15,7 +16,8 @@
         "post_delay": 2000,
         "next": [
             "戈里刻虚影"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "戈里刻虚影": {
         "recognition": "OCR",
@@ -24,7 +26,8 @@
         "post_delay": 2000,
         "next": [
             "拖满滑条"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "拖满滑条": {
         "recognition": "DirectHit",
@@ -44,7 +47,9 @@
         "duration": 2000,
         "next": [
             "选择宙斯"
-        ]
+        ],
+        "pre_delay": 2000,
+        "post_delay": 2000
     },
     "选择宙斯": {
         "recognition": "TemplateMatch",
@@ -54,7 +59,8 @@
         "post_delay": 4000,
         "next": [
             "开始战斗"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "开始战斗": {
         "recognition": "OCR",
@@ -63,7 +69,8 @@
         "post_delay": 4000,
         "next": [
             "开始周本行动"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "开始周本行动": {
         "doc": "周本入口：点开始行动后按宙斯条件分支，再依次点击1~6",
@@ -74,7 +81,8 @@
         "next": [
             "宙斯路线1",
             "宙斯路线2"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "宙斯路线1": {
         "doc": "认出条件1图 → 走点击链",
@@ -85,7 +93,8 @@
         "post_delay": 1000,
         "next": [
             "周本点击1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "宙斯路线2": {
         "doc": "认出条件2图 → 走点击链",
@@ -96,7 +105,8 @@
         "post_delay": 1000,
         "next": [
             "周本点击1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击1": {
         "recognition": "DirectHit",
@@ -108,7 +118,8 @@
         "post_delay": 8000,
         "next": [
             "周本点击2"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击2": {
         "recognition": "DirectHit",
@@ -120,7 +131,8 @@
         "post_delay": 8000,
         "next": [
             "周本点击3"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击3": {
         "recognition": "DirectHit",
@@ -132,7 +144,8 @@
         "post_delay": 8000,
         "next": [
             "周本点击4"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击4": {
         "recognition": "DirectHit",
@@ -144,7 +157,8 @@
         "post_delay": 8000,
         "next": [
             "周本点击5"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击5": {
         "recognition": "DirectHit",
@@ -156,7 +170,8 @@
         "post_delay": 8000,
         "next": [
             "周本点击6"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "周本点击6": {
         "recognition": "DirectHit",
@@ -168,7 +183,8 @@
         "post_delay": 8000,
         "next": [
             "点击空白处继续11"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "点击空白处继续11": {
         "recognition": "OCR",
@@ -177,7 +193,8 @@
         "post_delay": 4000,
         "next": [
             "点击（中左）"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "点击（中左）": {
         "doc": "备用节点，未接入主流程",
@@ -187,6 +204,7 @@
             700,
             400
         ],
-        "post_delay": 1000
+        "post_delay": 1000,
+        "pre_delay": 2000
     }
 }

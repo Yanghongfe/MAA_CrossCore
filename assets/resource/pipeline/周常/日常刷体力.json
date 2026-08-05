@@ -7,7 +7,8 @@
         "next": [
             "日常任务出击",
             "资源采集1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "资源采集1": {
         "recognition": "OCR",
@@ -16,7 +17,8 @@
         "post_delay": 2000,
         "next": [
             "资源采集2"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "资源采集2": {
         "recognition": "OCR",
@@ -25,7 +27,8 @@
         "post_delay": 2000,
         "next": [
             "荒墟拾遗"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "荒墟拾遗": {
         "recognition": "OCR",
@@ -34,7 +37,8 @@
         "post_delay": 2000,
         "next": [
             "第五层"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "第五层": {
         "recognition": "OCR",
@@ -43,7 +47,8 @@
         "post_delay": 2000,
         "next": [
             "开始扫荡"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "开始扫荡": {
         "recognition": "OCR",
@@ -53,7 +58,8 @@
         "next": [
             "没体力了",
             "次数+1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "没体力了": {
         "recognition": "TemplateMatch",
@@ -61,7 +67,8 @@
         "post_delay": 2000,
         "next": [
             "返回上级菜单"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "返回上级菜单": {
         "recognition": "TemplateMatch",
@@ -71,7 +78,8 @@
         "next": [
             "返回上级菜单",
             "初始页面"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "次数+1": {
         "recognition": "TemplateMatch",
@@ -82,7 +90,8 @@
             "体力到上限",
             "到10次了",
             "次数+1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "到10次了": {
         "recognition": "TemplateMatch",
@@ -90,7 +99,8 @@
         "post_delay": 2000,
         "next": [
             "开始战斗(日常专用)"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "体力到上限": {
         "recognition": "TemplateMatch",
@@ -98,7 +108,8 @@
         "post_delay": 2000,
         "next": [
             "次数-1"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "次数-1": {
         "recognition": "TemplateMatch",
@@ -107,7 +118,8 @@
         "post_delay": 2000,
         "next": [
             "开始战斗(日常专用)"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "开始战斗(日常专用)": {
         "recognition": "OCR",
@@ -117,7 +129,8 @@
         "next": [
             "使用双倍体力",
             "空白点击"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "使用双倍体力": {
         "recognition": "OCR",
@@ -126,7 +139,8 @@
         "post_delay": 2000,
         "next": [
             "空白点击"
-        ]
+        ],
+        "pre_delay": 2000
     },
     "空白点击": {
         "recognition": "OCR",
@@ -139,6 +153,7 @@
         ],
         "next": [
             "开始扫荡"
-        ]
+        ],
+        "pre_delay": 2000
     }
 }

@@ -13,7 +13,7 @@
 
 仓库地址：[Yanghongfe/MAA_Practice](https://github.com/Yanghongfe/MAA_Practice)
 
-## 联系方式
+
 
 目前主要以 GitHub Issues / 同学协作沟通为主。若后续建立 QQ 交流群，会补充到此处。
 

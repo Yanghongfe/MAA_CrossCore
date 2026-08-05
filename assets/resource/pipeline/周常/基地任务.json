@@ -1,17 +1,17 @@
 {
-    "$__mpe_config_新建Pipeline7": {
+    "$__mpe_config_基地任务": {
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1785862828763,
+            "lastSyncTime": 1785947246305,
             "isModifiedExternally": false,
             "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\周常\\基地任务.json",
             "savedViewport": {
-                "x": -535,
-                "y": 188,
-                "zoom": 0.26
+                "x": -6881,
+                "y": -702,
+                "zoom": 1.21
             },
-            "filename": "新建Pipeline7",
+            "filename": "基地任务",
             "version": "v1.7.4"
         }
     },
@@ -26,9 +26,11 @@
                 "threshold": 0.92
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "$__mpe_code": {
             "position": {
                 "x": 1932,
@@ -45,9 +47,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "点击确认"
         ],
@@ -70,10 +74,11 @@
                 "order_by": "Score"
             }
         },
+        "pre_delay": 500,
         "action": {
             "type": "Click"
         },
-        "post_delay": 1000,
+        "post_delay": 500,
         "timeout": 5000,
         "next": [
             "黑匣子数量鉴定",
@@ -99,16 +104,18 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "识别黑匣"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1292,
-                "y": 294
+                "x": 1243,
+                "y": 199
             }
         }
     },
@@ -118,8 +125,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 5836,
-                "y": 617
+                "x": 5824,
+                "y": 714
             }
         }
     },
@@ -132,6 +139,8 @@
                 ]
             }
         },
+        "pre_delay": 2000,
+        "post_delay": 2000,
         "next": [
             "选择好友"
         ],
@@ -151,18 +160,19 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
-        "post_delay": 2000,
+        "post_delay": 7000,
         "next": [
             "有矿可点",
             "进入商店"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12,
-                "y": 299
+                "x": -171,
+                "y": 145
             }
         }
     },
@@ -192,6 +202,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click",
             "param": {
@@ -204,6 +215,7 @@
                 ]
             }
         },
+        "post_delay": 2000,
         "next": [
             "确定"
         ],
@@ -223,9 +235,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "开始刷卷"
         ],
@@ -245,6 +259,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -259,28 +274,6 @@
             }
         }
     },
-    "测试OCR数字": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    130,
-                    370,
-                    36,
-                    44
-                ],
-                "expected": [
-                    "\\d+"
-                ]
-            }
-        },
-        "$__mpe_code": {
-            "position": {
-                "x": 0,
-                "y": 0
-            }
-        }
-    },
     "点击确认": {
         "recognition": {
             "type": "OCR",
@@ -290,9 +283,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "点击空白继续（制作用"
         ],
@@ -312,6 +307,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -335,6 +331,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -358,6 +355,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -381,9 +379,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "点击空白继续（制造卷用"
         ],
@@ -403,9 +403,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "制作不了",
             "制造最多"
@@ -426,9 +428,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "回到交易场",
             "返回上级（制造"
@@ -437,6 +441,30 @@
             "position": {
                 "x": 2894,
                 "y": 327
+            }
+        }
+    },
+    "返回主": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    186,
+                    30,
+                    63,
+                    35
+                ]
+            }
+        },
+        "pre_delay": 2000,
+        "post_delay": 2000,
+        "next": [
+            "一键_基地后进JJC"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 6205,
+                "y": 656
             }
         }
     },
@@ -449,6 +477,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -458,8 +487,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 972,
-                "y": 269
+                "x": 888,
+                "y": 142
             }
         }
     },
@@ -472,9 +501,11 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
+        "post_delay": 2000,
         "next": [
             "拜访"
         ],
@@ -502,6 +533,7 @@
                 }
             }
         },
+        "pre_delay": 2000,
         "post_delay": 500,
         "next": [
             "商城任务完成"
@@ -513,22 +545,11 @@
             }
         }
     },
-    "返回主": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "template": [
-                    "返回主菜单.png"
-                ]
-            }
-        },
-        "action": {
-            "type": "Click"
-        },
+    "$__mpe_external_一键_基地后进JJC_基地任务": {
         "$__mpe_code": {
             "position": {
-                "x": 6256,
-                "y": 620
+                "x": 537,
+                "y": -173
             }
         }
     }
