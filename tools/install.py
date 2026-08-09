@@ -54,7 +54,16 @@ def get_dotnet_platform_tag():
     return platform_tag
 
 
+def _has_mfw_ui() -> bool:
+    """MFW 发行包已自带 maafw，无需再按 MFAAvalonia 的 runtimes 布局拷 deps。"""
+    return (install_path / "MFW.exe").exists() or (install_path / "MFW").exists()
+
+
 def install_deps():
+    if _has_mfw_ui():
+        print("Detected MFW UI in install/, skip MFAAvalonia-style deps copy.")
+        return
+
     if not (working_dir / "deps" / "bin").exists():
         print('Please download the MaaFramework to "deps" first.')
         print('请先下载 MaaFramework 到 "deps"。')

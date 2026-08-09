@@ -36,7 +36,7 @@
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
 2. 确认 **MuMu 已启动且游戏可进入**
-3. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
+3. 运行解压目录中的 `MFW.exe`（Windows；其他平台以实际文件名为准）
 4. 在软件中选择控制器（安卓端 / ADB）、资源，勾选任务后开始运行
 
 > 当前安装包显示名仍可能为模板默认的 `MaaXXX`，后续会随 `interface.json` 一并调整。
@@ -88,7 +88,7 @@
 感谢以下开发者对本项目作出的贡献：
 
 <a href="https://github.com/Yanghongfe/MAA_Practice/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Yanghongfe/MAA_Practice" alt="贡献者" />
+  <img src="https://contrib.rocks/image?repo=Yanghongfe/MAA_Practice&v=2" alt="贡献者" />
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks)

@@ -5,7 +5,9 @@ env:
   # - 设置 VERSION 为空字符串时，下载 latest 版本
   # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
   MAAFW_VERSION: ""
-  MFAA_VERSION: ""
+  # 下载的是该仓库 Releases 附件（MFW-PyQt6-*.zip），不是 git clone 源码
+  # 仓库：https://github.com/qing4368-svg/MFW-PyQt6-ui
+  MFW_VERSION: ""
 
 on:
   # 练习/日常开发不自动打包，避免 artifact 配额被打满。
@@ -80,46 +82,40 @@ jobs:
           out-file-path: "deps"
           extract: true
 
-      - name: Download MFAAvalonia
+      - name: Download MFW-PyQt6
         if: matrix.os != 'android'
-        id: download_mfa
+        id: download_mfw
         uses: robinraju/release-downloader@v1
         with:
-          repository: SweetSmellFox/MFAAvalonia
-          fileName: "MFAAvalonia-*-${{ (matrix.os == 'win' && 'win') || (matrix.os == 'macos' && 'osx') || (matrix.os == 'linux' && 'linux') }}-${{ (matrix.arch == 'x86_64' && 'x64') || (matrix.arch == 'aarch64' && 'arm64') }}*"
-          latest: ${{ env.MFAA_VERSION == '' }}
-          tag: ${{ env.MFAA_VERSION }}
-          out-file-path: "MFA"
+          repository: qing4368-svg/MFW-PyQt6-ui
+          fileName: "MFW-PyQt6-${{ matrix.os }}-${{ matrix.arch }}*"
+          latest: ${{ env.MFW_VERSION == '' }}
+          tag: ${{ env.MFW_VERSION }}
+          out-file-path: "MFW"
           extract: true
 
-      - name: Clean up MFAAvalonia archive
+      - name: Clean up MFW archive
         if: matrix.os != 'android'
         shell: bash
         run: |
-          ARCHIVE_FILE_PATH="${{ fromJson(steps.download_mfa.outputs.downloaded_files)[0] }}"
+          ARCHIVE_FILE_PATH="${{ fromJson(steps.download_mfw.outputs.downloaded_files)[0] }}"
           rm -f "${ARCHIVE_FILE_PATH}"
-          echo "Archive cleanup command executed for MFAAvalonia."
+          echo "Archive cleanup command executed for MFW."
 
-      - name: Remove built-in runtime in MFA
-        if: matrix.os != 'android'
-        shell: bash
-        run: |
-          rm -rf MFA/runtimes
-      
       - name: Install
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" != "android" ]]; then
-            if [ -d "MFA" ]; then
-              echo "Copying MFA files to install directory..."
+            if [ -d "MFW" ]; then
+              echo "Copying MFW files to install directory..."
               mkdir -p install
-              rsync -av --ignore-existing MFA/ install/
-              echo "MFA files copied successfully."
+              rsync -av --ignore-existing MFW/ install/
+              echo "MFW files copied successfully."
             else
-              echo "MFA directory not found, skipping copy."
+              echo "MFW directory not found, skipping copy."
             fi
           else
-            echo "Skipping copy MFA for Android."
+            echo "Skipping copy MFW for Android."
           fi
 
           cd tools/
