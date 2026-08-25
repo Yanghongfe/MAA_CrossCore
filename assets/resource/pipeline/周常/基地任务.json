@@ -3,16 +3,24 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1785947246305,
+            "lastSyncTime": 1786545672017,
             "isModifiedExternally": false,
             "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\周常\\基地任务.json",
             "savedViewport": {
-                "x": -6881,
-                "y": -702,
-                "zoom": 1.21
+                "x": -431,
+                "y": 1,
+                "zoom": 0.65
             },
             "filename": "基地任务",
-            "version": "v1.7.4"
+            "version": "v1.7.6"
+        }
+    },
+    "$__mpe_external_一键_基地后进JJC_基地任务": {
+        "$__mpe_code": {
+            "position": {
+                "x": 537,
+                "y": -173
+            }
         }
     },
     "制作不了": {
@@ -31,10 +39,13 @@
             "type": "Click"
         },
         "post_delay": 2000,
+        "next": [
+            "返回上级（制造"
+        ],
         "$__mpe_code": {
             "position": {
-                "x": 1932,
-                "y": 12
+                "x": 1870,
+                "y": -57
             }
         }
     },
@@ -57,8 +68,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1932,
-                "y": 339
+                "x": 1935,
+                "y": 387
             }
         }
     },
@@ -82,6 +93,7 @@
         "timeout": 5000,
         "next": [
             "黑匣子数量鉴定",
+            "刷新完全部好友",
             "找到支援卷",
             "刷新好友"
         ],
@@ -90,8 +102,30 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 4395,
-                "y": 341
+                "x": 4363,
+                "y": 348
+            }
+        }
+    },
+    "刷新完全部好友": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "好友交付记录"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "商城任务完成"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 4782,
+                "y": 476
             }
         }
     },
@@ -318,7 +352,7 @@
         "$__mpe_code": {
             "position": {
                 "x": 2572,
-                "y": 329
+                "y": 464
             }
         }
     },
@@ -410,7 +444,8 @@
         "post_delay": 2000,
         "next": [
             "制作不了",
-            "制造最多"
+            "制造最多",
+            "识别黑匣"
         ],
         "$__mpe_code": {
             "position": {
@@ -445,6 +480,7 @@
         }
     },
     "返回主": {
+        "pre_delay": 2000,
         "action": {
             "type": "Click",
             "param": {
@@ -456,7 +492,6 @@
                 ]
             }
         },
-        "pre_delay": 2000,
         "post_delay": 2000,
         "next": [
             "一键_基地后进JJC"
@@ -542,14 +577,6 @@
             "position": {
                 "x": 4679,
                 "y": 30
-            }
-        }
-    },
-    "$__mpe_external_一键_基地后进JJC_基地任务": {
-        "$__mpe_code": {
-            "position": {
-                "x": 537,
-                "y": -173
             }
         }
     }

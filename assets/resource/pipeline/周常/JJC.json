@@ -3,16 +3,24 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1785943147894,
+            "lastSyncTime": 1786543325629,
             "isModifiedExternally": false,
             "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\周常\\JJC.json",
             "savedViewport": {
-                "x": -202,
-                "y": -3,
-                "zoom": 0.65
+                "x": -574,
+                "y": -125,
+                "zoom": 0.61
             },
             "filename": "JJC",
-            "version": "v1.7.4"
+            "version": "v1.7.6"
+        }
+    },
+    "$__mpe_external_回到主菜单_JJC": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1574,
+                "y": 65
+            }
         }
     },
     "JJC出击": {
@@ -22,6 +30,7 @@
                 "expected": "出击"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -34,8 +43,7 @@
                 "x": 12,
                 "y": 215
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "jjc点击空白继续": {
         "recognition": {
@@ -44,6 +52,7 @@
                 "expected": "点击空白处继续"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -54,11 +63,10 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2649,
-                "y": 202
+                "x": 2791,
+                "y": 261
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "刷新": {
         "recognition": {
@@ -67,20 +75,21 @@
                 "template": "JJC刷新按钮.png"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
         "post_delay": 2000,
         "next": [
-            "找总队长"
+            "找总队长",
+            "刷新"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1275,
-                "y": 456
+                "x": 1244,
+                "y": 464
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "开始jjc战斗": {
         "recognition": {
@@ -89,23 +98,24 @@
                 "expected": "挑战"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
-        "post_delay": 25000,
-        "next": [
-            "战斗结束"
-        ],
+        "post_delay": 2000,
+        "timeout": 120000,
         "on_error": [
             "开始刷新流程"
         ],
+        "next": [
+            "战斗结束"
+        ],
         "$__mpe_code": {
             "position": {
-                "x": 1944,
-                "y": 329
+                "x": 1928,
+                "y": 563
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "开始刷新流程": {
         "next": [
@@ -115,8 +125,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 972,
-                "y": 260
+                "x": 956,
+                "y": 282
             }
         }
     },
@@ -137,8 +147,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2252,
-                "y": 280
+                "x": 2312,
+                "y": 550
             }
         }
     },
@@ -154,6 +164,7 @@
                 ]
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -163,11 +174,10 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1638,
-                "y": 254
+                "x": 1591,
+                "y": 507
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "模拟军演": {
         "recognition": {
@@ -176,6 +186,7 @@
                 "expected": "模拟军演"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -188,8 +199,7 @@
                 "x": 332,
                 "y": 215
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "次数用完": {
         "doc": "ROI 内 OCR 数字；小于 1（剩余 0）视为次数用完",
@@ -208,17 +218,17 @@
                 }
             }
         },
+        "pre_delay": 2000,
         "post_delay": 500,
         "next": [
             "回到主菜单"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1261,
-                "y": -9
+                "x": 1239,
+                "y": -23
             }
-        },
-        "pre_delay": 2000
+        }
     },
     "镜像竞技": {
         "recognition": {
@@ -227,6 +237,7 @@
                 "expected": "镜像竞技"
             }
         },
+        "pre_delay": 2000,
         "action": {
             "type": "Click"
         },
@@ -238,15 +249,6 @@
             "position": {
                 "x": 652,
                 "y": 215
-            }
-        },
-        "pre_delay": 2000
-    },
-    "$__mpe_external_回到主菜单_JJC": {
-        "$__mpe_code": {
-            "position": {
-                "x": 1612,
-                "y": 130
             }
         }
     }
