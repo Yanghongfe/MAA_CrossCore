@@ -1,0 +1,359 @@
+{
+    "每日探索_旧入口": {
+        "next": [
+            "首页_出击",
+            "[JumpBack]子任务_进入首页"
+        ]
+    },
+    "每日探索_入口": {
+        "recognition": "OCR",
+        "expected": [
+            "每日探索"
+        ],
+        "roi": [
+            874,
+            294,
+            218,
+            132
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next_doc": "Set in code."
+    },
+    "每日探索_资源采集": {
+        "recognition": "OCR",
+        "expected": [
+            "资源采集"
+        ],
+        "roi": [
+            259,
+            205,
+            243,
+            70
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next_doc": "Set in code."
+    },
+    "每日探索_技能磨砺": {
+        "recognition": "OCR",
+        "expected": [
+            "技能磨砺"
+        ],
+        "roi": [
+            830,
+            127,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_星币开采": {
+        "recognition": "OCR",
+        "expected": [
+            "星币开采"
+        ],
+        "roi": [
+            838,
+            237,
+            176,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_技术解析": {
+        "recognition": "OCR",
+        "expected": [
+            "技术解析"
+        ],
+        "roi": [
+            838,
+            347,
+            176,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_荒墟拾遗": {
+        "recognition": "OCR",
+        "expected": [
+            "荒墟拾遗"
+        ],
+        "roi": [
+            838,
+            455,
+            176,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_层数选择": {
+        "recognition": "OCR",
+        "text_doc": "Set in code.",
+        "roi": [
+            1147,
+            258,
+            93,
+            365
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_扫荡"
+        ]
+    },
+    "每日探索_扫荡": {
+        "recognition": "OCR",
+        "expected": [
+            "扫荡"
+        ],
+        "roi": [
+            843,
+            559,
+            115,
+            91
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_开始战斗",
+            "每日探索_扫荡"
+        ]
+    },
+    "每日探索_开始战斗": {
+        "recognition": "OCR",
+        "expected": [
+            "开始战斗"
+        ],
+        "roi": [
+            943,
+            521,
+            159,
+            85
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]每日探索_扫荡双倍",
+            "每日探索_扫荡奖励",
+            "每日探索_燃料补给",
+            "每日探索_开始战斗"
+        ]
+    },
+    "每日探索_燃料补给": {
+        "recognition": "OCR",
+        "expected": [
+            "燃料补给"
+        ],
+        "roi": [
+            212,
+            139,
+            180,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "target": [
+            584,
+            57,
+            10,
+            10
+        ],
+        "next": [
+            "进入首页"
+        ]
+    },
+    "每日探索_扫荡奖励": {
+        "recognition": "OCR",
+        "expected": [
+            "扫荡奖励"
+        ],
+        "roi": [
+            569,
+            5,
+            181,
+            66
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]每日探索_升级",
+            "每日探索_扫荡",
+            "每日探索_扫荡奖励"
+        ]
+    },
+    "每日探索_升级": {
+        "recognition": "TemplateMatch",
+        "template": "Combat/DailyExplore_LevelUp.png",
+        "roi": [
+            540,
+            242,
+            207,
+            91
+        ],
+        "action": "Click"
+    },
+    "每日探索_扫荡双倍": {
+        "recognition": "OCR",
+        "expected": [
+            "开启"
+        ],
+        "roi": [
+            702,
+            398,
+            252,
+            100
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": []
+    },
+    "每日探索_芯片嵌合": {
+        "recognition": "OCR",
+        "expected": [
+            "芯片嵌合"
+        ],
+        "roi": [
+            287,
+            372,
+            205,
+            64
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next_doc": "Set in code."
+    },
+    "每日探索_鼓军嵌合": {
+        "recognition": "OCR",
+        "expected": [
+            "鼓军嵌合"
+        ],
+        "roi": [
+            830,
+            127,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_光": {
+        "recognition": "OCR",
+        "expected": [
+            "光"
+        ],
+        "roi": [
+            830,
+            241,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_注": {
+        "recognition": "OCR",
+        "expected": [
+            "注"
+        ],
+        "roi": [
+            830,
+            341,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_跃升行动": {
+        "recognition": "OCR",
+        "expected": [
+            "跃升行动"
+        ],
+        "roi": [
+            287,
+            534,
+            205,
+            64
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next_doc": "Set in code."
+    },
+    "每日探索_自然": {
+        "recognition": "OCR",
+        "expected": [
+            "自然"
+        ],
+        "roi": [
+            830,
+            127,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_人造": {
+        "recognition": "OCR",
+        "expected": [
+            "人造"
+        ],
+        "roi": [
+            830,
+            241,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    },
+    "每日探索_生命": {
+        "recognition": "OCR",
+        "expected": [
+            "生命"
+        ],
+        "roi": [
+            830,
+            341,
+            190,
+            60
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "每日探索_层数选择"
+        ]
+    }
+}

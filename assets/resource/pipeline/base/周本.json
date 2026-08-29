@@ -1,0 +1,637 @@
+{
+    "周本": {
+        "next": [
+            "首页_出击",
+            "[JumpBack]子任务_进入首页"
+        ]
+    },
+    "活动探索": {
+        "recognition": "OCR",
+        "expected": [
+            "活动探索"
+        ],
+        "roi": [
+            540,
+            98,
+            215,
+            95
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "活动探索_碎星虚影",
+            "活动探索"
+        ]
+    },
+    "活动探索_碎星虚影": {
+        "recognition": "OCR",
+        "expected": [
+            "碎星虚影"
+        ],
+        "roi": [
+            450,
+            443,
+            302,
+            98
+        ],
+        "action": "Click",
+        "post_delay": 3000,
+        "next": [
+            "活动探索_已存在",
+            "活动探索_戈里刻虚影",
+            "活动探索_碎星虚影"
+        ]
+    },
+    "活动探索_戈里刻虚影": {
+        "recognition": "OCR",
+        "expected": [
+            "戈里刻虚影"
+        ],
+        "roi": [
+            100,
+            333,
+            500,
+            154
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "活动探索_第五关",
+            "[JumpBack]活动探索_下滑",
+            "活动探索_戈里刻虚影"
+        ]
+    },
+    "活动探索_虚影阿瑞斯": {
+        "recognition": "OCR",
+        "expected": [
+            "虚影阿瑞斯"
+        ],
+        "roi": [
+            653,
+            204,
+            180,
+            55
+        ],
+        "action": "Click",
+        "next": [
+            "活动探索_已存在",
+            "活动探索_开始"
+        ]
+    },
+    "活动探索_第五关": {
+        "recognition": "OCR",
+        "expected": [
+            "虚影宙斯"
+        ],
+        "roi": [
+            682,
+            456,
+            180,
+            180
+        ],
+        "action": "Click",
+        "next": [
+            "活动探索_已存在",
+            "活动探索_第五关开始"
+        ]
+    },
+    "活动探索_已存在": {
+        "recognition": "OCR",
+        "expected": [
+            "600/600",
+            "6007600",
+            "6001600"
+        ],
+        "roi": [
+            86,
+            623,
+            152,
+            40
+        ],
+        "action": "Click",
+        "target": [
+            208,
+            37,
+            20,
+            20
+        ]
+    },
+    "活动探索_开始": {
+        "recognition": "OCR",
+        "expected": [
+            "开始战斗"
+        ],
+        "roi": [
+            1057,
+            615,
+            200,
+            89
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]活动探索_确认",
+            "[JumpBack]活动探索_关闭第二队",
+            "活动探索_开始行动",
+            "活动探索_开始",
+            "活动探索_步骤1"
+        ]
+    },
+    "活动探索_第五关开始": {
+        "recognition": "OCR",
+        "expected": [
+            "开始战斗"
+        ],
+        "roi": [
+            1057,
+            615,
+            200,
+            89
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]活动探索_确认",
+            "[JumpBack]活动探索_关闭第二队",
+            "活动探索_第五关开始行动",
+            "活动探索_第五关开始",
+            "活动探索_第五关步骤1"
+        ]
+    },
+    "活动探索_确认": {
+        "recognition": "OCR",
+        "expected": [
+            "开启"
+        ],
+        "roi": [
+            722,
+            405,
+            190,
+            94
+        ],
+        "action": "Click",
+        "post_delay": 2000
+    },
+    "活动探索_关闭第二队": {
+        "recognition": "ColorMatch",
+        "roi": [
+            1153,
+            380,
+            21,
+            14
+        ],
+        "method": 4,
+        "lower": [
+            220,
+            180,
+            60
+        ],
+        "upper": [
+            255,
+            220,
+            100
+        ],
+        "count": 1,
+        "action": "Click"
+    },
+    "活动探索_开始行动": {
+        "recognition": "OCR",
+        "expected": [
+            "开始行动"
+        ],
+        "roi": [
+            1057,
+            615,
+            200,
+            89
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "活动探索_步骤1",
+            "活动探索_开始行动"
+        ]
+    },
+    "活动探索_第五关开始行动": {
+        "recognition": "OCR",
+        "expected": [
+            "开始行动"
+        ],
+        "roi": [
+            1057,
+            615,
+            200,
+            89
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "活动探索_第五关步骤1",
+            "活动探索_第五关开始行动"
+        ]
+    },
+    "活动探索_步骤1": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            705,
+            284,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_步骤2"
+        ]
+    },
+    "活动探索_第五关步骤1": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            538,
+            564,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_第五关步骤2"
+        ]
+    },
+    "活动探索_步骤2": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            588,
+            221,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_战斗中1",
+            "活动探索_步骤2"
+        ]
+    },
+    "活动探索_第五关步骤2": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            415,
+            384,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_第五关步骤3"
+        ]
+    },
+    "活动探索_步骤3": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            777,
+            331,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_战斗中2",
+            "活动探索_步骤3"
+        ]
+    },
+    "活动探索_第五关步骤3": {
+        "recognition": "ColorMatch",
+        "roi": [
+            375,
+            415,
+            40,
+            40
+        ],
+        "method": 4,
+        "lower": [
+            80,
+            135,
+            55
+        ],
+        "upper": [
+            120,
+            180,
+            120
+        ],
+        "count": 1,
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            332,
+            260,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_第五关步骤4"
+        ]
+    },
+    "活动探索_第五关步骤4": {
+        "recognition": "ColorMatch",
+        "roi": [
+            377,
+            419,
+            40,
+            40
+        ],
+        "method": 4,
+        "lower": [
+            80,
+            135,
+            55
+        ],
+        "upper": [
+            120,
+            180,
+            120
+        ],
+        "count": 1,
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            503,
+            295,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_第五关步骤5"
+        ]
+    },
+    "活动探索_步骤4": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            592,
+            186,
+            20,
+            20
+        ],
+        "post_delay": 3000,
+        "next": [
+            "活动探索_步骤5"
+        ]
+    },
+    "活动探索_第五关步骤5": {
+        "recognition": "ColorMatch",
+        "roi": [
+            808,
+            291,
+            40,
+            40
+        ],
+        "method": 4,
+        "lower": [
+            80,
+            135,
+            55
+        ],
+        "upper": [
+            120,
+            180,
+            120
+        ],
+        "count": 1,
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            680,
+            224,
+            20,
+            20
+        ],
+        "timeout": 40000,
+        "next": [
+            "活动探索_战斗中3",
+            "活动探索_第五关步骤5"
+        ]
+    },
+    "活动探索_步骤5": {
+        "recognition": "OCR",
+        "expected": [
+            "行动"
+        ],
+        "roi": [
+            1052,
+            11,
+            130,
+            64
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "target": [
+            592,
+            186,
+            20,
+            20
+        ],
+        "timeout": 40000,
+        "next": [
+            "活动探索_战斗中3",
+            "活动探索_步骤5"
+        ]
+    },
+    "活动探索_战斗中1": {
+        "recognition": "TemplateMatch",
+        "template": "Combat/Combat_Combating.png",
+        "roi": [
+            1169,
+            27,
+            105,
+            59
+        ],
+        "next": [
+            "[JumpBack]战斗_自动战斗",
+            "[JumpBack]战斗_启用二倍速",
+            "活动探索_战斗结束1",
+            "活动探索_战斗中1"
+        ]
+    },
+    "活动探索_战斗结束1": {
+        "recognition": "OCR",
+        "expected": [
+            "等级"
+        ],
+        "roi": [
+            210,
+            410,
+            97,
+            152
+        ],
+        "action": "Click",
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "活动探索_步骤3",
+            "活动探索_战斗结束1"
+        ]
+    },
+    "活动探索_战斗中2": {
+        "recognition": "TemplateMatch",
+        "template": "Combat/Combat_Combating.png",
+        "roi": [
+            1169,
+            27,
+            105,
+            59
+        ],
+        "next": [
+            "[JumpBack]战斗_自动战斗",
+            "[JumpBack]战斗_启用二倍速",
+            "活动探索_战斗结束2",
+            "活动探索_战斗中2"
+        ]
+    },
+    "活动探索_战斗结束2": {
+        "recognition": "OCR",
+        "expected": [
+            "等级"
+        ],
+        "roi": [
+            210,
+            410,
+            97,
+            152
+        ],
+        "action": "Click",
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "活动探索_步骤4",
+            "活动探索_战斗结束2"
+        ]
+    },
+    "活动探索_战斗中3": {
+        "recognition": "TemplateMatch",
+        "template": "Combat/Combat_Combating.png",
+        "roi": [
+            1169,
+            27,
+            105,
+            59
+        ],
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "[JumpBack]战斗_自动战斗",
+            "[JumpBack]战斗_启用二倍速",
+            "活动探索_战斗结束3",
+            "活动探索_战斗中3"
+        ]
+    },
+    "活动探索_战斗结束3": {
+        "recognition": "OCR",
+        "expected": [
+            "等级"
+        ],
+        "roi": [
+            210,
+            410,
+            97,
+            152
+        ],
+        "action": "Click",
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "活动探索_第五关",
+            "活动探索_战斗结束3"
+        ]
+    },
+    "活动探索_上滑": {
+        "action": "Swipe",
+        "begin": [
+            617,
+            196,
+            40,
+            40
+        ],
+        "end": [
+            617,
+            385,
+            40,
+            40
+        ]
+    },
+    "活动探索_下滑": {
+        "action": "Swipe",
+        "begin": [
+            617,
+            385,
+            40,
+            40
+        ],
+        "end": [
+            617,
+            196,
+            40,
+            40
+        ]
+    }
+}
