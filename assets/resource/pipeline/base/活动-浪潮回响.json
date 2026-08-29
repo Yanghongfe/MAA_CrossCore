@@ -19,7 +19,6 @@
     "recognition": "TemplateMatch",
     "action": "Click",
     "template" : "StartUp/浪潮回响.png",
-    "recommended roi" : [167, 510, 292, 195],
     "post_delay":1000,
     "next": [
       "活动_任务奖励_点击领取",
@@ -30,7 +29,6 @@
     "recognition": "OCR",
     "action": "Click",
     "expected": "领取",
-    "recommended roi" : [956,53,269,129],
     "next": [
       "活动_任务奖励_奖励弹框",
       "活动_任务奖励_领取完成",
@@ -54,7 +52,6 @@
   },
   "活动_任务奖励_领取完成": {
     "recognition": "ColorMatch",
-    "recommended roi" : [1026,88,150,52],
     "upper" : [90,77,58],
     "lower" : [8,4,8],
     "method" : 4,
@@ -81,7 +78,6 @@
   "活动_进入关卡": {
     "recognition": "OCR",
     "expected" : "海滨",
-    "recommended roi" : [914, 543, 337, 171],
     "action": "Click",
     "target": [1016, 570, 101, 101],
     "next": [
@@ -103,7 +99,6 @@
     "recognition": "OCR",
     "action": "Swipe",
     "expected" : "漆黑",
-    "recommended roi" : [996, 605, 94, 39],
      "begin": [1095, 625, 10, 10],
      "end": [39, 625,10, 10],
     "next":[

@@ -2,7 +2,6 @@
     "interface_version": 2,
     "name": "MaaXXX",
     "description": "交错战线助手（基于 MCCA 任务结构）",
-    "url": "https://github.com/MaaXYZ/MaaPracticeBoilerplate",
     "version": "1.0.0",
     "controller": [
         {
@@ -32,36 +31,30 @@
             "{PROJECT_DIR}/agent/main.py"
         ]
     },
-
     "task": [
         {
             "name": "启动游戏",
             "entry": "进入首页",
-            "check": true,
             "doc": "无"
         },
         {
             "name": "活动",
             "entry": "活动_入口",
-            "check": true,
             "doc": "[color:red]活动功能暂时只有困难最后一关，且版本更新后未必能继续使用[/color]"
         },
         {
             "name": "每日免费礼包",
             "entry": "每日免费礼包",
-            "check": true,
             "doc": "无"
         },
         {
             "name": "限时贸易所购买",
             "entry": "限时贸易所购买",
-            "check": true,
             "doc": "无"
         },
         {
             "name": "模拟军演",
             "entry": "模拟军演",
-            "check": true,
             "doc": "无",
             "option": [
                 "刷新战力阈值"
@@ -105,7 +98,6 @@
         {
             "name": "领取奖励(邮箱+每日+通行证)",
             "entry": "领取奖励",
-            "check": true,
             "doc": "无"
         },
         {
@@ -115,7 +107,6 @@
         {
             "name": "历战试炼",
             "entry": "历战试炼",
-            "check": true,
             "doc": "测试中,暂时仅支持打限时boss，任务目标达到10为高进度，将不会继续任务；[color:red]开启该任务需自行配置有足够强度的队伍[/color]",
             "pipeline_override": {
                 "活动选择": {
@@ -129,8 +120,6 @@
             ]
         }
     ],
-    "recognizer": {},
-    "action": {},
     "option": {
         "作战关卡": {
             "cases": [
@@ -304,7 +293,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "是否访问每个好友换抽": {
             "cases": [
@@ -324,7 +314,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "是否打挑战难度": {
             "cases": [
@@ -344,7 +335,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "挑战难度选择": {
             "cases": [
@@ -388,7 +380,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "关卡选择": {
             "cases": [
@@ -574,7 +567,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "第几层": {
             "cases": [
@@ -630,7 +624,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "手动次数": {
             "cases": [
@@ -961,7 +956,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "好友界面向左滑动": {
             "cases": [
@@ -981,7 +977,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "战力刷新选择": {
             "cases": [
@@ -1025,7 +1022,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "是否手动选择次数(开启燃料使用)": {
             "cases": [
@@ -1057,7 +1055,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "驻员": {
             "cases": [
@@ -1077,7 +1076,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "矿场": {
             "cases": [
@@ -1097,7 +1097,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "交易所": {
             "cases": [
@@ -1117,7 +1118,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "浏览好友订单": {
             "cases": [
@@ -1137,7 +1139,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "switch"
         },
         "周本关卡选择": {
             "cases": [
@@ -1179,7 +1182,8 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         },
         "刷新战力阈值": {
             "cases": [
@@ -1215,7 +1219,9 @@
                         }
                     }
                 }
-            ]
+            ],
+            "type": "select"
         }
-    }
+    },
+    "github": "https://github.com/MaaXYZ/MaaPracticeBoilerplate"
 }
