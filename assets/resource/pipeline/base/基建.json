@@ -748,9 +748,9 @@
     "基建_自己交付1": {
         "recognition": "TemplateMatch",
         "template": [
-            "InfrastructureS/构建订单3.png",
-            "InfrastructureS/构建订单1.png",
-            "InfrastructureS/构建订单4.png"
+            "Infrastructures/构建订单3.png",
+            "Infrastructures/构建订单1.png",
+            "Infrastructures/构建订单4.png"
         ],
         "threshold": 0.9,
         "roi": [
@@ -777,7 +777,7 @@
     },
     "基建_自己交付2": {
         "recognition": "TemplateMatch",
-        "template": "InfrastructureS/星币120000.png",
+        "template": "Infrastructures/星币120000.png",
         "threshold": 0.95,
         "roi": [
             272,
@@ -803,7 +803,7 @@
     },
     "基建_自己交付3": {
         "recognition": "TemplateMatch",
-        "template": "InfrastructureS/经验120000.png",
+        "template": "Infrastructures/经验120000.png",
         "threshold": 0.95,
         "roi": [
             272,
@@ -1170,7 +1170,7 @@
         "action": "Click",
         "recognition": "TemplateMatch",
         "template": [
-            "InfrastructureS/Infr_JDSC.png"
+            "Infrastructures/Infr_JDSC.png"
         ],
         "roi": [
             1,

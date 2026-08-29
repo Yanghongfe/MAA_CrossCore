@@ -14,7 +14,8 @@
             "threshold": 0.95
         },
         "next": [
-            "扫荡次数选择"
+            "扫荡次数选择",
+            "自选扫荡次数"
         ],
         "focus": true
     },
@@ -24,6 +25,176 @@
             "检查体力-红",
             "检查体力-白",
             "[JumpBack]重连网络"
+        ]
+    },
+    "自选扫荡次数": {
+        "enabled": false,
+        "next": [
+            "自选-次数1",
+            "自选-次数2",
+            "自选-次数3",
+            "自选-次数4",
+            "自选-次数5",
+            "自选-次数6",
+            "自选-次数7",
+            "自选-次数8",
+            "自选-次数9",
+            "自选-次数10"
+        ]
+    },
+    "自选-次数1": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "开始战斗",
+        "roi": [
+            946,
+            541,
+            127,
+            39
+        ],
+        "pre_wait_freezes": {
+            "time": 1000,
+            "threshold": 0.95
+        },
+        "action": "Click",
+        "next": [
+            "开启加成",
+            "扫荡成功"
+        ]
+    },
+    "自选-次数2": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数3": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数4": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数5": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数6": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数7": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数8": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数9": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
+        ]
+    },
+    "自选-次数10": {
+        "enabled": false,
+        "recognition": "TemplateMatch",
+        "template": "选择次数.png",
+        "roi": [
+            503,
+            531,
+            84,
+            59
+        ],
+        "action": "Click",
+        "next": [
+            "开始战斗"
         ]
     },
     "增加次数": {
