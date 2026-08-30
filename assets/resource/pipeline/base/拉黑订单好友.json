@@ -150,9 +150,6 @@
         }
     },
     "清理完毕退出": {
-        "action": {
-            "type": "StopTask"
-        },
         "next": [
             "[JumpBack]子任务_进入首页"
         ],
