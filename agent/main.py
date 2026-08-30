@@ -5,8 +5,14 @@ from maa.toolkit import Toolkit
 
 import my_action
 import my_reco
-import number_lt  # noqa: F401
+import number_lt  # noqa: F401  # 注册 number_lt 自定义识别
 import order_fetch  # noqa: F401  # 注册 取下一单、输入当前UID
+from arena_loop import ArenaLoop
+from chip_filter_flow import ChipFilterFlow
+
+
+AgentServer.custom_action("arena_loop")(ArenaLoop)
+AgentServer.custom_action("chip_filter_flow")(ChipFilterFlow)
 
 print("[agent] custom actions ready: 取下一单, 输入当前UID, 取下一待删好友, 删除登记完成")
 
