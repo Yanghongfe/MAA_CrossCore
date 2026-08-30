@@ -7,9 +7,10 @@
         "name": "自动启动 MuMu 12",
         "label": "仅在选择启动游戏时运行",
         "description": "自动查找 MuMu 12、启动实例、配置 ADB 并打开交错战线。",
-        "exec": "python",
+        "exec": "C:/Windows/py.exe",
         "args": [
-            "../../../agent/ensure_mumu.py"
+            "-3",
+            "../../agent/ensure_mumu.py"
         ]
     },
     "controller": [

@@ -339,12 +339,36 @@ def recover_existing_adb(adb, serial, allow_hard_restart=True):
 
 
 def saved_connection(instance):
-    device = instance.get("AdbDevice", {})
+    device = instance.get("AdbDevice", {}) or {}
     adb = Path(str(device.get("AdbPath", "")))
     serial = str(device.get("AdbSerial", "")).strip()
     if adb.is_file() and serial:
         return adb, serial
     return None
+
+
+def device_root_index(instance, adb):
+    """从已有 AdbDevice.Config / 路径推断 MuMu root 与实例号，供写回 MFA。"""
+    device = instance.get("AdbDevice", {}) or {}
+    index = 0
+    root = None
+    try:
+        extras = json.loads(str(device.get("Config") or "{}")).get("extras", {}).get("mumu", {})
+        if extras.get("path"):
+            root = Path(str(extras["path"]))
+        if extras.get("index") is not None and str(extras["index"]).isdigit():
+            index = int(extras["index"])
+    except (TypeError, ValueError, json.JSONDecodeError):
+        pass
+    if root is None or not root.exists():
+        # adb 通常在 <root>/nx_main/adb.exe
+        candidate = Path(adb).resolve().parent.parent
+        if (candidate / "nx_main" / "MuMuManager.exe").is_file():
+            root = candidate
+    if root is None:
+        found, _, _ = find_mumu()
+        root = found
+    return root, index
 
 
 def ensure_adb(adb, info, index):
@@ -369,20 +393,22 @@ def ensure_adb(adb, info, index):
 def update_instance(path, instance, adb, serial, root, index):
     if not path:
         return
+    if root is None:
+        log(f"无法写回 MFA：缺少 MuMu 安装路径（serial={serial}）")
+        return
+    old = instance.get("AdbDevice", {}) or {}
     device = {
-        "Name": f"MuMu 12（实例 {index}）",
+        "Name": f"MuMu（实例 {index}）",
         "AdbPath": str(adb),
         "AdbSerial": serial,
-        "ScreencapMethods": 18446744073709551559,
-        "InputMethods": 4,
+        "ScreencapMethods": int(old.get("ScreencapMethods") or 18446744073709551559),
+        "InputMethods": int(old.get("InputMethods") or 4),
         "Config": json.dumps({
-            "extras": {"mumu": {"enable": True, "index": index, "path": root.as_posix()}}
+            "extras": {"mumu": {"enable": True, "index": index, "path": Path(root).as_posix()}}
         }, ensure_ascii=False, separators=(",", ":")),
-        "AgentPath": "./MaaAgentBinary",
+        "AgentPath": old.get("AgentPath") or "./MaaAgentBinary",
     }
-    if instance.get("AdbDevice") == device:
-        log(f"MFA 已使用当前 ADB 连接：{serial}")
-        return
+    # 不保留过期 InfoHandle，否则 MFA 可能仍按 device=<none> 连接
     instance["AdbDevice"] = device
     save_json(path, instance)
     log(f"已写入 MFA 连接：{serial}")
@@ -434,6 +460,9 @@ def main():
         log(f"[1/4] 检查已保存的 ADB 连接：{serial}")
         if recover_existing_adb(adb, serial):
             log("[2/4] 已保存的 ADB 连接可用，跳过模拟器扫描")
+            # MFA 启动时若 device=<none>，即使文件里有 AdbDevice 也不会用；必须写回触发重载
+            root, index = device_root_index(instance, adb)
+            update_instance(instance_path, instance, adb, serial, root, index)
             log(f"[3/4] 正在启动交错战线：{package}")
             result = launch_game(adb, serial, package)
             log("[4/4] 启动游戏流程完成" if result else "[4/4] 启动游戏失败")
@@ -454,10 +483,20 @@ def main():
         preferred_serial=preferred_serial,
         use_cache=settings["vm_index"] is None,
     )
+    if index is None and settings["vm_index"] is None:
+        # 自动模式遇到多开：优先用配置里上次成功的实例号（如 extras.mumu.index）
+        _, saved_index = device_root_index(instance, saved[0] if saved else adb)
+        log(f"自动模式无法唯一选择，改用上次保存的实例 {saved_index}")
+        index, info = choose_instance(
+            manager,
+            requested=saved_index,
+            preferred_serial=preferred_serial,
+            use_cache=False,
+        )
     if index is None:
         candidates = info.get("candidates", [])
         if candidates:
-            log(f"发现多个 MuMu 实例 {candidates}，请在“启动游戏”设置中选择实例")
+            log(f"发现多个 MuMu 实例 {candidates}，请在「启动游戏」→ MuMu实例 里选 0/1/…，不要用自动")
         else:
             log("没有发现可用的 MuMu 12 实例")
         return 1
