@@ -1,109 +1,90 @@
 # -*- coding: utf-8 -*-
-"""取单加好友 + 按登记列表清理好友。
+"""订单好友 Agent（Custom 动作）
 
-阶段：
-1) 取下一单 / 输入当前UID —— 只维护 claimed_types + current，不碰「找到指定好友了」
-2) 类型占完 → 跳到「加好友完毕」（后面你自己接活动；清理请另跑「拉黑订单好友」任务）
-3) 取下一待删好友 / 删除登记完成 —— 在 pipeline/base/拉黑订单好友.json，按 claimed_types 逐个 OCR 拉黑并移出登记
+本地状态 config/orders_state.json（长期保留，拉黑不删条目）：
+  {
+    "friends": [
+      { "uid": "123", "type": "8-1", "status": "held" },      # 已加、还占着
+      { "uid": "456", "type": "6-1", "status": "released" }   # 已拉黑，记录仍在
+    ]
+  }
+
+每人 status：
+  held     → 还占着（加了未拉黑）
+  released → 已拉黑（记录保留；该 type 可再接新单）
+
+流程：
+  取下一单     → 网站取 type 尚无 held 的单，追加为 held；没有 →「加好友完毕」
+  输入当前UID  → 输入最后一条 held 的 uid
+  取下一待删   → 第一条 held 绑 OCR；没有 held →「清理完毕退出」
+  删除登记完成 → 该条改为 released（不删列表）
+
+URL：节点 param.url，或 config/orders_source.json
 """
 
 import json
 import re
 import urllib.request
 from pathlib import Path
-from urllib.parse import urlparse
 
 from maa.agent.agent_server import AgentServer
 from maa.custom_action import CustomAction
 
-_ROOT = Path(__file__).resolve().parent.parent
-STATE = _ROOT / "config" / "orders_state.json"
-SOURCE = _ROOT / "config" / "orders_source.json"
-
-_ALLOWED_HOSTS = frozenset({"rentry.org", "rentry.co"})
+ROOT = Path(__file__).resolve().parent.parent
+STATE_PATH = ROOT / "config" / "orders_state.json"
+SOURCE_PATH = ROOT / "config" / "orders_source.json"
 
 
-def load_state():
-    if STATE.exists():
-        try:
-            return json.loads(STATE.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-    return {"claimed_types": [], "current": None, "deleting": None}
-
-
-def save_state(state):
-    STATE.parent.mkdir(parents=True, exist_ok=True)
-    STATE.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def load_source_url():
-    if not SOURCE.exists():
-        return ""
-    try:
-        data = json.loads(SOURCE.read_text(encoding="utf-8"))
-    except Exception:
-        return ""
-    if isinstance(data, dict):
-        return str(data.get("url") or "").strip()
-    return ""
-
-
-def resolve_orders_url(param: dict) -> str:
-    return str((param or {}).get("url") or "").strip() or load_source_url()
-
-
-def validate_orders_url(url: str) -> str | None:
-    if not url:
-        return f"未配置订单 URL。请创建 {SOURCE} ，内容如 {{\"url\": \"https://rentry.org/你的短链\"}}"
-    try:
-        u = urlparse(url)
-    except Exception:
-        return "订单 URL 格式无效"
-    if u.scheme not in ("https",):
-        return "订单 URL 仅允许 https"
-    host = (u.hostname or "").lower()
-    if host not in _ALLOWED_HOSTS:
-        return f"订单 URL 主机不在白名单: {host}"
-    return None
-
-
-def normalize_claimed(raw):
+def _norm_friends(raw):
+    """统一每条带 status；旧数据没有 status 的一律当 held。"""
     out = []
     for item in raw or []:
-        if isinstance(item, str) and item.strip():
-            out.append({"uid": "", "type": item.strip()})
-        elif isinstance(item, dict):
-            uid = str(item.get("uid") or "").strip()
-            typ = str(item.get("type") or "").strip()
-            if typ:
-                out.append({"uid": uid, "type": typ})
+        if not isinstance(item, dict):
+            continue
+        uid = str(item.get("uid") or "").strip()
+        typ = str(item.get("type") or "").strip()
+        if not typ:
+            continue
+        st = item.get("status")
+        if st not in ("held", "released"):
+            st = "held"
+        out.append({"uid": uid, "type": typ, "status": st})
     return out
 
 
-def claimed_type_set(claimed):
-    return {c["type"] for c in claimed}
+def load_state():
+    try:
+        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        return {"friends": _norm_friends(data.get("friends"))}
+    except Exception:
+        return {"friends": []}
 
 
-def claimed_uids(claimed):
-    return [c["uid"] for c in claimed if c.get("uid")]
-
-
-def override_find_friend(context, uid: str):
-    """仅清理阶段：把「找到指定好友了」绑到正在删除的 uid。"""
-    context.override_pipeline(
-        {
-            "找到指定好友了": {
-                "recognition": {
-                    "type": "OCR",
-                    "param": {"expected": [uid]},
-                }
-            },
-        }
+def save_state(state):
+    """只写 friends；旧文件里的 phase 等多余字段不再保留。"""
+    STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    STATE_PATH.write_text(
+        json.dumps(
+            {"friends": _norm_friends(state.get("friends"))},
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
     )
 
 
-def fetch_orders(url):
+def orders_url(param):
+    url = str((param or {}).get("url") or "").strip()
+    if url:
+        return url
+    try:
+        return str(json.loads(SOURCE_PATH.read_text(encoding="utf-8")).get("url") or "").strip()
+    except Exception:
+        return ""
+
+
+def fetch_uid_type_list(url):
     html = urllib.request.urlopen(url, timeout=15).read().decode("utf-8", errors="replace")
     m = re.search(r'<div class="entry-text"[\s\S]*?<p>([\s\S]*?)</p>', html)
     if not m:
@@ -115,11 +96,18 @@ def fetch_orders(url):
         line = line.strip()
         if "|" not in line:
             continue
-        uid, typ = line.split("|", 1)
-        uid, typ = uid.strip(), typ.strip()
-        if uid.isdigit() and 5 <= len(uid) <= 16 and typ and len(typ) <= 32 and "\n" not in typ:
+        uid, typ = [x.strip() for x in line.split("|", 1)]
+        if uid.isdigit() and typ:
             rows.append((uid, typ))
     return rows
+
+
+def held_types(friends):
+    return {f["type"] for f in friends if f.get("status") == "held"}
+
+
+def held_friends(friends):
+    return [f for f in friends if f.get("status") == "held" and f.get("uid")]
 
 
 @AgentServer.custom_action("取下一单")
@@ -130,105 +118,100 @@ class TakeNextOrder(CustomAction):
         except json.JSONDecodeError:
             param = {}
 
-        url = resolve_orders_url(param)
-        err = validate_orders_url(url)
-        if err:
-            print(f"[取下一单] {err}")
+        url = orders_url(param)
+        if not url:
+            print("[取下一单] 未配置 URL（config/orders_source.json）")
             return False
 
         state = load_state()
-        claimed = normalize_claimed(state.get("claimed_types"))
-        types_done = claimed_type_set(claimed)
-        print(f"[取下一单] claimed={claimed}")
-        print(f"[取下一单] source_host={urlparse(url).hostname}")
+        friends = state["friends"]
+        used = held_types(friends)
+        print(f"[取下一单] friends={friends} held_types={sorted(used)}")
 
         try:
-            orders = fetch_orders(url)
+            orders = fetch_uid_type_list(url)
         except Exception as e:
-            print(f"[取下一单] fetch failed: {e}")
+            print(f"[取下一单] 拉单失败: {e}")
             return False
         print(f"[取下一单] orders={orders}")
 
-        picked = next(((u, t) for u, t in orders if t not in types_done), None)
-        if not picked:
-            reason = "订单列表为空" if not orders else "可用类型已占完"
-            print(f"[取下一单] {reason} → 加好友完毕（去跑活动，稍后再清理登记好友）")
+        pick = next(((u, t) for u, t in orders if t not in used), None)
+        if not pick:
+            print("[取下一单] 没有新类型 → 加好友完毕")
+            save_state(state)
             context.override_next(argv.node_name, ["加好友完毕"])
             return True
 
-        uid, typ = picked
-        claimed.append({"uid": uid, "type": typ})
-        claimed.sort(key=lambda x: (x["type"], x["uid"]))
-        state["claimed_types"] = claimed
-        state["current"] = {"uid": uid, "type": typ}
+        uid, typ = pick
+        friends.append({"uid": uid, "type": typ, "status": "held"})
+        state["friends"] = friends
         save_state(state)
-        # 加好友阶段不覆盖「找到指定好友了」——那是清理阶段的事
-        print(f"[取下一单] picked {uid}|{typ}")
+        print(f"[取下一单] 追加 held {uid}|{typ}")
         return True
-
-
-def clear_input_box(context):
-    ctrl = context.tasker.controller
-    ctrl.post_key_down(113).wait()
-    ctrl.post_click_key(29).wait()
-    ctrl.post_key_up(113).wait()
-    ctrl.post_click_key(67).wait()
 
 
 @AgentServer.custom_action("输入当前UID")
 class InputCurrentUid(CustomAction):
     def run(self, context, argv):
-        state = load_state()
-        cur = state.get("current") or {}
-        uid = str(cur.get("uid") or "").strip()
-        if not uid:
-            print("[输入当前UID] no current.uid, 先跑取下一单")
+        held = held_friends(load_state()["friends"])
+        if not held:
+            print("[输入当前UID] 没有 held，先取下一单")
             return False
+        uid = str(held[-1]["uid"])
 
-        print("[输入当前UID] clear input box")
-        clear_input_box(context)
-        print(f"[输入当前UID] typing {uid}")
-        context.tasker.controller.post_input_text(uid).wait()
+        ctrl = context.tasker.controller
+        ctrl.post_key_down(113).wait()
+        ctrl.post_click_key(29).wait()
+        ctrl.post_key_up(113).wait()
+        ctrl.post_click_key(67).wait()
+
+        print(f"[输入当前UID] {uid}")
+        ctrl.post_input_text(uid).wait()
         return True
 
 
 @AgentServer.custom_action("取下一待删好友")
 class TakeNextFriendToDelete(CustomAction):
-    """从 claimed_types 取下一个有 uid 的登记，绑到「找到指定好友了」。"""
-
     def run(self, context, argv):
         state = load_state()
-        claimed = normalize_claimed(state.get("claimed_types"))
-        target = next((c for c in claimed if c.get("uid")), None)
-        if not target:
-            print("[取下一待删好友] 登记已空 → 清理完毕退出")
+        pending = held_friends(state["friends"])
+
+        if not pending:
+            print("[取下一待删好友] 无 held → 清理完毕退出")
+            save_state(state)
             context.override_next(argv.node_name, ["清理完毕退出"])
             return True
 
-        uid, typ = target["uid"], target["type"]
-        state["deleting"] = {"uid": uid, "type": typ}
-        state["claimed_types"] = claimed
+        target = pending[0]
+        uid = target["uid"]
         save_state(state)
-        override_find_friend(context, uid)
-        print(f"[取下一待删好友] deleting {uid}|{typ} remaining={len(claimed_uids(claimed))}")
+        context.override_pipeline(
+            {
+                "找到指定好友了": {
+                    "recognition": {"type": "OCR", "param": {"expected": [uid]}},
+                }
+            }
+        )
+        print(f"[取下一待删好友] {uid}|{target.get('type')} 待清理 {len(pending)}")
         return True
 
 
 @AgentServer.custom_action("删除登记完成")
 class FinishDeleteClaim(CustomAction):
-    """拉黑确认后：从 claimed_types 去掉正在删除的那条。"""
+    """拉黑成功：把第一条 held 标成 released，条目保留。"""
 
     def run(self, context, argv):
         state = load_state()
-        deleting = state.get("deleting") or {}
-        uid = str(deleting.get("uid") or "").strip()
-        claimed = normalize_claimed(state.get("claimed_types"))
-        if uid:
-            claimed = [c for c in claimed if c.get("uid") != uid]
-            print(f"[删除登记完成] removed {uid}, left={claimed}")
+        friends = state["friends"]
+        for f in friends:
+            if f.get("status") == "held" and f.get("uid"):
+                f["status"] = "released"
+                print(f"[删除登记完成] {f['uid']}|{f.get('type')} → released（保留记录）")
+                break
         else:
-            print("[删除登记完成] 无 deleting.uid，跳过移除")
-        state["claimed_types"] = claimed
-        state["deleting"] = None
+            print("[删除登记完成] 没有 held 可改")
+
+        state["friends"] = friends
         save_state(state)
+        print(f"[删除登记完成] 仍 held={len(held_friends(friends))}")
         return True
