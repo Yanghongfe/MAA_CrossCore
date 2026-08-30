@@ -1,0 +1,3 @@
+maafw>=5.12.0
+numpy
+opencv-python

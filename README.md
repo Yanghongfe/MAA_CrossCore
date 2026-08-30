@@ -22,27 +22,31 @@
 
 开发笔记见：[开发专用.md](./开发专用.md)
 
-## 使用事项
-
-> [!NOTE]
-> 大部分测试基于 Windows + MuMu 模拟器。其他系统或模拟器若有问题，请提 Issues，并尽量附上程序目录下 `debug/maa.log` 与相关截图。
-
-0. 默认面向 Windows 用户。
-1. 推荐使用 [MuMu 模拟器](https://mumu.163.com/) 运行游戏；[模拟器支持情况](https://maa.plus/docs/zh-cn/manual/device/windows.html) 可参考 MAA 官方文档。
-2. 模拟器建议使用 `16:9` 分辨率，例如 `1920×1080`、`1280×720`。
-3. 软件内更新后若看不到新任务选项，可关闭程序后删除根目录 `config/config.json` 再打开（需重新配置部分选项）。
-4. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
-
 ## 使用方式
 
 0. 从 [Releases](https://github.com/Yanghongfe/MAA_Practice/releases) 下载 Windows 包，例如：  
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
-2. 确认 **MuMu 已启动且游戏可进入**
-3. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
-4. 在软件中选择控制器（安卓端 / ADB）、资源，勾选任务后开始运行
+2. **安装 Python 3.10+**（勾选 *Add python.exe to PATH*），然后双击包内 `Install-Agent-Deps.bat` 安装 Agent 依赖  
+   （订单好友 / 自动启 MuMu / 竞技场·芯片等自定义逻辑都需要）
+3. 若使用 **添加订单好友 / 拉黑订单好友**：复制 `config/orders_source.example.json` 为 `config/orders_source.json`，填入你的订单页 URL；正文每行 `UID|类型`（如 `123456|8-1`）
+4. 确认 **MuMu** 可用（可先手动开，或勾选「启动游戏」让 pretask 自动启）
+5. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
+6. 选择资源（官服 / B 服）、勾选任务后开始运行
 
 > 当前安装包显示名仍可能为模板默认的 `MaaXXX`，后续会随 `interface.json` 一并调整。
+
+## 使用事项
+
+> [!NOTE]
+> 大部分测试基于 Windows + MuMu 模拟器。其他系统或模拟器若有问题，请提 Issues，并尽量附上程序目录下 `debug/maa.log` / `logs` 与相关截图。
+
+0. 默认面向 Windows 用户。
+1. 推荐使用 [MuMu 模拟器](https://mumu.163.com/) 运行游戏；[模拟器支持情况](https://maa.plus/docs/zh-cn/manual/device/windows.html) 可参考 MAA 官方文档。
+2. 模拟器建议使用 `16:9` 分辨率，例如 `1920×1080`、`1280×720`。
+3. 软件内更新后若看不到新任务选项，可关闭程序后删除根目录 `config/config.json` 再打开（需重新配置部分选项）。
+4. Agent 报错 / Action is null：先确认已跑过 `Install-Agent-Deps.bat`，且命令行能执行 `python` 或 `py -3`。
+5. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
 
 ## 功能说明
 
@@ -69,10 +73,11 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent 示例（如 `number_lt`）
+* [x] Agent 示例（如 `number_lt`）与订单好友 / MuMu pretask
+* [x] 发版包附带 `Install-Agent-Deps.bat` 与订单源示例
 * [ ] 实机验收与选项打磨
 * [ ] 自研周常与 MCCA 主线进一步整合
-
+* [ ] 嵌入式 Python（免本机安装）
 ## 待开发功能
 
 开发前建议先开 Issue 声明要做的内容，避免重复劳动。

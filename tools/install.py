@@ -151,7 +151,19 @@ def install_agent():
         working_dir / "agent",
         install_path / "agent",
         dirs_exist_ok=True,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"),
     )
+
+    # Windows: one-click pip install for end users (Agent / MuMu pretask)
+    bat = working_dir / "Install-Agent-Deps.bat"
+    if bat.is_file() and os_name == "win":
+        shutil.copy2(bat, install_path / "Install-Agent-Deps.bat")
+
+    config_dir = install_path / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    example = working_dir / "agent" / "orders_source.example.json"
+    if example.is_file():
+        shutil.copy2(example, config_dir / "orders_source.example.json")
 
 
 if __name__ == "__main__":
