@@ -44,7 +44,12 @@
         {
             "name": "启动游戏",
             "entry": "进入首页",
-            "doc": "无"
+            "doc": "优先复用可用的 ADB 连接，连接失败时自动查找并启动 MuMu。",
+            "option": [
+                "MuMu实例",
+                "模拟器自动启动",
+                "每次重新检测连接"
+            ]
         },
         {
             "name": "活动",
@@ -132,6 +137,42 @@
         }
     ],
     "option": {
+        "MuMu实例": {
+            "type": "select",
+            "label": "MuMu实例",
+            "default_case": "自动",
+            "cases": [
+                { "name": "自动" },
+                { "name": "0" },
+                { "name": "1" },
+                { "name": "2" },
+                { "name": "3" },
+                { "name": "4" },
+                { "name": "5" },
+                { "name": "6" },
+                { "name": "7" },
+                { "name": "8" },
+                { "name": "9" }
+            ]
+        },
+        "模拟器自动启动": {
+            "type": "select",
+            "label": "ADB 失败时启动模拟器",
+            "default_case": "开启",
+            "cases": [
+                { "name": "开启" },
+                { "name": "关闭" }
+            ]
+        },
+        "每次重新检测连接": {
+            "type": "select",
+            "label": "每次重新检测连接",
+            "default_case": "关闭",
+            "cases": [
+                { "name": "关闭" },
+                { "name": "开启" }
+            ]
+        },
         "作战关卡": {
             "cases": [
                 {
