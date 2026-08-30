@@ -33,6 +33,21 @@
     },
     "task": [
         {
+            "name": "添加订单好友",
+            "entry": "订单好友添加流程",
+            "doc": "按订单源加好友；URL 见 config/orders_source.json；加完后跑活动，再另开「拉黑订单好友」"
+        },
+        {
+            "name": "拉黑订单好友",
+            "entry": "拉黑好友流程",
+            "doc": "按 config/orders_state.json 的 claimed_types 逐个找人屏蔽并移出登记（需 Agent）"
+        },
+        {
+            "name": "单号连接测试",
+            "entry": "订单好友添加流程",
+            "doc": "[color:gray]已拆成「添加订单好友」+「拉黑订单好友」，保留此名兼容旧配置[/color]"
+        },
+        {
             "name": "启动游戏",
             "entry": "进入首页",
             "doc": "无"
