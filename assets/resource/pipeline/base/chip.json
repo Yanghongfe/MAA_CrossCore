@@ -1,0 +1,42 @@
+{
+    "ChipDetailReadTask": {
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "chip_filter_flow"
+    },
+    "ChipPageText": {
+        "recognition": "OCR",
+        "roi": [0, 0, 1280, 720],
+        "expected": [],
+        "threshold": 0.2,
+        "action": "DoNothing"
+    },
+    "ChipSkillName": {
+        "recognition": "OCR",
+        "roi": [527, 205, 150, 37],
+        "expected": [],
+        "threshold": 0.2,
+        "action": "DoNothing"
+    },
+    "ChipSkillLevel": {
+        "recognition": "OCR",
+        "roi": [692, 205, 87, 37],
+        "expected": [],
+        "threshold": 0.2,
+        "action": "DoNothing"
+    },
+    "ChipCapacity": {
+        "recognition": "OCR",
+        "roi": [640, 13, 220, 53],
+        "expected": [],
+        "threshold": 0.2,
+        "action": "DoNothing"
+    },
+    "ChipLockedBadge": {
+        "recognition": "TemplateMatch",
+        "template": "chip_locked_badge.png",
+        "roi": [43, 110, 35, 35],
+        "threshold": 0.72,
+        "action": "DoNothing"
+    }
+}

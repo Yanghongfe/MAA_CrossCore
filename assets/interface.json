@@ -3,6 +3,16 @@
     "name": "MaaXXX",
     "description": "交错战线助手（基于 MCCA 任务结构）",
     "version": "1.0.0",
+    "pretask": {
+        "name": "自动启动 MuMu 12",
+        "label": "仅在选择启动游戏时运行",
+        "description": "自动查找 MuMu 12、启动实例、配置 ADB 并打开交错战线。",
+        "exec": "C:/Windows/py.exe",
+        "args": [
+            "-3",
+            "../../agent/ensure_mumu.py"
+        ]
+    },
     "controller": [
         {
             "name": "ADB 默认方式",
@@ -50,7 +60,12 @@
         {
             "name": "启动游戏",
             "entry": "进入首页",
-            "doc": "无"
+            "doc": "优先复用可用的 ADB 连接，连接失败时自动查找并启动 MuMu。",
+            "option": [
+                "MuMu实例",
+                "模拟器自动启动",
+                "每次重新检测连接"
+            ]
         },
         {
             "name": "活动",
@@ -68,17 +83,19 @@
             "doc": "无"
         },
         {
-            "name": "模拟军演",
-            "entry": "模拟军演",
-            "doc": "无",
+            "name": "竞技场",
+            "entry": "ArenaTask",
+            "doc": "读取己方与顶部对手战力，按策略刷新并挑战。",
             "option": [
-                "刷新战力阈值"
-            ],
-            "pipeline_override": {
-                "首页_出击": {
-                    "next": "模拟军演_入口"
-                }
-            }
+                "刷取策略",
+                "战力差时依然挑战",
+                "重复挑战方式"
+            ]
+        },
+        {
+            "name": "芯片筛选-仓库",
+            "entry": "ChipDetailReadTask",
+            "doc": "根据已保存的芯片筛选方案检查仓库内全部芯片，并纠正其上锁状态。"
         },
         {
             "name": "基建",
@@ -136,6 +153,42 @@
         }
     ],
     "option": {
+        "MuMu实例": {
+            "type": "select",
+            "label": "MuMu实例",
+            "default_case": "自动",
+            "cases": [
+                { "name": "自动" },
+                { "name": "0" },
+                { "name": "1" },
+                { "name": "2" },
+                { "name": "3" },
+                { "name": "4" },
+                { "name": "5" },
+                { "name": "6" },
+                { "name": "7" },
+                { "name": "8" },
+                { "name": "9" }
+            ]
+        },
+        "模拟器自动启动": {
+            "type": "select",
+            "label": "ADB 失败时启动模拟器",
+            "default_case": "开启",
+            "cases": [
+                { "name": "开启" },
+                { "name": "关闭" }
+            ]
+        },
+        "每次重新检测连接": {
+            "type": "select",
+            "label": "每次重新检测连接",
+            "default_case": "关闭",
+            "cases": [
+                { "name": "关闭" },
+                { "name": "开启" }
+            ]
+        },
         "作战关卡": {
             "cases": [
                 {
@@ -1050,42 +1103,61 @@
             ],
             "type": "select"
         },
-        "刷新战力阈值": {
+        "重复挑战方式": {
+            "type": "select",
+            "label": "重复挑战方式",
+            "default_case": "自定次数",
             "cases": [
                 {
-                    "name": "5000",
-                    "pipeline_override": {
-                        "模拟军演_刷新对手": {
-                            "expected": "^([5-9]\\d{3}|[1-9]\\d{4})$"
-                        }
-                    }
+                    "name": "自定次数",
+                    "option": [
+                        "自定次数"
+                    ]
                 },
                 {
-                    "name": "10000",
-                    "pipeline_override": {
-                        "模拟军演_刷新对手": {
-                            "expected": "^[1-9]\\d{4}$"
-                        }
-                    }
-                },
-                {
-                    "name": "20000",
-                    "pipeline_override": {
-                        "模拟军演_刷新对手": {
-                            "expected": "^([2-9]\\d{4})$"
-                        }
-                    }
-                },
-                {
-                    "name": "30000",
-                    "pipeline_override": {
-                        "模拟军演_刷新对手": {
-                            "expected": "^([3-9]\\d{4})$"
-                        }
-                    }
+                    "name": "重复挑战直到次数归零"
                 }
-            ],
-            "type": "select"
+            ]
+        },
+        "自定次数": {
+            "type": "select",
+            "label": "挑战次数",
+            "default_case": "1",
+            "cases": [
+                { "name": "1" },
+                { "name": "2" },
+                { "name": "3" },
+                { "name": "4" },
+                { "name": "5" },
+                { "name": "6" },
+                { "name": "7" },
+                { "name": "8" },
+                { "name": "9" },
+                { "name": "10" }
+            ]
+        },
+        "刷取策略": {
+            "type": "select",
+            "label": "刷取策略",
+            "default_case": "尽量刷取高分",
+            "cases": [
+                { "name": "尽量刷取高分" },
+                { "name": "尽量完成挑战" }
+            ]
+        },
+        "战力差时依然挑战": {
+            "type": "input",
+            "label": "战力差时依然挑战",
+            "inputs": [
+                {
+                    "name": "战力差",
+                    "label": "战力差（仅我方较低时）",
+                    "default": "10000",
+                    "pipeline_type": "int",
+                    "verify": "^[0-9]+$",
+                    "pattern_msg": "请输入大于或等于 0 的整数"
+                }
+            ]
         }
     },
     "github": "https://github.com/MaaXYZ/MaaPracticeBoilerplate"

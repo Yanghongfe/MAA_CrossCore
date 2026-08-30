@@ -3,17 +3,33 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788099735099,
+            "lastSyncTime": 1788109425052,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\base\\拉黑订单好友.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MaaXXX-win-x86_64-v0.3.0\\resource\\pipeline\\base\\拉黑订单好友.json",
             "savedViewport": {
-                "x": -347,
-                "y": -1131,
-                "zoom": 0.67
+                "x": 627,
+                "y": -1214,
+                "zoom": 0.75
             },
             "filename": "拉黑订单好友",
-            "version": "v1.9.1"
+            "version": "v1.9.2"
+        }
+    },
+    "$__mpe_external_子任务_进入个人配置_拉黑订单好友": {
+        "$__mpe_code": {
+            "position": {
+                "x": 572,
+                "y": 2450
+            }
+        }
+    },
+    "$__mpe_external_子任务_进入首页_拉黑订单好友": {
+        "$__mpe_code": {
+            "position": {
+                "x": 542,
+                "y": 2138
+            }
         }
     },
     "删除登记完成": {
@@ -28,8 +44,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2244,
-                "y": 2316
+                "x": 1896,
+                "y": 2300
             }
         }
     },
@@ -45,8 +61,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 984,
-                "y": 2308
+                "x": 961,
+                "y": 2279
             }
         }
     },
@@ -134,9 +150,6 @@
     },
     "拉黑好友流程": {
         "doc": "入口：按 orders_state.friends 从头逐个屏蔽并移出登记",
-        "action": {
-            "type": "Click"
-        },
         "next": [
             "[JumpBack]子任务_进入个人配置",
             "取下一待删好友",
@@ -144,22 +157,56 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 393,
-                "y": 2273
+                "x": 56,
+                "y": 2259
+            }
+        }
+    },
+    "检测滑动到底了吗": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    1210,
+                    125,
+                    51,
+                    588
+                ],
+                "template": [
+                    "StartUp/template_1788096029286.png"
+                ]
+            }
+        },
+        "next": [
+            "删除登记完成"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1540,
+                "y": 2087
             }
         }
     },
     "清理完毕退出": {
         "action": {
-            "type": "StopTask"
+            "type": "Click",
+            "param": {
+                "target": [
+                    481,
+                    714,
+                    0,
+                    5
+                ]
+            }
         },
+        "post_delay": 1000,
         "next": [
-            "[JumpBack]子任务_进入首页"
+            "子任务_进入首页"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 413,
-                "y": 2045
+                "x": 89,
+                "y": 1944
             }
         }
     },
@@ -186,8 +233,8 @@
         "post_delay": 2000,
         "$__mpe_code": {
             "position": {
-                "x": 1543,
-                "y": 2366
+                "x": 1545,
+                "y": 2422
             }
         }
     },
@@ -241,47 +288,6 @@
             "position": {
                 "x": 2444,
                 "y": 1837
-            }
-        }
-    },
-    "$__mpe_external_子任务_进入首页_拉黑订单好友": {
-        "$__mpe_code": {
-            "position": {
-                "x": 706,
-                "y": 2240
-            }
-        }
-    },
-    "$__mpe_external_子任务_进入个人配置_拉黑订单好友": {
-        "$__mpe_code": {
-            "position": {
-                "x": 711,
-                "y": 2408
-            }
-        }
-    },
-    "检测滑动到底了吗": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": {
-                "roi": [
-                    1210,
-                    125,
-                    51,
-                    588
-                ],
-                "template": [
-                    "StartUp/template_1788096029286.png"
-                ]
-            }
-        },
-        "next": [
-            "删除登记完成"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 1540,
-                "y": 2026
             }
         }
     }

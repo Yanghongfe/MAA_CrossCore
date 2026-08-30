@@ -1,175 +1,91 @@
-# 本地开发手册（MuMu + MaaDebugger）
+# 本地开发手册（MuMu 12 + MFAAvalonia）
 
-面向本机日常开发：用 MuMu 模拟器 + ADB + MaaDebugger 调试 pipeline。  
-官方模板流程见 [如何开发](./how_to_develop.md)；框架概念见 [快速开始](https://maafw.com/docs/1.1-QuickStarted)。
+本文说明 Windows 下运行和调试本项目的推荐方式。项目不依赖开发者电脑上的固定盘符、ADB 端口或 MuMu 实例编号。
 
-## 环境约定
+## 运行前提
 
-| 项 | 本机路径 / 值 |
-| --- | --- |
-| 项目根目录 | `C:\Users\thomas\Desktop\workwork\MAA\MAA_Practice` |
-| MuMu ADB | `D:\Program Files\Netease\MuMu\nx_main\adb.exe` |
-| ADB 地址 | `127.0.0.1:16384`（以多开器里显示为准） |
-| OCR 模型 | `assets/resource/model/ocr/`（`det.onnx` / `rec.onnx` / `keys.txt`） |
-| 调试器 | http://localhost:8011 |
-| 框架日志 | `debug/maafw.log` |
+- Windows x64
+- MuMu 模拟器 12，且目标实例中已安装《交错战线》
+- Python 3.10 或更高版本，并安装 `maafw`、`numpy`、`opencv-python`
+- 从 Release 下载完整程序包；仅下载 GitHub 源码不会包含 MFAAvalonia、MaaFramework 运行库和 OCR 模型
 
-OCR 已在 `.gitignore` 中忽略，不要提交进仓库。
+开发环境可在仓库根目录创建虚拟环境：
 
-## 每次开工
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install maafw numpy opencv-python
+```
 
-1. 打开 MuMu，确认实例已启动。
-2. （可选）确认 ADB：
+## 启动游戏任务
 
-   ```powershell
-   & "D:\Program Files\Netease\MuMu\nx_main\adb.exe" connect 127.0.0.1:16384
-   & "D:\Program Files\Netease\MuMu\nx_main\adb.exe" devices
-   ```
+打开 LAA 本体时不会连接或启动模拟器。勾选“启动游戏”并点击“开始任务”后，`agent/ensure_mumu.py` 会依次完成：
 
-   应看到 `127.0.0.1:16384    device`。
+1. 验证上次保存的 ADB；连接健康时直接复用并跳过模拟器扫描。
+2. 普通重连失败后，在没有其他在线 ADB 设备时重启 ADB Server。
+3. 仍无法连接时查找 MuMu 12，并按用户设置、历史成功实例、唯一运行实例的顺序选择。
+4. 调用 `MuMuManager.exe` 启动实例并等待 Android 就绪。
+5. 从实例信息读取实际 ADB 地址和端口，连接设备并写入当前 MFA 配置。
+6. 根据资源选择启动官服或 B 服游戏。
 
-3. 在项目根目录启动调试器：
+定位顺序包括环境变量、上次成功缓存、Windows 卸载注册表，以及各磁盘常见安装目录。程序不会递归扫描整块磁盘。
 
-   ```powershell
-   cd C:\Users\thomas\Desktop\workwork\MAA\MAA_Practice
-   python -m MaaDebugger
-   ```
+“启动游戏”的任务设置提供以下选项：
 
-4. 浏览器打开 http://localhost:8011 。
+| 选项 | 默认 | 作用 |
+| --- | --- | --- |
+| MuMu 实例 | 自动 | 自动模式只选择可唯一确定或历史成功的实例；多开有歧义时要求用户明确选择 0-9 |
+| ADB 失败时启动模拟器 | 开启 | 关闭后只连接已经启动的实例 |
+| 每次重新检测连接 | 关闭 | 开启后跳过已保存 ADB 快速路径，重新读取 MuMu 实例信息 |
 
-系统找不到 `adb` 命令是正常的：PATH 里没有它，请用上面的完整路径。
+多个实例无法唯一判断时，程序不会根据磁盘大小猜测。用户选择会随 MFA 配置持久保存。也可设置以下环境变量覆盖界面配置：
 
-## MaaDebugger 连接（重要）
+| 变量 | 作用 | 示例 |
+| --- | --- | --- |
+| `MUMU_VM_INDEX` | 指定 MuMu 实例编号 | `1` |
+| `MUMU_HOME` | 指定 MuMu 12 安装根目录 | `E:\MuMuPlayer-12.0` |
+| `MUMU_MANAGER` | 直接指定 `MuMuManager.exe` | `E:\MuMuPlayer-12.0\nx_main\MuMuManager.exe` |
+| `MUMU_ADB` | 直接指定 MuMu 自带 `adb.exe` | `E:\MuMuPlayer-12.0\nx_main\adb.exe` |
 
-### 推荐填法
+成功结果会缓存到 `config/mumu_runtime.json`。该文件仅保存本机路径、实例号和 ADB 地址，已被 Git 忽略，不会提交到仓库。
 
-| 字段 | 值 |
-| --- | --- |
-| 控制器 | Adb |
-| ADB 路径 | `D:\Program Files\Netease\MuMu\nx_main\adb.exe` |
-| 地址 | `127.0.0.1:16384` |
-| Extras / Config | `{}` |
+## 日常开发
 
-然后点 **连接**。
-
-### 成功怎么判断
-
-- 前端出现 MuMu 画面 → **已连接成功**。
-- 调试器成功时**几乎不往终端打「连接成功」**；失败才会红字报错。
-- 连接按钮旁状态为 Succeeded / 绿色亦可作参考。
-
-### 不要这样做
-
-1. **地址末尾不要有空格**  
-   错误示例：`127.0.0.1:16384 `（日志里会变成 `"127.0.0.1:16384 "`，直接连失败）。
-
-2. **开发初期不要依赖「扫描设备」带出的 MuMu extras**  
-   扫描常会自动填入类似：
-
-   ```json
-   {
-     "extras": {
-       "mumu": {
-         "enable": true,
-         "index": 0,
-         "path": "D:/Program Files/Netease/MuMu"
-       }
-     }
-   }
-   ```
-
-   本机上该增强通道会刷：
-
-   ```text
-   nemu_connect ...
-   connect not same day
-   ```
-
-   普通 ADB 已够用。若被扫描覆盖，把 Config 改回 `{}` 再连。
-
-3. **不要用 Win32 去「启动」MuMu**  
-   本项目控制的是模拟器里的安卓画面（ADB），不是自动打开桌面端 MuMu 进程。MuMu 需先手动开着。
-
-## 资源与任务开发
-
-### 主要改这些文件
+主要目录：
 
 | 路径 | 作用 |
 | --- | --- |
-| `assets/interface.json` | 项目名、控制器、资源、任务列表（通用 UI / 调试入口） |
-| `assets/resource/pipeline/*.json` | 任务流水线：识别 + 动作 |
-| `assets/resource/image/` | 模板图 |
-| `agent/` | 可选：自定义识别 / 动作（Python） |
+| `assets/interface.json` | 资源、任务、选项、Agent 和 pretask 配置 |
+| `assets/resource/pipeline/` | Pipeline 识别与动作流程 |
+| `assets/resource/image/` | 经过裁剪的识别模板 |
+| `agent/` | 竞技场、芯片筛选、导航及 MuMu 启动逻辑 |
+| `ui_custom/MFAAvalonia/` | LAA 使用的 MFAAvalonia 可复现补丁 |
 
-### 调试器里加载资源
+Pipeline 调试可使用 MaaDebugger：
 
-连接成功后，资源目录选：
-
-- `assets`，或
-- `assets/resource`
-
-以工具提示为准。改 pipeline 后按工具说明重载再跑。
-
-### 最小可跑任务示例
-
-编辑 `assets/resource/pipeline/my_task.json`，例如：
-
-```json
-{
-  "MyTask1": {
-    "recognition": "OCR",
-    "expected": "开始",
-    "action": "Click"
-  }
-}
+```powershell
+.\.venv\Scripts\python.exe -m MaaDebugger
 ```
 
-在 `interface.json` 中对应入口为 `MyTask1`（「普通任务」）。  
-屏幕上真实存在该文字后再跑；没有就改成你画面上的字。
+浏览器访问 `http://127.0.0.1:8011`，控制器选择 Adb，并填入 MuMu 实例信息中显示的 ADB 路径和地址。
 
-可视化编辑可参考 [MaaPipelineEditor](https://mpe.codax.site/stable/)。  
-协议详见 [任务流水线](https://maafw.com/docs/3.1-PipelineProtocol)。
-
-### 自定义 Agent（可选）
-
-需要复杂逻辑时：
-
-1. 取消 `assets/interface.json` 里 `agent` 段注释，并按本机改 `child_exec` / `child_args`。
-2. 在 `agent/` 实现自定义 recognition / action。
-3. pipeline 节点使用 `"recognition": "Custom"` / `"action": "Custom"`。
-
-## 日常开发节奏
-
-```text
-开 MuMu → 启 MaaDebugger → ADB 连接（config 用 {}）
-    → 加载 assets → 改 pipeline / 截图抠图
-    → 跑任务验证 → 提交代码
-```
-
-发版、打 tag、CI 打包仍按 [如何开发](./how_to_develop.md) 后半部分操作。
-
-## 排错速查
+## 常见问题
 
 | 现象 | 处理 |
 | --- | --- |
-| `adb` 不是内部或外部命令 | 用 MuMu 自带完整路径，或临时：`$env:Path += ";D:\Program Files\Netease\MuMu\nx_main"` |
-| `Failed to connect ... adb.exe 127.0.0.1:16384` | 查地址空格；MuMu 是否在跑；`adb devices` 是否为 `device` |
-| 终端刷 `connect not same day` | Config 改为 `{}`，勿用 MuMu extras |
-| 缺运行库弹窗 | 安装 [vc_redist](https://aka.ms/vs/17/release/vc_redist.x64.exe) |
-| OCR 无结果 / Failed to load det or rec | 确认 `assets/resource/model/ocr/` 三文件齐全 |
-| 前端有画面但终端无成功日志 | 正常；以截图为准 |
+| 未找到 MuMu 12 | 设置 `MUMU_HOME`，确认目录内存在 `nx_main/MuMuManager.exe` |
+| 启动了错误实例 | 设置 `MUMU_VM_INDEX`，或删除 `config/mumu_runtime.json` 后重试 |
+| 日志提示发现多个实例 | 在“启动游戏”任务设置中明确选择实例编号 |
+| ADB 显示 `offline` | 程序会先重连；不存在其他在线设备时才会重启 ADB Server |
+| MuMu 已启动但 ADB 失败 | 在多开器中确认 Android 已完全启动，并检查防火墙或被占用端口 |
+| 提示游戏包不存在 | 确认所选资源与实例中安装的官服/B 服一致 |
+| 双击源码中的文件无法运行 | 使用完整 Release 包，或先按 `tools/install.py` 流程组装运行目录 |
+| OCR 模型加载失败 | 确认完整包中有 `resource/model/ocr/` 下的模型文件 |
 
-详细通用 FAQ：[faq.md](./faq.md)。
+日志默认位于程序目录的 `debug/`。排错时优先查看最新日志中的 `[MuMu pretask]`、ADB 和 Agent 启动记录。
 
-## 推荐工具
-
-- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger)：本手册主调试方式
-- VS Code / Cursor 插件 [Maa Pipeline Support](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)
-- [MaaPipelineEditor](https://mpe.codax.site/stable/)：可视化编 pipeline
-
-## 参考链接
+## 参考
 
 - [MaaFramework 快速开始](https://maafw.com/docs/1.1-QuickStarted)
-- [术语解释](https://maafw.com/docs/1.2-ExplanationOfTerms)
 - [ProjectInterface V2](https://maafw.com/docs/3.3-ProjectInterfaceV2)
-- 本仓库：[如何开发](./how_to_develop.md) · [个性化配置](./custom_configure.md)
+- [如何开发](./how_to_develop.md)
+- [个性化配置](./custom_configure.md)
