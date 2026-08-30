@@ -5,7 +5,8 @@ env:
   # - 设置 VERSION 为空字符串时，下载 latest 版本
   # - 设置 VERSION 为具体版本号时（如 v1.2.3），下载指定版本
   MAAFW_VERSION: ""
-  MFAA_VERSION: ""
+  # UI patches under ui_custom/MFAAvalonia target this exact release.
+  MFAA_VERSION: "v2.15.2"
 
 on:
   # 练习/日常开发不自动打包，避免 artifact 配额被打满。
@@ -126,6 +127,35 @@ jobs:
           python -m pip install -r ./requirements.txt
           python ./install.py ${{ needs.meta.outputs.tag }} ${{ matrix.os }} ${{ matrix.arch }}
           cd ..
+
+      - name: Set up .NET for customized MFAAvalonia core
+        if: matrix.os != 'android'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and install customized MFAAvalonia core
+        if: matrix.os != 'android'
+        shell: bash
+        run: |
+          git clone https://github.com/SweetSmellFox/MFAAvalonia.git .tmp/MFAAvalonia-src
+          git -C .tmp/MFAAvalonia-src checkout 6065fe33798b72906c5079fa6f210646801d9a5c
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-filter.patch"
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-no-autostart.patch"
+
+          case "${{ matrix.os }}-${{ matrix.arch }}" in
+            win-x86_64) rid=win-x64 ;;
+            win-aarch64) rid=win-arm64 ;;
+            macos-x86_64) rid=osx-x64 ;;
+            macos-aarch64) rid=osx-arm64 ;;
+            linux-x86_64) rid=linux-x64 ;;
+            linux-aarch64) rid=linux-arm64 ;;
+            *) echo "Unsupported MFA runtime"; exit 1 ;;
+          esac
+
+          dotnet restore .tmp/MFAAvalonia-src/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -r "$rid"
+          dotnet build .tmp/MFAAvalonia-src/MFAAvalonia.Desktop/MFAAvalonia.Desktop.csproj -c Release -r "$rid" --no-restore
+          cp .tmp/MFAAvalonia-src/bin/AnyCPU/Release/MFAAvalonia.Core.dll install/libs/MFAAvalonia.Core.dll
 
       - uses: actions/upload-artifact@v4
         with:

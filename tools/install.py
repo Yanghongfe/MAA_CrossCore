@@ -108,6 +108,11 @@ def install_resource():
         install_path / "resource",
         dirs_exist_ok=True,
     )
+    shutil.copytree(
+        working_dir / "assets" / "default",
+        install_path / "default",
+        dirs_exist_ok=True,
+    )
     shutil.copy2(
         working_dir / "assets" / "interface.json",
         install_path,
@@ -131,6 +136,14 @@ def install_chores():
         working_dir / "LICENSE",
         install_path,
     )
+
+    appsettings_path = install_path / "appsettings.json"
+    if appsettings_path.exists():
+        with open(appsettings_path, "r", encoding="utf-8-sig") as f:
+            appsettings = jsonc.load(f)
+        appsettings["NoAutoStart"] = "True"
+        with open(appsettings_path, "w", encoding="utf-8") as f:
+            jsonc.dump(appsettings, f, ensure_ascii=False, indent=2)
 
 
 def install_agent():
