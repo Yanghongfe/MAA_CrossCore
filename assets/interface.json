@@ -1144,19 +1144,19 @@
         "清理四星及以下芯片": {
             "type": "switch",
             "label": "清理四星及以下芯片",
-            "default_case": "关闭",
+            "default_case": "No",
             "cases": [
-                { "name": "关闭" },
-                { "name": "开启" }
+                { "name": "No" },
+                { "name": "Yes" }
             ]
         },
         "根据自定义设置锁定/解锁仓库内芯片": {
             "type": "switch",
             "label": "根据自定义设置锁定/解锁仓库内芯片",
-            "default_case": "no",
+            "default_case": "No",
             "cases": [
-                { "name": "no" },
-                { "name": "yes" }
+                { "name": "No" },
+                { "name": "Yes" }
             ]
         },
         "重复挑战方式": {
