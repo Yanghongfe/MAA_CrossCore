@@ -60,6 +60,14 @@ py -m venv .venv
 | `agent/` | 竞技场、芯片筛选、导航及 MuMu 启动逻辑 |
 | `ui_custom/MFAAvalonia/` | LAA 使用的 MFAAvalonia 可复现补丁 |
 
+### Pipeline 与 Agent 分工
+
+- Pipeline 是任务状态机的正式来源，负责页面识别、导航、点击、分支、循环、重试、接续和结束条件。
+- Agent 只提供边界清晰的原子能力，例如复杂 OCR、数值判断、配置读写和单次稳定识别。
+- 新功能不得把完整页面流程写成单个 Custom Action；应由 Pipeline 组合多个原子能力。
+- 正式 Pipeline JSON 直接保存 `$__mpe_code`，同组成员可在 MPE 中阅读真实运行流程。
+- 竞技场、芯片筛选和第五关周本仍含历史单体 Agent，后续维护时逐步迁回 Pipeline。
+
 Pipeline 调试可使用 MaaDebugger：
 
 ```powershell

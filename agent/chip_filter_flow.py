@@ -48,29 +48,38 @@ ITEM_TAB = (1510, 70)
 CHIP_TAB = (1800, 70)          # 图4“芯片区”标注中心。
 DETAIL_CLOSE_BLANK = (300, 700)
 DETAIL_LOCK_TOGGLE = (1207, 158)  # 芯片筛选2.0“上锁/弃置键”标注中心。
-DETAIL_LOCK_Y_OFFSET = -155
 LOCKED_SCORE = 0.85
 UNLOCKED_SCORE = 0.75
-CHIP_SCROLLBAR_X = 1560
-CHIP_SCROLLBAR_CENTER_TOP = 202
-CHIP_SCROLLBAR_PAGE_STEP = 32
-CHIP_SCROLL_DURATION = 320
+CHIP_ROW_SCROLL_X = 1300
+CHIP_ROW_SCROLL_START_Y = 929
+CHIP_ROW_SCROLL_END_Y = 747
+CHIP_ROW_SCROLL_DURATION = 1000
 CAPACITY_ROI = [960, 20, 330, 80]
 INVENTORY_GRID_ROI = [55, 145, 1450, 790]
 
 DECOMPOSE_BUTTON = (1813, 984)
 QUICK_SELECT_BUTTON = (1752, 828)
-QUALITY_BUTTONS = ((1064, 820), (1178, 824), (1323, 828), (1414, 826))
+QUALITY_BUTTONS = (
+    (1, (1064, 820), True),
+    (2, (1178, 824), True),
+    (3, (1323, 828), True),
+    (4, (1414, 826), True),
+    (5, (1547, 826), False),
+)
 QUALITY_CONFIRM_BUTTON = (1318, 939)
 DECOMPOSE_CONFIRM_BUTTON = (1800, 950)
 SELL_CONFIRM_BUTTON = (1225, 675)
 REWARD_DISMISS_POINT = (1438, 913)
 DECOMPOSE_BACK_BUTTON = (77, 62)
 DECOMPOSE_ACTION_ROI = [1500, 720, 410, 330]
-DECOMPOSE_SELECTED_ROI = [1470, 80, 430, 110]
+DECOMPOSE_SELECTED_ROI = [1560, 690, 320, 130]
 QUALITY_DIALOG_ROI = [930, 650, 570, 350]
 SELL_DIALOG_ROI = [650, 380, 700, 390]
 REWARD_ROI = [520, 240, 880, 650]
+
+CLICK_CONFIRM_ATTEMPTS = 2
+CLICK_SETTLE_DELAY = 0.75
+CLICK_RETRY_DELAY = 0.65
 
 # The fourth row is cut off by the bottom edge. Read the three complete rows first;
 # later full-inventory scanning can reuse these columns after deterministic paging.
@@ -110,6 +119,31 @@ def parse_level(text):
     return int(match.group(1)) if match else None
 
 
+def parse_decompose_selected_count(text):
+    match = re.search(r"已\s*选择\s*(\d+)\s*[/／]", str(text or ""))
+    return int(match.group(1)) if match else None
+
+
+def quality_option_is_selected(image, point):
+    """Read the yellow selected frame without depending on RGB/BGR channel order."""
+    x, y, width, height = scale_roi(
+        image, [point[0] - 64, point[1] - 58, 128, 118]
+    )
+    crop = np.asarray(image)[y:y + height, x:x + width]
+    if crop.size == 0 or crop.ndim < 3 or crop.shape[2] < 3:
+        return None
+    channels = crop[..., :3].astype(np.int16)
+    edge_a = channels[..., 0]
+    green = channels[..., 1]
+    edge_b = channels[..., 2]
+    yellow = (
+        (green > 100)
+        & (np.maximum(edge_a, edge_b) > 160)
+        & (np.minimum(edge_a, edge_b) < 130)
+    )
+    return float(yellow.mean()) >= 0.04
+
+
 def validate_chip_detail(rows):
     """Convert four OCR rows into a typed chip detail, or reject partial reads."""
     if len(rows) != 4:
@@ -117,6 +151,8 @@ def validate_chip_detail(rows):
     names = [row[0] for row in rows]
     levels = [row[1] for row in rows]
     if names[0] not in MAIN_SKILLS or any(name not in SUB_SKILLS for name in names[1:]):
+        return None
+    if len(set(names)) != len(names):
         return None
     if any(level not in (1, 2, 3) for level in levels):
         return None
@@ -146,10 +182,43 @@ def load_filter_plan(path=None):
         (candidate for candidate in DEFAULT_PLAN_FILES if candidate.exists()), requested
     )
     data = json.loads(source.read_text(encoding="utf-8-sig"))
+    validate_filter_plan(data)
+    return data
+
+
+def validate_filter_plan(data):
+    if data.get("version") != 3:
+        raise ValueError("仅支持CF3芯片筛选方案")
     levels = data.get("levels", {})
     if not all(str(level) in levels for level in (1, 2, 3)):
         raise ValueError("芯片筛选方案缺少主词条等级配置")
-    return data
+    for level in (1, 2, 3):
+        level_rule = levels[str(level)]
+        mode = level_rule.get("mode")
+        if mode not in ("lock", "unlock", "conditional"):
+            raise ValueError("主词条%d级包含未知处理方式" % level)
+        if mode != "conditional":
+            continue
+        conditions = level_rule.get("conditions")
+        if not isinstance(conditions, dict):
+            raise ValueError("主词条%d级缺少条件锁定配置" % level)
+        missing = [name for name in MAIN_SKILLS if name not in conditions]
+        if missing:
+            raise ValueError(
+                "主词条%d级尚有未配置类别：%s" % (level, "、".join(missing))
+            )
+        for main_name in MAIN_SKILLS:
+            condition = conditions[main_name]
+            effective = condition.get("effective_sub_skills")
+            minimum_total = condition.get("minimum_total_level")
+            if (
+                not isinstance(effective, list)
+                or not effective
+                or any(name not in SUB_SKILLS for name in effective)
+                or len(set(effective)) != len(effective)
+                or minimum_total not in (2, 3, 4, 5, 6)
+            ):
+                raise ValueError("主词条%d级的%s条件配置无效" % (level, main_name))
 
 
 def should_lock_chip(detail, plan):
@@ -176,6 +245,22 @@ def should_lock_chip(detail, plan):
         if sub_skill["name"] in effective
     )
     return effective_total >= minimum_total
+
+
+def chip_detail_signature(detail):
+    """Return only the fields that identify a filtering decision."""
+    return (
+        detail["main_skill"]["name"],
+        detail["main_skill"]["level"],
+        tuple((item["name"], item["level"]) for item in detail["sub_skills"]),
+    )
+
+
+def has_stable_detail(readings, required=3):
+    if len(readings) < required:
+        return False
+    signatures = [chip_detail_signature(item) for item in readings[-required:]]
+    return all(value == signatures[0] for value in signatures[1:])
 
 
 class ChipFilterFlow(CustomAction):
@@ -286,7 +371,39 @@ class ChipFilterFlow(CustomAction):
 
     def _is_quality_dialog(self, context, image):
         text = normalize_ocr(self._page_text(context, image, QUALITY_DIALOG_ROI))
-        return "1星" in text and "4星" in text and "确定" in text
+        # Selected quality labels change color and may temporarily drop out of OCR.
+        # The dialog title and confirm button remain stable in every selection state.
+        return "品质" in text and "确定" in text
+
+    def _decompose_selected_count(self, context, image):
+        text = self._page_text(context, image, DECOMPOSE_SELECTED_ROI)
+        return parse_decompose_selected_count(text)
+
+    def _set_quality_option(self, context, level, point, desired):
+        for attempt in range(1, 3):
+            image = self._shot(context)
+            if not self._is_quality_dialog(context, image):
+                log.warning("校准%d星品质时已离开品质弹窗", level)
+                return False
+            selected = quality_option_is_selected(image, point)
+            if selected is desired:
+                log.info("%d星品质状态已正确：%s", level, "选中" if desired else "未选中")
+                return True
+            if selected is None:
+                log.warning("无法读取%d星品质选中状态", level)
+                return False
+            self._click(
+                context, point,
+                "%d星品质切换为%s（第%d次）" % (
+                    level, "选中" if desired else "未选中", attempt,
+                ),
+            )
+            self._sleep(context, 0.45)
+        selected = quality_option_is_selected(self._shot(context), point)
+        if selected is desired:
+            return True
+        log.warning("%d星品质状态校准失败", level)
+        return False
 
     def _is_sell_dialog(self, context, image):
         text = normalize_ocr(self._page_text(context, image, SELL_DIALOG_ROI))
@@ -296,7 +413,28 @@ class ChipFilterFlow(CustomAction):
         text = normalize_ocr(self._page_text(context, image, REWARD_ROI))
         return "获得物品" in text or "点击空白处继续" in text
 
-    def _wait_for(self, context, predicate, timeout, label):
+    def _is_decompose_selection_page(self, context, image):
+        if (
+            self._is_quality_dialog(context, image)
+            or self._is_sell_dialog(context, image)
+            or self._is_reward_popup(context, image)
+        ):
+            return False
+        return self._is_decompose_page(context, image)
+
+    def _is_chip_selection_page(self, context, image):
+        # The capacity counter can remain visible behind decompose dialogs/pages.
+        # A cleanup step is complete only on the unobstructed inventory list.
+        if (
+            self._is_decompose_page(context, image)
+            or self._is_quality_dialog(context, image)
+            or self._is_sell_dialog(context, image)
+            or self._is_reward_popup(context, image)
+        ):
+            return False
+        return self._is_chip_page(context, image)
+
+    def _wait_for(self, context, predicate, timeout, label, warn=True):
         deadline = time.time() + timeout
         while time.time() < deadline:
             image = self._shot(context)
@@ -304,7 +442,56 @@ class ChipFilterFlow(CustomAction):
                 log.info("已确认%s", label)
                 return True
             self._sleep(context, 0.18)
-        log.warning("等待%s超时", label)
+        if warn:
+            log.warning("等待%s超时", label)
+        return False
+
+    def _click_and_confirm(
+        self,
+        context,
+        point,
+        label,
+        target_predicate,
+        target_label,
+        source_predicate=None,
+        attempts=CLICK_CONFIRM_ATTEMPTS,
+        timeout=2.5,
+        pre_delay=0.0,
+    ):
+        """Click a stable source page, confirm the target, and retry only in place."""
+        if pre_delay > 0:
+            self._sleep(context, pre_delay)
+        for attempt in range(1, attempts + 1):
+            image = self._shot(context)
+            if target_predicate(context, image):
+                log.info("点击%s前已确认%s", label, target_label)
+                return True
+            if source_predicate is not None and not source_predicate(context, image):
+                log.warning("点击%s前既非原页面也非目标页面，停止盲目点击", label)
+                return False
+
+            self._click(context, point, "%s（第%d次）" % (label, attempt))
+            self._sleep(context, CLICK_SETTLE_DELAY)
+            if self._wait_for(
+                context, target_predicate, timeout, target_label, warn=False
+            ):
+                return True
+
+            image = self._shot(context)
+            if target_predicate(context, image):
+                log.info("已确认%s", target_label)
+                return True
+            if source_predicate is not None and not source_predicate(context, image):
+                log.warning("点击%s后页面已变化但未识别为%s，停止重复点击", label, target_label)
+                return False
+            if attempt < attempts:
+                log.warning(
+                    "点击%s后仍停留在原页面，等待%.2fs后进行第%d次点击",
+                    label, CLICK_RETRY_DELAY, attempt + 1,
+                )
+                self._sleep(context, CLICK_RETRY_DELAY)
+
+        log.warning("点击%s共%d次仍未进入%s", label, attempts, target_label)
         return False
 
     def _is_warehouse(self, context, image):
@@ -324,7 +511,7 @@ class ChipFilterFlow(CustomAction):
     def _ensure_chip_page(self, context):
         for _ in range(12):
             image = self._shot(context)
-            if self._is_chip_page(context, image):
+            if self._is_chip_selection_page(context, image):
                 return True
             if is_idle_main_ui(context, image):
                 self._click(context, (960, 540), "唤醒主界面")
@@ -359,68 +546,132 @@ class ChipFilterFlow(CustomAction):
             return False
         return float(np.abs(before - after).mean()) >= 5.0
 
-    def _scroll_to_page(self, context, page):
+    def _scroll_next_row_to_first(self, context, row):
         before = self._inventory_fingerprint(self._shot(context))
-        start_y = CHIP_SCROLLBAR_CENTER_TOP + (page - 1) * CHIP_SCROLLBAR_PAGE_STEP
-        end_y = CHIP_SCROLLBAR_CENTER_TOP + page * CHIP_SCROLLBAR_PAGE_STEP
         self._swipe(
             context,
-            (CHIP_SCROLLBAR_X, start_y, CHIP_SCROLLBAR_X, end_y, CHIP_SCROLL_DURATION),
-            "芯片滚动条向后三行",
+            (
+                CHIP_ROW_SCROLL_X,
+                CHIP_ROW_SCROLL_START_Y,
+                CHIP_ROW_SCROLL_X,
+                CHIP_ROW_SCROLL_END_Y,
+                CHIP_ROW_SCROLL_DURATION,
+            ),
+            "固定上滑一排芯片至第一排",
         )
-        self._sleep(context, 0.65)
+        self._sleep(context, 0.8)
         after = self._inventory_fingerprint(self._shot(context))
         if self._inventory_changed(before, after):
-            log.info("芯片库存已翻至第%d批，画面变化校验通过", page + 1)
+            log.info("第%d排芯片已固定上滑至第一排，画面变化校验通过", row + 1)
             return True
+        log.info("固定上滑后画面未变化，已到列表底部或滑动未生效")
+        return False
 
-        # A 32px reference drag becomes about 21px on a 1280x720 controller and
-        # can be swallowed. A grid drag is the recorded three-row fallback.
-        log.warning("滚动条微拖未改变库存画面，补偿执行三行列表拖拽")
-        self._swipe(context, (1450, 900, 1450, 165, 420), "芯片列表补偿向后三行")
-        self._sleep(context, 0.75)
-        after = self._inventory_fingerprint(self._shot(context))
-        changed = self._inventory_changed(before, after)
-        if changed:
-            log.info("芯片库存第%d批补偿翻页校验通过", page + 1)
-        else:
-            log.error("芯片库存翻页失败，停止扫描以避免重复处理第一页")
-        return changed
+    @staticmethod
+    def _row_slots(start_index, count, y):
+        return [
+            {"index": start_index + col, "point": (CHIP_COLUMNS[col], y)}
+            for col in range(count)
+        ]
 
     def _return_from_decompose(self, context):
-        self._click(context, DECOMPOSE_BACK_BUTTON, "芯片分解页左上返回键")
-        return self._wait_for(context, self._is_chip_page, 5.0, "返回芯片选择页面")
+        return self._click_and_confirm(
+            context,
+            DECOMPOSE_BACK_BUTTON,
+            "芯片分解页左上返回键",
+            self._is_chip_selection_page,
+            "返回芯片选择页面",
+            source_predicate=self._is_decompose_selection_page,
+            timeout=3.0,
+            pre_delay=0.5,
+        )
 
     def _run_cleanup(self, context):
         log.info("开始子任务：清理四星及以下芯片")
         if not self._ensure_chip_page(context):
             log.warning("无法进入仓库芯片选择页面，停止清理")
             return False
-        self._click(context, DECOMPOSE_BUTTON, "批量分解")
-        if not self._wait_for(context, self._is_decompose_page, 5.0, "芯片分解页面"):
+        if not self._click_and_confirm(
+            context,
+            DECOMPOSE_BUTTON,
+            "批量分解",
+            self._is_decompose_selection_page,
+            "芯片分解页面",
+            source_predicate=self._is_chip_selection_page,
+            timeout=3.5,
+            pre_delay=0.6,
+        ):
             return False
-        self._click(context, QUICK_SELECT_BUTTON, "快捷选择")
-        if not self._wait_for(context, self._is_quality_dialog, 4.0, "快捷选择品质弹窗"):
+        if not self._click_and_confirm(
+            context,
+            QUICK_SELECT_BUTTON,
+            "快捷选择",
+            self._is_quality_dialog,
+            "快捷选择品质弹窗",
+            source_predicate=self._is_decompose_selection_page,
+            attempts=3,
+            timeout=2.5,
+            pre_delay=1.2,
+        ):
             return False
-        for level, point in enumerate(QUALITY_BUTTONS, start=1):
-            self._click(context, point, "%d星芯片" % level)
-            self._sleep(context, 0.12)
-        self._click(context, QUALITY_CONFIRM_BUTTON, "品质选择确定")
-        if not self._wait_for(context, self._is_decompose_page, 4.0, "已选择四星及以下芯片"):
+        for level, point, desired in QUALITY_BUTTONS:
+            if not self._set_quality_option(context, level, point, desired):
+                return False
+        if not self._click_and_confirm(
+            context,
+            QUALITY_CONFIRM_BUTTON,
+            "品质选择确定",
+            self._is_decompose_selection_page,
+            "已选择四星及以下芯片",
+            source_predicate=self._is_quality_dialog,
+            timeout=3.0,
+            pre_delay=0.5,
+        ):
             return False
 
-        self._click(context, DECOMPOSE_CONFIRM_BUTTON, "确认分解")
-        if not self._wait_for(context, self._is_sell_dialog, 2.5, "出售芯片二次确认"):
+        selected = self._decompose_selected_count(context, self._shot(context))
+        if selected == 0:
+            log.info("快捷选择结果为0件，无需点击确认分解，直接返回芯片选择页面")
+            return self._return_from_decompose(context)
+        if selected is not None:
+            log.info("快捷选择已选中%d件四星及以下芯片", selected)
+
+        if not self._click_and_confirm(
+            context,
+            DECOMPOSE_CONFIRM_BUTTON,
+            "确认分解",
+            self._is_sell_dialog,
+            "出售芯片二次确认",
+            source_predicate=self._is_decompose_selection_page,
+            timeout=2.5,
+            pre_delay=0.6,
+        ):
             image = self._shot(context)
-            if self._is_decompose_page(context, image):
+            if self._is_decompose_selection_page(context, image):
                 log.info("没有可分解的四星及以下芯片，直接返回芯片选择页面")
                 return self._return_from_decompose(context)
             return False
-        self._click(context, SELL_CONFIRM_BUTTON, "出售芯片确定")
-        if not self._wait_for(context, self._is_reward_popup, 8.0, "分解获得物品页面"):
+        if not self._click_and_confirm(
+            context,
+            SELL_CONFIRM_BUTTON,
+            "出售芯片确定",
+            self._is_reward_popup,
+            "分解获得物品页面",
+            source_predicate=self._is_sell_dialog,
+            timeout=5.0,
+            pre_delay=0.5,
+        ):
             return False
-        self._click(context, REWARD_DISMISS_POINT, "奖励页面空白处")
-        if not self._wait_for(context, self._is_decompose_page, 6.0, "分解完成页面"):
+        if not self._click_and_confirm(
+            context,
+            REWARD_DISMISS_POINT,
+            "奖励页面空白处",
+            self._is_decompose_selection_page,
+            "分解完成页面",
+            source_predicate=self._is_reward_popup,
+            timeout=4.0,
+            pre_delay=0.6,
+        ):
             return False
         completed = self._return_from_decompose(context)
         if completed:
@@ -476,21 +727,25 @@ class ChipFilterFlow(CustomAction):
         return self._recognition_score(detail)
 
     def _read_slot_lock_state(self, context, point):
-        scores = [self._slot_lock_score(context, self._shot(context), point)]
-        if scores[0] >= LOCKED_SCORE:
-            self._last_lock_scores = scores
-            log.info("芯片栏位锁状态评分：%.3f（已锁）", scores[0])
-            return True
-        if scores[0] <= UNLOCKED_SCORE:
-            self._last_lock_scores = scores
-            log.info("芯片栏位锁状态评分：%.3f（未锁）", scores[0])
-            return False
-
-        # Only ambiguous frames pay for retries; the normal path still uses one
-        # screenshot and one template match, matching the previous scan cost.
-        for _ in range(2):
-            self._sleep(context, 0.05)
+        scores = []
+        for index in range(3):
             scores.append(self._slot_lock_score(context, self._shot(context), point))
+            locked_votes = sum(score >= LOCKED_SCORE for score in scores)
+            unlocked_votes = sum(score <= UNLOCKED_SCORE for score in scores)
+            if locked_votes >= 2 and unlocked_votes == 0:
+                self._last_lock_scores = scores
+                log.info("芯片栏位锁状态评分：%s（已锁）", ", ".join("%.3f" % score for score in scores))
+                return True
+            if unlocked_votes >= 2 and locked_votes == 0:
+                self._last_lock_scores = scores
+                log.info("芯片栏位锁状态评分：%s（未锁）", ", ".join("%.3f" % score for score in scores))
+                return False
+            if locked_votes and unlocked_votes:
+                self._last_lock_scores = scores
+                log.warning("芯片栏位锁状态帧间冲突：%s", ", ".join("%.3f" % score for score in scores))
+                return None
+            if index < 2:
+                self._sleep(context, 0.05)
         locked_votes = sum(score >= LOCKED_SCORE for score in scores)
         unlocked_votes = sum(score <= UNLOCKED_SCORE for score in scores)
         log.info(
@@ -498,10 +753,9 @@ class ChipFilterFlow(CustomAction):
             ", ".join("%.3f" % score for score in scores), locked_votes, unlocked_votes,
         )
         self._last_lock_scores = scores
-        if locked_votes >= 2:
+        if locked_votes >= 2 and unlocked_votes == 0:
             return True
-        # Ambiguous states require all three frames to agree on unlocked.
-        if unlocked_votes == 3:
+        if unlocked_votes >= 2 and locked_votes == 0:
             return False
         return None
 
@@ -528,7 +782,7 @@ class ChipFilterFlow(CustomAction):
 
     def _read_detail(self, context):
         readings = []
-        for _ in range(4):
+        for _ in range(7):
             image = self._shot(context)
             name_detail = self._ocr_detail(
                 context, image, "ChipSkillName", DETAIL_NAMES_ROI, ALL_SKILLS
@@ -551,22 +805,20 @@ class ChipFilterFlow(CustomAction):
                     levels.append((self._result_y(item), level))
             names.sort()
             levels.sort()
-            rows = [
-                (names[index][1], levels[index][1])
-                for index in range(min(len(names), len(levels), 4))
-            ]
+            rows = []
+            if len(names) == 4 and len(levels) == 4:
+                rows = [(names[index][1], levels[index][1]) for index in range(4)]
             detail = validate_chip_detail(rows)
             if detail:
-                viewport_height = image_size(image)[1]
-                reference_name_y = round(names[0][0] * REFERENCE_SIZE[1] / viewport_height)
-                detail["_lock_toggle_point"] = (
-                    DETAIL_LOCK_TOGGLE[0], reference_name_y + DETAIL_LOCK_Y_OFFSET
-                )
+                detail["_lock_toggle_point"] = DETAIL_LOCK_TOGGLE
                 readings.append(detail)
-                if len(readings) >= 2 and readings[-1] == readings[-2]:
+                if has_stable_detail(readings):
                     return detail
-            self._sleep(context, 0.18)
-        return readings[-1] if readings else None
+            else:
+                readings.clear()
+            self._sleep(context, 0.14)
+        # A lone/alternating OCR result is unsafe: it must never drive an unlock.
+        return None
 
     def _save_results(self, results, capacity, summary):
         RESULT_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -599,6 +851,8 @@ class ChipFilterFlow(CustomAction):
             summary["failed"] += 1
             return
 
+        self._sleep(context, 0.25)
+
         detail = self._read_detail(context)
         if not detail:
             log.warning("芯片%d详情未能稳定读取，已跳过且不修改锁定状态", slot["index"])
@@ -608,6 +862,40 @@ class ChipFilterFlow(CustomAction):
             return
 
         desired_locked = should_lock_chip(detail, plan)
+
+        # Unlocking is destructive to the user's protection state. Require a
+        # second independent stable read and the same negative decision.
+        if locked_before is True and desired_locked is False:
+            confirmed_detail = self._read_detail(context)
+            unlock_confirmed = (
+                confirmed_detail is not None
+                and chip_detail_signature(confirmed_detail) == chip_detail_signature(detail)
+                and should_lock_chip(confirmed_detail, plan) is False
+            )
+            if not unlock_confirmed:
+                log.warning(
+                    "芯片%d解锁前二次详情复核不一致，保留原锁且跳过该芯片：首次=%s",
+                    slot["index"], chip_detail_signature(detail),
+                )
+                summary["unlock_guard_failed"] += 1
+                self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
+                self._sleep(context, 0.25)
+                detail.pop("_lock_toggle_point", None)
+                detail.update({
+                    "slot": slot["index"],
+                    "locked_before": True,
+                    "desired_locked": False,
+                    "changed": False,
+                    "change_needed": None,
+                    "verified": False,
+                    "unlock_guard": "detail_confirmation_failed",
+                    "lock_scores_before": lock_scores_before,
+                    "elapsed_ms": round((time.perf_counter() - started) * 1000),
+                })
+                results.append(detail)
+                summary["read"] += 1
+                return
+
         lock_toggle_point = tuple(detail.pop("_lock_toggle_point"))
         if locked_before is None:
             log.warning("芯片%d锁状态无法可靠确认，已读取详情但不会点击锁定区域", slot["index"])
@@ -632,7 +920,7 @@ class ChipFilterFlow(CustomAction):
         if changed and not dry_run:
             action = "上锁" if desired_locked else "取消上锁"
             self._click(context, lock_toggle_point, action)
-            self._sleep(context, 0.3)
+            self._sleep(context, 0.6)
         self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
         self._sleep(context, 0.25)
 
@@ -642,21 +930,14 @@ class ChipFilterFlow(CustomAction):
         elif changed:
             state_after = self._read_slot_lock_state(context, slot["point"])
             verified = state_after == desired_locked
-            if not verified and state_after == locked_before:
-                log.info("芯片%d首次%s未生效，确认状态未变化后仅重试一次", slot["index"], action)
-                self._click(context, slot["point"], "第%d个芯片栏位重试" % slot["index"])
-                self._sleep(context, 0.32)
-                if self._is_detail_open(context, self._shot(context)):
-                    self._click(context, lock_toggle_point, action + "重试")
-                    self._sleep(context, 0.3)
-                    self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
-                    self._sleep(context, 0.25)
-                    verified = self._read_slot_lock_state(context, slot["point"]) == desired_locked
             if verified:
                 summary["locked" if desired_locked else "unlocked"] += 1
             else:
                 summary["verify_failed"] += 1
-                log.warning("芯片%d执行%s后锁定标记复核失败，不进行重复点击", slot["index"], action)
+                log.warning(
+                    "芯片%d执行%s后锁定标记复核失败；切换按钮只允许点击一次，已停止处理该栏位",
+                    slot["index"], action,
+                )
         else:
             summary["unchanged"] += 1
 
@@ -727,41 +1008,54 @@ class ChipFilterFlow(CustomAction):
             log.info("芯片筛选预览模式：只读取前%d/%d枚且不修改锁定状态", scan_capacity, capacity)
 
         results = []
-        summary = {"attempted": 0, "read": 0, "locked": 0, "unlocked": 0, "unchanged": 0, "planned": 0, "failed": 0, "lock_state_failed": 0, "verify_failed": 0, "page_failed": 0}
-        full_pages, remainder = divmod(scan_capacity, len(VISIBLE_SLOTS))
-        for page in range(full_pages):
-            page_offset = page * len(VISIBLE_SLOTS)
-            rows = CHIP_ROWS if page == 0 else SCROLLED_CHIP_ROWS
-            visible_slots = tuple(
-                {"index": row * len(CHIP_COLUMNS) + col + 1, "point": (x, y)}
-                for row, y in enumerate(rows)
-                for col, x in enumerate(CHIP_COLUMNS)
-            )
-            for visible in visible_slots:
-                slot = {"index": page_offset + visible["index"], "point": visible["point"]}
+        summary = {"attempted": 0, "read": 0, "locked": 0, "unlocked": 0, "unchanged": 0, "planned": 0, "failed": 0, "lock_state_failed": 0, "unlock_guard_failed": 0, "verify_failed": 0, "page_failed": 0}
+        total_rows = (scan_capacity + len(CHIP_COLUMNS) - 1) // len(CHIP_COLUMNS)
+        row = 0
+        while row < total_rows:
+            start_index = row * len(CHIP_COLUMNS) + 1
+            count = min(len(CHIP_COLUMNS), scan_capacity - start_index + 1)
+            for slot in self._row_slots(start_index, count, CHIP_ROWS[0]):
                 self._process_slot(context, slot, plan, results, summary, dry_run)
-            if page < full_pages - 1 or remainder:
-                if not self._scroll_to_page(context, page + 1):
-                    summary["page_failed"] += 1
-                    self._save_results(results, capacity, summary)
-                    return False
+            if row == total_rows - 1:
+                break
 
-        for slot in self._remainder_slots(scan_capacity):
-            self._process_slot(context, slot, plan, results, summary, dry_run)
+            if self._scroll_next_row_to_first(context, row + 1):
+                row += 1
+                continue
 
-        on_chip_page = self._is_chip_page(context, self._shot(context))
+            remaining_rows = total_rows - row - 1
+            if remaining_rows > 2:
+                log.error("尚余%d排芯片但固定上滑未生效，停止扫描以避免漏行", remaining_rows)
+                summary["page_failed"] += 1
+                self._save_results(results, capacity, summary)
+                return False
+
+            # At the bottom limit the final rows cannot move to the first row.
+            # They remain at the stable second/third row coordinates.
+            for tail_offset in range(1, remaining_rows + 1):
+                tail_row = row + tail_offset
+                start_index = tail_row * len(CHIP_COLUMNS) + 1
+                count = min(len(CHIP_COLUMNS), scan_capacity - start_index + 1)
+                y = SCROLLED_CHIP_ROWS[tail_offset]
+                for slot in self._row_slots(start_index, count, y):
+                    self._process_slot(context, slot, plan, results, summary, dry_run)
+            row = total_rows
+
+        on_chip_page = self._is_chip_selection_page(context, self._shot(context))
         all_slots_attempted = summary["attempted"] == scan_capacity
         self._save_results(results, capacity, summary)
         log.info(
-            "锁定/解锁子任务完成检查：容量%d，计划处理%d，实际处理%d，读取%d，上锁%d，解锁%d，无需变更%d，读取失败%d，锁状态失败%d，复核失败%d，仍在芯片页=%s，结果=%s",
+            "锁定/解锁子任务完成检查：容量%d，计划处理%d，实际处理%d，读取%d，上锁%d，解锁%d，无需变更%d，读取失败%d，锁状态失败%d，解锁保护拦截%d，复核失败%d，仍在芯片页=%s，结果=%s",
             capacity, scan_capacity, summary["attempted"], summary["read"], summary["locked"], summary["unlocked"], summary["unchanged"],
-            summary["failed"], summary["lock_state_failed"], summary["verify_failed"], on_chip_page, RESULT_FILE,
+            summary["failed"], summary["lock_state_failed"], summary["unlock_guard_failed"],
+            summary["verify_failed"], on_chip_page, RESULT_FILE,
         )
         completed = (
             all_slots_attempted
             and on_chip_page
             and summary["failed"] == 0
             and summary["lock_state_failed"] == 0
+            and summary["unlock_guard_failed"] == 0
             and summary["verify_failed"] == 0
             and summary["page_failed"] == 0
         )
