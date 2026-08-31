@@ -7,8 +7,10 @@
         "name": "自动启动 MuMu 12",
         "label": "仅在选择启动游戏时运行",
         "description": "自动查找 MuMu 12、启动实例、配置 ADB 并打开交错战线。",
-        "exec": "../../agent/ensure_mumu.cmd",
-        "args": []
+        "exec": "python",
+        "args": [
+            "{PROJECT_DIR}/agent/ensure_mumu.py"
+        ]
     },
     "controller": [
         {
@@ -92,7 +94,11 @@
         {
             "name": "芯片筛选-仓库",
             "entry": "ChipDetailReadTask",
-            "doc": "根据已保存的芯片筛选方案检查仓库内全部芯片，并纠正其上锁状态。"
+            "doc": "按勾选顺序清理四星及以下芯片，并根据已保存方案纠正仓库芯片的上锁状态。",
+            "option": [
+                "清理四星及以下芯片",
+                "根据自定义设置锁定/解锁仓库内芯片"
+            ]
         },
         {
             "name": "基建",
@@ -1099,6 +1105,24 @@
                 }
             ],
             "type": "select"
+        },
+        "清理四星及以下芯片": {
+            "type": "switch",
+            "label": "清理四星及以下芯片",
+            "default_case": "关闭",
+            "cases": [
+                { "name": "关闭" },
+                { "name": "开启" }
+            ]
+        },
+        "根据自定义设置锁定/解锁仓库内芯片": {
+            "type": "switch",
+            "label": "根据自定义设置锁定/解锁仓库内芯片",
+            "default_case": "no",
+            "cases": [
+                { "name": "no" },
+                { "name": "yes" }
+            ]
         },
         "重复挑战方式": {
             "type": "select",

@@ -17,6 +17,11 @@ is shown as a solid green button: click to select it and double-click to edit.
 The editor can copy its conditions to selected unconfigured skills, or clear
 only the active main-skill level after confirmation.
 
+Each main-skill condition uses one page: select its effective sub-skills, then
+require their actual level sum to be at least 2, 3, 4, 5, or 6. Recommended
+effective sub-skills with a total-level threshold of 3 form the default plan.
+Newly exported and imported share codes use the `LAA-CF3` format exclusively.
+
 Run `build.ps1` after cloning the matching upstream source into
 `E:\MAA_crosscore\MFAAvalonia-src`. The script applies the patch when needed,
 builds the UI, and copies only `MFAAvalonia.Core.dll` into `install/libs`.

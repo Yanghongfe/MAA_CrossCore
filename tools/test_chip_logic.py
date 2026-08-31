@@ -35,7 +35,7 @@ def test_recorded_skill_catalog_is_complete():
 
 def test_detail_classification():
     detail = validate_chip_detail([
-        ("切割", 2), ("命中", 2), ("耐久", 1), ("防御", 2),
+        ("切割", 2), ("攻击", 1), ("命中", 2), ("防御", 2),
     ])
     assert detail["main_skill"] == {"name": "切割", "level": 2}
     assert detail["sub_skills"][2] == {"name": "防御", "level": 2}
@@ -59,7 +59,7 @@ def test_level_parser_and_recorded_lock_point():
 
 def test_saved_plan_match_logic():
     detail = validate_chip_detail([
-        ("切割", 2), ("命中", 2), ("耐久", 1), ("防御", 2),
+        ("切割", 2), ("攻击", 1), ("命中", 2), ("防御", 2),
     ])
     plan = {
         "levels": {
@@ -67,17 +67,65 @@ def test_saved_plan_match_logic():
             "2": {
                 "mode": "conditional",
                 "conditions": {
-                    "切割": {"minimum_levels": {"1": [], "2": ["攻击", "命中"], "3": []}}
+                    "切割": {
+                        "effective_sub_skills": ["攻击", "命中"],
+                        "minimum_total_level": 3,
+                    }
                 },
             },
             "3": {"mode": "lock", "conditions": {}},
         }
     }
     assert should_lock_chip(detail, plan) is True
-    detail["sub_skills"][0]["level"] = 1
+    detail["sub_skills"][1]["level"] = 1
     assert should_lock_chip(detail, plan) is False
     detail["main_skill"]["level"] = 3
     assert should_lock_chip(detail, plan) is True
+
+
+def test_effective_sub_skill_total_is_per_main_skill():
+    detail = validate_chip_detail([
+        ("切割", 2), ("攻击", 2), ("暴伤", 1), ("防御", 3),
+    ])
+    plan = {
+        "levels": {
+            "1": {"mode": "unlock", "conditions": {}},
+            "2": {
+                "mode": "conditional",
+                "conditions": {
+                    "切割": {
+                        "minimum_total_level": 5,
+                        "effective_sub_skills": ["暴伤", "攻击", "瞄准"],
+                    },
+                    "重击": {
+                        "minimum_total_level": 2,
+                        "effective_sub_skills": ["攻击", "速度"],
+                    },
+                },
+            },
+            "3": {"mode": "lock", "conditions": {}},
+        }
+    }
+    # 防御未被“切割”选为有效词条，因此总和只有攻击2 + 暴伤1 = 3。
+    assert should_lock_chip(detail, plan) is False
+    detail["sub_skills"][1]["level"] = 3
+    assert should_lock_chip(detail, plan) is True
+
+
+def test_incomplete_cf3_condition_does_not_lock():
+    detail = validate_chip_detail([
+        ("切割", 2), ("攻击", 2), ("耐久", 1), ("防御", 2),
+    ])
+    plan = {
+        "levels": {
+            "1": {"mode": "unlock", "conditions": {}},
+            "2": {"mode": "conditional", "conditions": {
+                "切割": {"effective_sub_skills": ["攻击"]}
+            }},
+            "3": {"mode": "lock", "conditions": {}},
+        }
+    }
+    assert should_lock_chip(detail, plan) is False
 
 
 def test_remainder_slots_are_bottom_aligned_after_full_pages():

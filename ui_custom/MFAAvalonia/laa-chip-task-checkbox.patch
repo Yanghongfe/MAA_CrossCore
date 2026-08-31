@@ -1,0 +1,233 @@
+diff --git a/MFAAvalonia/Helper/TaskOptionGenerator.cs b/MFAAvalonia/Helper/TaskOptionGenerator.cs
+index ed3a642..2139e1c 100644
+--- a/MFAAvalonia/Helper/TaskOptionGenerator.cs
++++ b/MFAAvalonia/Helper/TaskOptionGenerator.cs
+@@ -34,6 +34,9 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
+     private static readonly Thickness OptionRowMargin = new(10, 3, 10, 3);
+     private static readonly Thickness NestedOptionMargin = new(14, 2, 4, 4);
+     private static readonly Thickness NestedOptionPadding = new(8, 4, 6, 4);
++
++    private static bool UseChipTaskCheckBox(string? name) =>
++        name == "根据自定义设置锁定/解锁仓库内芯片";
+     
+     public void GeneratePanelContent(StackPanel panel, DragItemViewModel dragItem)
+     {
+@@ -613,31 +616,54 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
+         DragItemViewModel source)
+     {
+         var wrapper = new StackPanel();
++        var useChipTaskCheckBox = UseChipTaskCheckBox(option.Name);
++        var useCompactChipTaskCheckBox = useChipTaskCheckBox;
+ 
+         var grid = new Grid
+         {
+             ColumnDefinitions =
+             {
+                 new ColumnDefinition { Width = GridLength.Auto },
+-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+-                new ColumnDefinition { Width = GridLength.Auto }
++                new ColumnDefinition { Width = useChipTaskCheckBox ? GridLength.Auto : new GridLength(1, GridUnitType.Star) },
++                new ColumnDefinition { Width = useChipTaskCheckBox ? new GridLength(1, GridUnitType.Star) : GridLength.Auto }
+             },
+             Margin = OptionRowMargin
+         };
+         
+         interfaceOption.InitializeIcon();
+ 
+-        var toggleSwitch = new ToggleSwitch
++        ToggleButton toggleSwitch;
++        if (useChipTaskCheckBox)
+         {
+-            IsChecked = option.Index == yesValue,
+-            Classes = { "Switch" },
+-            MaxHeight = 60,
+-            MaxWidth = 100,
+-            Margin = new Thickness(0, 4, 0, 4),
+-            HorizontalAlignment = HorizontalAlignment.Right,
+-            VerticalAlignment = VerticalAlignment.Center,
+-            Tag = option.Name
+-        };
++            toggleSwitch = new CheckBox
++            {
++                IsChecked = option.Index == yesValue,
++                Width = useCompactChipTaskCheckBox ? 18 : 24,
++                Height = useCompactChipTaskCheckBox ? 18 : 24,
++                MinWidth = useCompactChipTaskCheckBox ? 18 : 24,
++                MinHeight = useCompactChipTaskCheckBox ? 18 : 24,
++                Margin = useCompactChipTaskCheckBox
++                    ? new Thickness(4, 4, 0, 4)
++                    : new Thickness(0, 4, 0, 4),
++                HorizontalAlignment = HorizontalAlignment.Right,
++                VerticalAlignment = VerticalAlignment.Center,
++                Tag = option.Name
++            };
++        }
++        else
++        {
++            toggleSwitch = new ToggleSwitch
++            {
++                IsChecked = option.Index == yesValue,
++                Classes = { "Switch" },
++                MaxHeight = 60,
++                MaxWidth = 100,
++                Margin = new Thickness(0, 4, 0, 4),
++                HorizontalAlignment = HorizontalAlignment.Right,
++                VerticalAlignment = VerticalAlignment.Center,
++                Tag = option.Name
++            };
++        }
+ 
+         BindIdleEnabled(toggleSwitch);
+         toggleSwitch.Bind(ToolTip.TipProperty, new ResourceBindingWithFallback(option.DisplayName, option.Name));
+@@ -680,12 +706,28 @@ public class TaskOptionGenerator(TaskQueueViewModel viewModel, Action saveConfig
+ 
+         // Label with Icon
+         var labelPanel = CreateLabelPanel(option.DisplayName, option.Name, interfaceOption.Description, interfaceOption.Document);
++        if (useChipTaskCheckBox)
++        {
++            labelPanel.Orientation = Orientation.Vertical;
++            labelPanel.MinWidth = 0;
++            labelPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
++            labelPanel.ClipToBounds = useCompactChipTaskCheckBox;
++            labelPanel.Margin = useCompactChipTaskCheckBox
++                ? new Thickness(0, 0, 4, 0)
++                : new Thickness(0, 0, 10, 0);
++
++            foreach (var textBlock in labelPanel.Children.OfType<TextBlock>())
++            {
++                textBlock.TextWrapping = TextWrapping.Wrap;
++                textBlock.TextTrimming = TextTrimming.None;
++            }
++        }
+         var icon = CreateIcon(interfaceOption);
+         icon.Margin = new Thickness(0, 0, 6, 0);
+         labelPanel.Children.Insert(0, icon);
+ 
+         Grid.SetColumn(labelPanel, 0);
+-        Grid.SetColumn(toggleSwitch, 2);
++        Grid.SetColumn(toggleSwitch, useChipTaskCheckBox ? 1 : 2);
+         
+         grid.Children.Add(labelPanel);
+         grid.Children.Add(toggleSwitch);
+diff --git a/MFAAvalonia/Views/Pages/TaskQueueView.axaml.cs b/MFAAvalonia/Views/Pages/TaskQueueView.axaml.cs
+index 407e0c5..72f8777 100644
+--- a/MFAAvalonia/Views/Pages/TaskQueueView.axaml.cs
++++ b/MFAAvalonia/Views/Pages/TaskQueueView.axaml.cs
+@@ -55,6 +55,9 @@ public partial class TaskQueueView : UserControl
+     private bool _isTopToolbarCompact;
+     private bool _chipFilterPlanWindowOpen;
+ 
++    private static bool UseChipTaskCheckBox(string? name) =>
++        name == "根据自定义设置锁定/解锁仓库内芯片";
++
+ 
+     public TaskQueueView()
+     {
+@@ -1913,6 +1916,8 @@ public partial class TaskQueueView : UserControl
+     {
+         // 外层容器，包含主选项和子配置项
+         var outerContainer = new StackPanel();
++        var useChipTaskCheckBox = UseChipTaskCheckBox(option.Name);
++        var useCompactChipTaskCheckBox = useChipTaskCheckBox;
+ 
+         // 子配置项容器
+         var subOptionsContainer = new StackPanel
+@@ -1920,20 +1925,38 @@ public partial class TaskQueueView : UserControl
+             Margin = new Thickness(0) // 由 Border 的 Padding 控制间距
+         };
+ 
+-        var button = new ToggleSwitch
++        ToggleButton button;
++        if (useChipTaskCheckBox)
++        {
++            button = new CheckBox
++            {
++                IsChecked = option.Index == yesValue,
++                Width = useCompactChipTaskCheckBox ? 18 : 24,
++                Height = useCompactChipTaskCheckBox ? 18 : 24,
++                MinWidth = useCompactChipTaskCheckBox ? 18 : 24,
++                MinHeight = useCompactChipTaskCheckBox ? 18 : 24,
++                Margin = useCompactChipTaskCheckBox
++                    ? new Thickness(4, 4, 0, 4)
++                    : new Thickness(0, 4, 0, 4),
++                HorizontalAlignment = HorizontalAlignment.Right,
++                Tag = option.Name,
++                VerticalAlignment = VerticalAlignment.Center
++            };
++        }
++        else
+         {
+-            IsChecked = option.Index == yesValue,
+-            Classes =
++            button = new ToggleSwitch
+             {
+-                "Switch"
+-            },
+-            MaxHeight = 60,
+-            MaxWidth = 100,
+-            Margin = new Thickness(0, 4, 0, 4),
+-            HorizontalAlignment = HorizontalAlignment.Right,
+-            Tag = option.Name,
+-            VerticalAlignment = VerticalAlignment.Center
+-        };
++                IsChecked = option.Index == yesValue,
++                Classes = { "Switch" },
++                MaxHeight = 60,
++                MaxWidth = 100,
++                Margin = new Thickness(0, 4, 0, 4),
++                HorizontalAlignment = HorizontalAlignment.Right,
++                Tag = option.Name,
++                VerticalAlignment = VerticalAlignment.Center
++            };
++        }
+ 
+         button.Bind(IsEnabledProperty, new Binding("Idle")
+         {
+@@ -1992,7 +2015,8 @@ public partial class TaskQueueView : UserControl
+         {
+             FontSize = 14,
+             Margin = new Thickness(10, 0, 5, 0),
+-            TextTrimming = TextTrimming.CharacterEllipsis,
++            TextTrimming = useChipTaskCheckBox ? TextTrimming.None : TextTrimming.CharacterEllipsis,
++            TextWrapping = useChipTaskCheckBox ? TextWrapping.Wrap : TextWrapping.NoWrap,
+             VerticalAlignment = VerticalAlignment.Center
+         };
+         textBlock.Bind(TextBlock.TextProperty, new ResourceBindingWithFallback(option.DisplayName, option.Name));
+@@ -2008,20 +2032,24 @@ public partial class TaskQueueView : UserControl
+                 },
+                 new ColumnDefinition
+                 {
+-                    Width = new GridLength(1, GridUnitType.Star)
++                    Width = useChipTaskCheckBox ? GridLength.Auto : new GridLength(1, GridUnitType.Star)
+                 },
+                 new ColumnDefinition
+                 {
+-                    Width = GridLength.Auto
++                    Width = useChipTaskCheckBox ? new GridLength(1, GridUnitType.Star) : GridLength.Auto
+                 }
+             },
+             Margin = new Thickness(0, 6, 10, 6)
+         };
+         var stackPanel = new StackPanel
+         {
+-            Orientation = Orientation.Horizontal,
++            Orientation = useChipTaskCheckBox ? Orientation.Vertical : Orientation.Horizontal,
+             VerticalAlignment = VerticalAlignment.Center,
+-            HorizontalAlignment = HorizontalAlignment.Left,
++            HorizontalAlignment = useChipTaskCheckBox ? HorizontalAlignment.Stretch : HorizontalAlignment.Left,
++            ClipToBounds = useCompactChipTaskCheckBox,
++            Margin = useCompactChipTaskCheckBox
++                ? new Thickness(0, 0, 4, 0)
++                : useChipTaskCheckBox ? new Thickness(0, 0, 10, 0) : new Thickness(0),
+         };
+ 
+         // 添加图标（使用数据绑定支持动态更新）
+@@ -2053,7 +2081,7 @@ public partial class TaskQueueView : UserControl
+         }
+ 
+         Grid.SetColumn(stackPanel, 0);
+-        Grid.SetColumn(button, 2);
++        Grid.SetColumn(button, useChipTaskCheckBox ? 1 : 2);
+         grid.Children.Add(stackPanel);
+         grid.Children.Add(button);
+ 

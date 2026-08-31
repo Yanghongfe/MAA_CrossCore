@@ -141,6 +141,9 @@ jobs:
           git clone https://github.com/SweetSmellFox/MFAAvalonia.git .tmp/MFAAvalonia-src
           git -C .tmp/MFAAvalonia-src checkout 6065fe33798b72906c5079fa6f210646801d9a5c
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-filter.patch"
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-filter-total-level.patch"
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-task-checkbox.patch"
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-pretask-path-resolution.patch"
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-no-autostart.patch"
 
           case "${{ matrix.os }}-${{ matrix.arch }}" in

@@ -7,17 +7,31 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $source = (Resolve-Path $SourceDir).Path
 $dotnet = (Resolve-Path $DotnetExe).Path
+$git = (Get-Command git -ErrorAction Stop).Source
+if ($git -match '\\Espressif\\tools\\git\\(?:bin|cmd)\\git\.exe$') {
+    $mingwGit = Join-Path (Split-Path (Split-Path $git -Parent) -Parent) 'mingw64\bin\git.exe'
+    if (Test-Path -LiteralPath $mingwGit) {
+        $git = $mingwGit
+    }
+}
+$gitRuntimeDir = Split-Path $git -Parent
+if (($env:Path -split ';') -notcontains $gitRuntimeDir) {
+    $env:Path = "$gitRuntimeDir;$env:Path"
+}
 $patches = @(
     (Join-Path $PSScriptRoot 'laa-chip-filter.patch'),
+    (Join-Path $PSScriptRoot 'laa-chip-filter-total-level.patch'),
+    (Join-Path $PSScriptRoot 'laa-chip-task-checkbox.patch'),
+    (Join-Path $PSScriptRoot 'laa-pretask-path-resolution.patch'),
     (Join-Path $PSScriptRoot 'laa-no-autostart.patch')
 )
 
 foreach ($patch in $patches) {
-    git -C $source apply --check $patch 2>$null
+    & $git -C $source apply --check $patch 2>$null
     if ($LASTEXITCODE -eq 0) {
-        git -C $source apply $patch
+        & $git -C $source apply $patch
     } else {
-        git -C $source apply --reverse --check $patch 2>$null
+        & $git -C $source apply --reverse --check $patch 2>$null
         if ($LASTEXITCODE -ne 0) {
             throw "MFAAvalonia source does not match patch: $patch"
         }
