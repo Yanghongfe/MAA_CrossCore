@@ -1,4 +1,4 @@
-"""MFA pretask: discover MuMu 12, start it, configure ADB, and launch the game."""
+"""MFA pretask: discover MuMu 12, start it, and configure ADB (does not launch the game)."""
 
 from __future__ import annotations
 
@@ -14,11 +14,6 @@ import time
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CACHE_FILE = PROJECT_ROOT / "config" / "mumu_runtime.json"
 START_ENTRIES = {"进入首页", "StartGameTask"}
-PACKAGES = {
-    "B 服": "com.megagame.crosscore.bilibili",
-    "B服": "com.megagame.crosscore.bilibili",
-}
-DEFAULT_PACKAGE = "com.megagame.crosscore"
 INSTANCE_OPTION = "MuMu实例"
 AUTOSTART_OPTION = "模拟器自动启动"
 REDETECT_OPTION = "每次重新检测连接"
@@ -179,9 +174,13 @@ def candidate_roots():
         drive = Path(f"{letter}:\\")
         if drive.exists():
             values.extend((
+                drive / "MuMu",
                 drive / "MuMuPlayer-12.0",
+                drive / "Netease" / "MuMu",
                 drive / "Netease" / "MuMuPlayer-12.0",
+                drive / "Program Files" / "Netease" / "MuMu",
                 drive / "Program Files" / "Netease" / "MuMuPlayer-12.0",
+                drive / "Program Files (x86)" / "Netease" / "MuMu",
                 drive / "Program Files (x86)" / "Netease" / "MuMuPlayer-12.0",
             ))
     seen = set()
@@ -189,7 +188,13 @@ def candidate_roots():
         if not value:
             continue
         path = Path(value).expanduser()
-        variants = (path, path / "Netease" / "MuMuPlayer-12.0", path / "MuMuPlayer-12.0")
+        variants = (
+            path,
+            path / "Netease" / "MuMu",
+            path / "Netease" / "MuMuPlayer-12.0",
+            path / "MuMu",
+            path / "MuMuPlayer-12.0",
+        )
         for candidate in variants:
             key = str(candidate).lower()
             if key not in seen:
@@ -234,19 +239,24 @@ def manager_info(manager, index):
         return {}
 
 
-def choose_instance(manager, requested=None, preferred_serial="", use_cache=True):
-    cached_index = load_json(CACHE_FILE).get("vm_index") if use_cache else None
-    requested = requested if requested is not None else cached_index
-    indexes = []
-    if requested is not None and str(requested).isdigit():
-        indexes.append(int(requested))
-    indexes.extend(index for index in range(10) if index not in indexes)
-    found = [(index, manager_info(manager, index)) for index in indexes]
-    found = [(index, info) for index, info in found if info]
+def choose_instance(manager, requested=None, preferred_serial="", cached_index=None, fallback_index=None):
+    found = []
+    for index in range(10):
+        info = manager_info(manager, index)
+        if info:
+            found.append((index, info))
     if not found:
         return None, {}
+
+    def pick(index):
+        for item in found:
+            if item[0] == index:
+                return item
+        return None
+
     if requested is not None:
-        return found[0]
+        choice = pick(int(requested))
+        return choice if choice else (None, {})
 
     def unique(candidates):
         if len(candidates) == 1:
@@ -265,12 +275,20 @@ def choose_instance(manager, requested=None, preferred_serial="", use_cache=True
     process_started = [item for item in found if item[1].get("is_process_started")]
     if choice := unique(process_started):
         return choice
+    if cached_index is not None:
+        if choice := pick(int(cached_index)):
+            return choice
+    if fallback_index is not None:
+        if choice := pick(int(fallback_index)):
+            return choice
     if len(found) == 1:
         return found[0]
     main_instances = [item for item in found if item[1].get("is_main")]
     if choice := unique(main_instances):
         return choice
-    return None, {"candidates": [index for index, _ in found]}
+    found.sort(key=lambda item: item[0])
+    log(f"自动模式发现多个实例 {[item[0] for item in found]}，选用编号 {found[0][0]}")
+    return found[0]
 
 
 def ensure_android(manager, index, info, allow_start=True):
@@ -311,14 +329,45 @@ def adb_state(adb, serial):
     return output.strip() if code == 0 else ""
 
 
-def recover_existing_adb(adb, serial, allow_hard_restart=True):
-    if adb_state(adb, serial) == "device":
+def adb_shell_ok(adb, serial):
+    code, output, error = run(
+        [adb, "-s", serial, "shell", "echo", "maa-ok"], timeout=8
+    )
+    return code == 0 and "maa-ok" in f"{output}\n{error}"
+
+
+def connection_usable(adb, serial, instance):
+    """adb devices 的 device 只代表端口还在握手，不代表 Android 能跑 shell。"""
+    if not serial:
+        return False
+    root, index = device_root_index(instance, adb)
+    manager = (root / "nx_main" / "MuMuManager.exe") if root else None
+    if manager and manager.is_file():
+        info = manager_info(manager, index)
+        if info and not info.get("is_android_started"):
+            name = info.get("name") or f"实例 {index}"
+            state = info.get("player_state") or "unknown"
+            log(
+                f"MuMu「{name}」(实例 {index}) Android 未就绪"
+                f"（player_state={state}），ADB {serial} 是假在线，不能连"
+            )
+            return False
+    if adb_state(adb, serial) != "device":
+        return False
+    if not adb_shell_ok(adb, serial):
+        log(f"ADB {serial} 显示 device，但 shell 无响应")
+        return False
+    return True
+
+
+def recover_existing_adb(adb, serial, instance, allow_hard_restart=True):
+    if connection_usable(adb, serial, instance):
         return True
     log(f"已保存的 ADB {serial} 不可用，尝试重新连接")
     if ":" in serial:
         run([adb, "disconnect", serial], timeout=10)
         run([adb, "connect", serial], timeout=15)
-    if adb_state(adb, serial) == "device":
+    if connection_usable(adb, serial, instance):
         return True
 
     devices = adb_devices(adb)
@@ -335,7 +384,7 @@ def recover_existing_adb(adb, serial, allow_hard_restart=True):
     run([adb, "start-server"], timeout=20)
     if ":" in serial:
         run([adb, "connect", serial], timeout=15)
-    return adb_state(adb, serial) == "device"
+    return connection_usable(adb, serial, instance)
 
 
 def saved_connection(instance):
@@ -350,7 +399,7 @@ def saved_connection(instance):
 def device_root_index(instance, adb):
     """从已有 AdbDevice.Config / 路径推断 MuMu root 与实例号，供写回 MFA。"""
     device = instance.get("AdbDevice", {}) or {}
-    index = 0
+    index = None
     root = None
     try:
         extras = json.loads(str(device.get("Config") or "{}")).get("extras", {}).get("mumu", {})
@@ -380,7 +429,7 @@ def ensure_adb(adb, info, index):
     for _ in range(50):
         devices = adb_devices(adb)
         for serial in (tcp, emulator):
-            if serial and devices.get(serial) == "device":
+            if serial and devices.get(serial) == "device" and adb_shell_ok(adb, serial):
                 return serial
         if tcp:
             if devices.get(tcp) == "offline":
@@ -414,93 +463,47 @@ def update_instance(path, instance, adb, serial, root, index):
     log(f"已写入 MFA 连接：{serial}")
 
 
-def top_has_package(adb, serial, package):
-    _, output, _ = run(
-        [adb, "-s", serial, "shell", "dumpsys", "activity", "activities"], timeout=30
-    )
-    return any(
-        package in line and ("topResumedActivity" in line or "mResumedActivity" in line)
-        for line in output.splitlines()
-    )
-
-
-def launch_game(adb, serial, package):
-    if top_has_package(adb, serial, package):
-        log("交错战线已经位于前台")
-        return True
-    for _ in range(2):
-        run([
-            adb, "-s", serial, "shell", "monkey", "-p", package,
-            "-c", "android.intent.category.LAUNCHER", "1",
-        ], timeout=30)
-        for _ in range(30):
-            time.sleep(0.5)
-            if top_has_package(adb, serial, package):
-                return True
-    log(f"未能启动游戏包 {package}，请确认已在该 MuMu 实例中安装")
-    return False
-
-
 def main():
     instance_path, instance = selected_instance()
-    if not start_game_selected(instance):
-        log("未选择“启动游戏”，不启动 MuMu")
-        return 0
     if os.name != "nt":
         log("MuMu 12 自动启动目前仅支持 Windows")
         return 1
 
     settings = runtime_settings(instance)
-    resource = str(instance.get("Resource", ""))
-    package = PACKAGES.get(resource, DEFAULT_PACKAGE)
-
+    # pretask 只保证 MuMu / ADB；开游戏包交给 pipeline「启动游戏」任务（StartApp）
     saved = saved_connection(instance)
+
     if saved and not settings["redetect"]:
         adb, serial = saved
-        log(f"[1/4] 检查已保存的 ADB 连接：{serial}")
-        if recover_existing_adb(adb, serial):
-            log("[2/4] 已保存的 ADB 连接可用，跳过模拟器扫描")
-            # MFA 启动时若 device=<none>，即使文件里有 AdbDevice 也不会用；必须写回触发重载
+        log(f"[1/3] 检查已保存的 ADB 连接：{serial}")
+        if recover_existing_adb(adb, serial, instance):
+            log("[2/3] 已保存的 ADB 连接可用，跳过模拟器扫描")
             root, index = device_root_index(instance, adb)
             update_instance(instance_path, instance, adb, serial, root, index)
-            log(f"[3/4] 正在启动交错战线：{package}")
-            result = launch_game(adb, serial, package)
-            log("[4/4] 启动游戏流程完成" if result else "[4/4] 启动游戏失败")
-            return 0 if result else 1
-        log("已保存连接恢复失败，转入 MuMu 检测流程")
+            log("[3/3] MuMu 与 ADB 已就绪（不开游戏）")
+            return 0
+        log("已保存连接不可用，改为查找并启动 MuMu")
 
-    log("[1/4] 正在查找 MuMu 12")
+    log("[1/3] 正在查找 MuMu 12")
     root, manager, adb = find_mumu()
     if not manager or not adb:
         log("未找到 MuMu 12；可设置 MUMU_HOME 指向安装目录后重试")
         return 1
     log(f"发现 MuMu 12：{root}")
 
-    preferred_serial = saved[1] if saved else ""
+    _, saved_index = device_root_index(instance, saved[0] if saved else adb)
+    cached_index = load_json(CACHE_FILE).get("vm_index")
     index, info = choose_instance(
         manager,
         requested=settings["vm_index"],
-        preferred_serial=preferred_serial,
-        use_cache=settings["vm_index"] is None,
+        preferred_serial=saved[1] if saved else "",
+        cached_index=cached_index,
+        fallback_index=saved_index,
     )
-    if index is None and settings["vm_index"] is None:
-        # 自动模式遇到多开：优先用配置里上次成功的实例号（如 extras.mumu.index）
-        _, saved_index = device_root_index(instance, saved[0] if saved else adb)
-        log(f"自动模式无法唯一选择，改用上次保存的实例 {saved_index}")
-        index, info = choose_instance(
-            manager,
-            requested=saved_index,
-            preferred_serial=preferred_serial,
-            use_cache=False,
-        )
     if index is None:
-        candidates = info.get("candidates", [])
-        if candidates:
-            log(f"发现多个 MuMu 实例 {candidates}，请在「启动游戏」→ MuMu实例 里选 0/1/…，不要用自动")
-        else:
-            log("没有发现可用的 MuMu 12 实例")
+        log("没有发现可用的 MuMu 12 实例")
         return 1
-    log(f"[2/4] 使用 MuMu 实例 {index}")
+    log(f"[2/3] 使用 MuMu 实例 {index}")
     info = ensure_android(manager, index, info, allow_start=settings["auto_start"])
     if not info:
         return 1
@@ -511,10 +514,8 @@ def main():
 
     save_json(CACHE_FILE, {"root": str(root), "vm_index": index, "adb_serial": serial})
     update_instance(instance_path, instance, adb, serial, root, index)
-    log(f"[3/4] 正在启动交错战线：{package}")
-    result = launch_game(adb, serial, package)
-    log("[4/4] 启动游戏流程完成" if result else "[4/4] 启动游戏失败")
-    return 0 if result else 1
+    log("[3/3] MuMu 与 ADB 已就绪（不开游戏）")
+    return 0
 
 
 if __name__ == "__main__":

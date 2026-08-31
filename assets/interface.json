@@ -6,7 +6,7 @@
     "pretask": {
         "name": "自动启动 MuMu 12",
         "label": "仅在选择启动游戏时运行",
-        "description": "自动查找 MuMu 12、启动实例、配置 ADB 并打开交错战线。",
+        "description": "自动查找 MuMu 12、启动实例并配置 ADB（不打开游戏；开游戏由「启动游戏」任务负责）。",
         "exec": "python",
         "args": [
             "{PROJECT_DIR}/agent/ensure_mumu.py"

@@ -1,733 +1,191 @@
 {
+    "$__mpe_config_基建": {
+        "$__mpe_code": {
+            "prefix": "",
+            "coordinateMode": "absolute-v1",
+            "lastSyncTime": 1788193046566,
+            "isModifiedExternally": false,
+            "isDeleted": false,
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MaaXXX-win-x86_64-v0.3.0\\resource\\pipeline\\base\\基建.json",
+            "savedViewport": {
+                "x": -2768,
+                "y": -48,
+                "zoom": 0.26
+            },
+            "filename": "基建",
+            "version": "v1.9.2"
+        }
+    },
+    "基地": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    543,
+                    561,
+                    168,
+                    147
+                ],
+                "template": "Infrastructures/Infr_JD.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 3000,
+        "next": [
+            "基建_收取资源",
+            "基建_驻员状况",
+            "基地"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7052,
+                "y": 253
+            }
+        }
+    },
+    "基地_交付": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    1020,
+                    619,
+                    167,
+                    93
+                ],
+                "expected": [
+                    "基地"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "基建_收取资源_不换班",
+            "基建_交付默认确认",
+            "基地_交付"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8972,
+                "y": 1121
+            }
+        }
+    },
     "基建": {
         "next": [
             "基地",
             "基建_收取资源",
             "[JumpBack]子任务_进入首页"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 6732,
+                "y": 335
+            }
+        }
+    },
+    "基建_1号物品售罄": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "基建_自己交付1",
+                "method": 4,
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    50,
+                    50,
+                    50
+                ],
+                "count": 300
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 388
+            }
+        }
     },
     "基建_交付": {
         "next": [
             "基地_交付",
             "基建_交付默认确认",
             "[JumpBack]子任务_进入首页"
-        ]
-    },
-    "基地_交付": {
-        "recognition": "OCR",
-        "expected": [
-            "基地"
         ],
-        "roi": [
-            1020,
-            619,
-            167,
-            93
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "基建_收取资源_不换班",
-            "基建_交付默认确认",
-            "基地_交付"
-        ]
-    },
-    "基地": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_JD.png",
-        "roi": [
-            543,
-            561,
-            168,
-            147
-        ],
-        "action": "Click",
-        "post_delay": 3000,
-        "next": [
-            "基建_收取资源",
-            "基建_驻员状况",
-            "基地"
-        ]
-    },
-    "基建_收取资源": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Recourse.png",
-        "roi": [
-            422,
-            423,
-            145,
-            140
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]子任务_获得物品",
-            "基建_驻员状况"
-        ]
-    },
-    "基建_收取资源_不换班": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Recourse.png",
-        "roi": [
-            412,
-            425,
-            331,
-            288
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]子任务_获得物品",
-            "基建_收取资源_不换班",
-            "基建_交付默认确认"
-        ]
-    },
-    "基建_驻员状况": {
-        "recognition": "OCR",
-        "expected": [
-            "驻员",
-            "状况"
-        ],
-        "roi": [
-            54,
-            554,
-            176,
-            89
-        ],
-        "action": "Click",
-        "post_delay": 1000,
-        "next": [
-            "基建_驻员预设1",
-            "基建_驻员状况"
-        ]
-    },
-    "基建_驻员预设1": {
-        "recognition": "OCR",
-        "expected": [
-            "驻员",
-            "预设"
-        ],
-        "roi": [
-            960,
-            180,
-            120,
-            90
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]基建_使用",
-            "基建_驻员预设2"
-        ]
-    },
-    "基建_驻员预设2": {
-        "recognition": "OCR",
-        "expected": [
-            "驻员",
-            "预设"
-        ],
-        "roi": [
-            960,
-            320,
-            120,
-            90
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]基建_使用",
-            "基建_驻员预设3"
-        ]
-    },
-    "基建_驻员预设3": {
-        "recognition": "OCR",
-        "expected": [
-            "驻员",
-            "预设"
-        ],
-        "roi": [
-            960,
-            460,
-            120,
-            90
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]基建_使用",
-            "基建_驻员预设4"
-        ]
-    },
-    "基建_驻员预设4": {
-        "recognition": "OCR",
-        "expected": [
-            "驻员",
-            "预设"
-        ],
-        "roi": [
-            960,
-            600,
-            120,
-            90
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "[JumpBack]基建_使用",
-            "基建_返回按钮"
-        ]
-    },
-    "基建_返回按钮": {
-        "recognition": "TemplateMatch",
-        "template": "StartUp/BackButton.png",
-        "roi": [
-            14,
-            10,
-            126,
-            72
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "基建_交易",
-            "基建_退出",
-            "基建_返回按钮"
-        ]
-    },
-    "基建_使用": {
-        "recognition": "OCR",
-        "expected": [
-            "使用"
-        ],
-        "roi": [
-            847,
-            201,
-            215,
-            356
-        ],
-        "action": "Click",
-        "post_delay": 2000
-    },
-    "基建_获取资源": {
-        "recognition": "OCR",
-        "expected": [
-            "收取资源"
-        ],
-        "roi": [
-            342,
-            575,
-            227,
-            134
-        ],
-        "action": "Click",
-        "post_delay": 1000,
-        "next": [
-            "基建_全部收取",
-            "基建_获取资源"
-        ]
-    },
-    "基建_全部收取": {
-        "recognition": "OCR",
-        "expected": [
-            "全部收取"
-        ],
-        "roi": [
-            498,
-            539,
-            329,
-            145
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "基建_占用",
-            "[JumpBack]子任务_获得物品",
-            "[JumpBack]子任务_点击返回"
-        ]
-    },
-    "基建_占用": {
-        "recognition": "ColorMatch",
-        "roi": [
-            678,
-            629,
-            32,
-            36
-        ],
-        "method": 4,
-        "lower": [
-            230,
-            178,
-            60
-        ],
-        "upper": [
-            255,
-            200,
-            80
-        ],
-        "count": 4,
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "基建_换班1",
-            "基建_占用"
-        ]
-    },
-    "基建_换班1": {
-        "recognition": "OCR",
-        "expected": [
-            "设施详情"
-        ],
-        "roi": [
-            240,
-            77,
-            188,
-            75
-        ],
-        "action": "Click",
-        "target": [
-            885,
-            189,
-            37,
-            27
-        ],
-        "next": [
-            "基建_换班1_0",
-            "基建_换班1"
-        ]
-    },
-    "基建_换班1_0": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Substitute1.png",
-        "roi": [
-            418,
-            124,
-            811,
-            91
-        ],
-        "action": "Click",
-        "next": [
-            "基建_换班1_0",
-            "基建_换班1_1"
-        ]
-    },
-    "基建_换班1_1": {
-        "action": "Click",
-        "target": [
-            950,
-            237,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班1_2"
-        ]
-    },
-    "基建_换班1_2": {
-        "action": "Click",
-        "target": [
-            1110,
-            240,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班1_3"
-        ]
-    },
-    "基建_换班1_3": {
-        "action": "Click",
-        "target": [
-            473,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班1_4"
-        ]
-    },
-    "基建_换班1_4": {
-        "action": "Click",
-        "target": [
-            625,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班1_5"
-        ]
-    },
-    "基建_换班1_5": {
-        "action": "Click",
-        "target": [
-            780,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班2",
-            "[JumpBack]基建_换班确认",
-            "[JumpBack]子任务_点击返回"
-        ]
-    },
-    "基建_换班确认": {
-        "recognition": "OCR",
-        "expected": [
-            "确定"
-        ],
-        "roi": [
-            889,
-            627,
-            218,
-            87
-        ],
-        "action": "Click"
-    },
-    "基建_换班2": {
-        "recognition": "OCR",
-        "expected": [
-            "设施详情"
-        ],
-        "roi": [
-            240,
-            77,
-            188,
-            75
-        ],
-        "action": "Click",
-        "target": [
-            885,
-            328,
-            37,
-            27
-        ],
-        "next": [
-            "基建_换班2_0",
-            "基建_换班2"
-        ]
-    },
-    "基建_换班2_0": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Substitute1.png",
-        "roi": [
-            418,
-            124,
-            811,
-            91
-        ],
-        "action": "Click",
-        "next": [
-            "基建_换班2_0",
-            "基建_换班2_1"
-        ]
-    },
-    "基建_换班2_1": {
-        "action": "Click",
-        "target": [
-            950,
-            237,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班2_2"
-        ]
-    },
-    "基建_换班2_2": {
-        "action": "Click",
-        "target": [
-            1110,
-            240,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班2_3"
-        ]
-    },
-    "基建_换班2_3": {
-        "action": "Click",
-        "target": [
-            473,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班2_4"
-        ]
-    },
-    "基建_换班2_4": {
-        "action": "Click",
-        "target": [
-            625,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班2_5"
-        ]
-    },
-    "基建_换班2_5": {
-        "action": "Click",
-        "target": [
-            780,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班3",
-            "[JumpBack]基建_换班确认",
-            "[JumpBack]子任务_点击返回"
-        ]
-    },
-    "基建_换班3": {
-        "recognition": "OCR",
-        "expected": [
-            "设施详情"
-        ],
-        "roi": [
-            240,
-            77,
-            188,
-            75
-        ],
-        "action": "Click",
-        "target": [
-            702,
-            468,
-            37,
-            27
-        ],
-        "next": [
-            "基建_换班3_0",
-            "基建_换班3"
-        ]
-    },
-    "基建_换班3_0": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Substitute1.png",
-        "roi": [
-            418,
-            124,
-            811,
-            91
-        ],
-        "action": "Click",
-        "next": [
-            "基建_换班3_0",
-            "基建_换班3_1"
-        ]
-    },
-    "基建_换班3_1": {
-        "action": "Click",
-        "target": [
-            473,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班3_2"
-        ]
-    },
-    "基建_换班3_2": {
-        "action": "Click",
-        "target": [
-            625,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班3_3"
-        ]
-    },
-    "基建_换班3_3": {
-        "action": "Click",
-        "target": [
-            789,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班3_4"
-        ]
-    },
-    "基建_换班3_4": {
-        "action": "Click",
-        "target": [
-            950,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班3_5"
-        ]
-    },
-    "基建_换班3_5": {
-        "action": "Click",
-        "target": [
-            1100,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班4_0"
-        ]
-    },
-    "基建_换班4_0": {
-        "action": "Swipe",
-        "begin": [
-            890,
-            610,
-            4,
-            4
-        ],
-        "end": [
-            890,
-            298,
-            4,
-            4
-        ],
-        "duration": 3000,
-        "next": [
-            "基建_换班4_1"
-        ]
-    },
-    "基建_换班4_1": {
-        "action": "Click",
-        "target": [
-            473,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班4_2"
-        ]
-    },
-    "基建_换班4_2": {
-        "action": "Click",
-        "target": [
-            625,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班4_3"
-        ]
-    },
-    "基建_换班4_3": {
-        "action": "Click",
-        "target": [
-            789,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班4_4"
-        ]
-    },
-    "基建_换班4_4": {
-        "action": "Click",
-        "target": [
-            950,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "基建_换班4_5"
-        ]
-    },
-    "基建_换班4_5": {
-        "action": "Click",
-        "target": [
-            1100,
-            496,
-            50,
-            50
-        ],
-        "next": [
-            "[JumpBack]基建_换班确认",
-            "基建_交易",
-            "基建_退出",
-            "[JumpBack]子任务_点击返回"
-        ]
-    },
-    "基建_退出": {
-        "recognition": "OCR",
-        "expected": [
-            "研发中心"
-        ],
-        "roi": [
-            523,
-            282,
-            155,
-            51
-        ],
-        "post_delay": 2000,
-        "next": [
-            "进入首页"
-        ]
-    },
-    "基建_交易": {
-        "enabled": true,
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Deal.png",
-        "roi": [
-            980,
-            225,
-            263,
-            235
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "next": [
-            "基建_制作素材",
-            "基建_自己交付",
-            "基建_交易"
-        ]
+        "$__mpe_code": {
+            "position": {
+                "x": 8652,
+                "y": 1353
+            }
+        }
     },
     "基建_交付默认确认": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/Infr_Deal.png",
-        "roi": [
-            980,
-            225,
-            263,
-            235
-        ],
-        "action": "Click",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    980,
+                    225,
+                    263,
+                    235
+                ],
+                "template": "Infrastructures/Infr_Deal.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
         "post_delay": 2000,
         "next": [
             "基建_行星指挥部_返回",
             "基建_交付默认确认",
             "基建_制作素材"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9622,
+                "y": 830
+            }
+        }
     },
-    "基建_自己交付": {
-        "post_wait_freezes": {
-            "time": 2000,
-            "threshold": 0.95
+    "基建_交易": {
+        "enabled": true,
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    980,
+                    225,
+                    263,
+                    235
+                ],
+                "template": "Infrastructures/Infr_Deal.png"
+            }
         },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
         "next": [
-            "[JumpBack]基建_自己交付1",
-            "[JumpBack]基建_自己交付2",
-            "[JumpBack]基建_自己交付3",
-            "基建_拜访好友",
-            "通用-返回主页"
-        ]
+            "基建_制作素材",
+            "基建_自己交付",
+            "基建_交易"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9622,
+                "y": 1256
+            }
+        }
     },
     "基建_他人交付": {
         "post_wait_freezes": {
@@ -737,497 +195,1766 @@
         "next": [
             "基建_拜访好友结束",
             "[JumpBack]基建_自己交付1",
-            "[JumpBack]基建_自己交付2",
-            "[JumpBack]基建_自己交付3",
             "[JumpBack]基建_拜访下一位好友"
         ],
         "on_error": [
             "通用-返回主页"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13298,
+                "y": 1713
+            }
+        }
     },
-    "基建_自己交付1": {
-        "recognition": "TemplateMatch",
-        "template": [
-            "Infrastructures/构建订单3.png",
-            "Infrastructures/构建订单1.png",
-            "Infrastructures/构建订单4.png"
-        ],
-        "threshold": 0.9,
-        "roi": [
-            272,
-            89,
-            909,
-            603
-        ],
-        "action": "Click",
-        "target": true,
-        "target_offset": [
-            90,
-            128,
-            -90,
-            -128
-        ],
-        "post_delay": 1000,
+    "基建_使用": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    847,
+                    201,
+                    215,
+                    356
+                ],
+                "expected": [
+                    "使用"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "$__mpe_code": {
+            "position": {
+                "x": 9292,
+                "y": 523
+            }
+        }
+    },
+    "基建_全部收取": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    498,
+                    539,
+                    329,
+                    145
+                ],
+                "expected": [
+                    "全部收取"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
         "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
+            "基建_占用",
             "[JumpBack]子任务_获得物品",
-            "基建_1号物品售罄"
-        ]
-    },
-    "基建_自己交付2": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/星币120000.png",
-        "threshold": 0.95,
-        "roi": [
-            272,
-            89,
-            909,
-            603
+            "[JumpBack]子任务_点击返回"
         ],
-        "action": "Click",
-        "target": true,
-        "target_offset": [
-            90,
-            128,
-            -90,
-            -128
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品",
-            "基建_2号物品售罄"
-        ]
-    },
-    "基建_自己交付3": {
-        "recognition": "TemplateMatch",
-        "template": "Infrastructures/经验120000.png",
-        "threshold": 0.95,
-        "roi": [
-            272,
-            89,
-            909,
-            603
-        ],
-        "action": "Click",
-        "target": true,
-        "target_offset": [
-            90,
-            128,
-            -90,
-            -128
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品",
-            "基建_3号物品售罄"
-        ]
-    },
-    "基建_1号物品售罄": {
-        "recognition": "ColorMatch",
-        "roi": "基建_自己交付1",
-        "method": 4,
-        "lower": [
-            0,
-            0,
-            0
-        ],
-        "upper": [
-            50,
-            50,
-            50
-        ],
-        "count": 300
-    },
-    "基建_2号物品售罄": {
-        "recognition": "ColorMatch",
-        "roi": "基建_自己交付2",
-        "method": 4,
-        "lower": [
-            0,
-            0,
-            0
-        ],
-        "upper": [
-            50,
-            50,
-            50
-        ],
-        "count": 100
-    },
-    "基建_3号物品售罄": {
-        "recognition": "ColorMatch",
-        "roi": "基建_自己交付3",
-        "method": 4,
-        "lower": [
-            0,
-            0,
-            0
-        ],
-        "upper": [
-            50,
-            50,
-            50
-        ],
-        "count": 100
-    },
-    "基建_自己交付是": {
-        "recognition": "OCR",
-        "expected": [
-            "是否确认提交订单"
-        ],
-        "roi": [
-            489,
-            277,
-            340,
-            126
-        ],
-        "pre_wait_freezes": 100,
-        "action": "Click",
-        "post_delay": 1000,
-        "target": [
-            767,
-            428,
-            70,
-            36
-        ]
-    },
-    "基建_自己交付否": {
-        "recognition": "OCR",
-        "expected": [
-            "订单兑换",
-            "是否进行合成"
-        ],
-        "roi": [
-            392,
-            261,
-            543,
-            154
-        ],
-        "pre_wait_freezes": 100,
-        "action": "Click",
-        "post_delay": 1000,
-        "target": [
-            447,
-            431,
-            65,
-            36
-        ]
-    },
-    "基建_拜访好友": {
-        "recognition": "TemplateMatch",
-        "template": "好友交付记录.png",
-        "roi": [
-            75,
-            474,
-            106,
-            76
-        ],
-        "action": "Click",
-        "target": [
-            96,
-            607,
-            62,
-            56
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_拜访好友1",
-            "基建_拜访好友"
-        ]
-    },
-    "基建_拜访好友1": {
-        "recognition": "OCR",
-        "expected": [
-            "好友列表"
-        ],
-        "roi": [
-            173,
-            126,
-            229,
-            80
-        ],
-        "action": "Click",
-        "target": [
-            276,
-            497,
-            136,
-            37
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_他人交付",
-            "基建_拜访好友1"
-        ]
-    },
-    "基建_拜访下一位好友": {
-        "recognition": "TemplateMatch",
-        "template": "向右箭头.png",
-        "roi": [
-            92,
-            595,
-            134,
-            82
-        ],
-        "action": "Click"
-    },
-    "基建_拜访好友结束": {
-        "recognition": "TemplateMatch",
-        "template": "好友交付记录.png",
-        "roi": [
-            75,
-            474,
-            106,
-            76
-        ],
-        "threshold": 0.9,
-        "post_delay": 1000,
-        "next": [
-            "通用-返回主页"
-        ]
+        "$__mpe_code": {
+            "position": {
+                "x": 332,
+                "y": 22
+            }
+        }
     },
     "基建_制作素材": {
-        "recognition": "OCR",
-        "expected": [
-            "制作素材"
-        ],
-        "roi": [
-            42,
-            99,
-            108,
-            34
-        ],
-        "action": "Click",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    42,
+                    99,
+                    108,
+                    34
+                ],
+                "expected": [
+                    "制作素材"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    53,
+                    358,
+                    79,
+                    73
+                ]
+            }
+        },
         "post_delay": 1000,
-        "target": [
-            53,
-            358,
-            79,
-            73
-        ],
         "next": [
             "基建_制作素材",
             "基建_制作素材_材料不足",
             "基建_制作素材_材料充足"
-        ]
-    },
-    "基建_制作素材_材料充足": {
-        "recognition": "ColorMatch",
-        "roi": [
-            461,
-            520,
-            85,
-            28
         ],
-        "lower": [
-            59,
-            65,
-            74
-        ],
-        "upper": [
-            99,
-            97,
-            107
-        ],
-        "action": "Click",
-        "post_delay": 2000,
-        "target": [
-            272,
-            525,
-            145,
-            140
-        ],
-        "next": [
-            "基建_制作素材_材料充足_合成",
-            "基建_制作素材_材料充足"
-        ]
-    },
-    "基建_制作素材_材料不足": {
-        "recognition": "ColorMatch",
-        "roi": [
-            461,
-            520,
-            85,
-            28
-        ],
-        "lower": [
-            33,
-            20,
-            33
-        ],
-        "upper": [
-            57,
-            32,
-            49
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_制作素材_返回"
-        ]
-    },
-    "基建_制作素材_材料充足_合成": {
-        "recognition": "OCR",
-        "expected": [
-            "合成份数"
-        ],
-        "roi": [
-            901,
-            95,
-            106,
-            33
-        ],
-        "action": "Click",
-        "post_delay": 1000,
-        "target": [
-            1159,
-            342,
-            67,
-            33
-        ],
-        "next": [
-            "基建_制作素材_材料充足_最大",
-            "基建_制作素材_材料充足_合成"
-        ]
-    },
-    "基建_制作素材_材料充足_最大": {
-        "recognition": "ColorMatch",
-        "roi": [
-            414,
-            308,
-            405,
-            107
-        ],
-        "lower": [
-            33,
-            20,
-            33
-        ],
-        "upper": [
-            57,
-            32,
-            49
-        ],
-        "post_delay": 1000,
-        "next": [
-            "基建_制作素材_材料充足_确定"
-        ]
-    },
-    "基建_制作素材_材料充足_确定": {
-        "recognition": "OCR",
-        "expected": [
-            "合成份数"
-        ],
-        "roi": [
-            896,
-            94,
-            111,
-            35
-        ],
-        "action": "Click",
-        "post_delay": 1000,
-        "target": [
-            1020,
-            603,
-            90,
-            39
-        ],
-        "next": [
-            "[JumpBack]子任务_获得物品",
-            "基建_制作素材_合成_返回"
-        ]
+        "$__mpe_code": {
+            "position": {
+                "x": 9942,
+                "y": 660
+            }
+        }
     },
     "基建_制作素材_合成_返回": {
-        "action": "Click",
-        "recognition": "TemplateMatch",
-        "template": [
-            "合成菜单.png"
-        ],
-        "roi": [
-            274,
-            97,
-            88,
-            27
-        ],
-        "target": [
-            44,
-            29,
-            120,
-            39
-        ],
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    274,
+                    97,
+                    88,
+                    27
+                ],
+                "template": [
+                    "合成菜单.png"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    44,
+                    29,
+                    120,
+                    39
+                ]
+            }
+        },
         "post_delay": 1000,
         "next": [
             "[JumpBack]子任务_获得物品",
             "基建_制作素材_返回",
             "基建_换取页面",
             "基建_制作素材_合成_返回"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 11542,
+                "y": 306
+            }
+        }
+    },
+    "基建_制作素材_材料不足": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    461,
+                    520,
+                    85,
+                    28
+                ],
+                "lower": [
+                    33,
+                    20,
+                    33
+                ],
+                "upper": [
+                    57,
+                    32,
+                    49
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_制作素材_返回"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 10582,
+                "y": 716
+            }
+        }
+    },
+    "基建_制作素材_材料充足": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    461,
+                    520,
+                    85,
+                    28
+                ],
+                "lower": [
+                    59,
+                    65,
+                    74
+                ],
+                "upper": [
+                    99,
+                    97,
+                    107
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    272,
+                    525,
+                    145,
+                    140
+                ]
+            }
+        },
+        "post_delay": 2000,
+        "next": [
+            "基建_制作素材_材料充足_合成",
+            "基建_制作素材_材料充足"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 10262,
+                "y": 289
+            }
+        }
+    },
+    "基建_制作素材_材料充足_合成": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    901,
+                    95,
+                    106,
+                    33
+                ],
+                "expected": [
+                    "合成份数"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1159,
+                    342,
+                    67,
+                    33
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_制作素材_材料充足_最大",
+            "基建_制作素材_材料充足_合成"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 10582,
+                "y": 305
+            }
+        }
+    },
+    "基建_制作素材_材料充足_最大": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    414,
+                    308,
+                    405,
+                    107
+                ],
+                "lower": [
+                    33,
+                    20,
+                    33
+                ],
+                "upper": [
+                    57,
+                    32,
+                    49
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_制作素材_材料充足_确定"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 10902,
+                "y": 290
+            }
+        }
+    },
+    "基建_制作素材_材料充足_确定": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    896,
+                    94,
+                    111,
+                    35
+                ],
+                "expected": [
+                    "合成份数"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1020,
+                    603,
+                    90,
+                    39
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "基建_制作素材_合成_返回"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 11222,
+                "y": 279
+            }
+        }
     },
     "基建_制作素材_返回": {
-        "action": "Click",
-        "recognition": "TemplateMatch",
-        "template": [
-            "Infrastructures/Infr_JDSC.png"
-        ],
-        "roi": [
-            1,
-            458,
-            235,
-            104
-        ],
-        "target": [
-            44,
-            29,
-            120,
-            39
-        ],
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    1,
+                    458,
+                    235,
+                    104
+                ],
+                "template": [
+                    "Infrastructures/Infr_JDSC.png"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    44,
+                    29,
+                    120,
+                    39
+                ]
+            }
+        },
         "post_delay": 1000,
         "next": [
             "基建_换取页面",
             "基建_制作素材_返回"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 11862,
+                "y": 660
+            }
+        }
+    },
+    "基建_占用": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    678,
+                    629,
+                    32,
+                    36
+                ],
+                "method": 4,
+                "lower": [
+                    230,
+                    178,
+                    60
+                ],
+                "upper": [
+                    255,
+                    200,
+                    80
+                ],
+                "count": 4
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "基建_换班1",
+            "基建_占用"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 652,
+                "y": 125
+            }
+        }
+    },
+    "基建_拜访下一位好友": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    92,
+                    595,
+                    134,
+                    82
+                ],
+                "template": "向右箭头.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 13782,
+                "y": 1810
+            }
+        }
+    },
+    "基建_拜访好友": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    75,
+                    474,
+                    106,
+                    76
+                ],
+                "template": "好友交付记录.png"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    96,
+                    607,
+                    62,
+                    56
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_拜访好友1",
+            "基建_拜访好友"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 12730,
+                "y": 1549
+            }
+        }
+    },
+    "基建_拜访好友1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    173,
+                    126,
+                    229,
+                    80
+                ],
+                "expected": [
+                    "好友列表"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    276,
+                    497,
+                    136,
+                    37
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_他人交付",
+            "基建_拜访好友1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 12999,
+                "y": 1723
+            }
+        }
+    },
+    "基建_拜访好友结束": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    75,
+                    474,
+                    106,
+                    76
+                ],
+                "template": "好友交付记录.png",
+                "threshold": 0.9
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "通用-返回主页"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13782,
+                "y": 2064
+            }
+        }
     },
     "基建_换取页面": {
-        "recognition": "OCR",
-        "expected": [
-            "制作素材"
-        ],
-        "roi": [
-            44,
-            44,
-            100,
-            100
-        ],
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    44,
+                    44,
+                    100,
+                    100
+                ],
+                "expected": [
+                    "制作素材"
+                ]
+            }
+        },
         "post_delay": 1000,
         "next": [
             "基建_自己交付"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 12182,
+                "y": 412
+            }
+        }
+    },
+    "基建_换班1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    240,
+                    77,
+                    188,
+                    75
+                ],
+                "expected": [
+                    "设施详情"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    885,
+                    189,
+                    37,
+                    27
+                ]
+            }
+        },
+        "next": [
+            "基建_换班1_0",
+            "基建_换班1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 972,
+                "y": 187
+            }
+        }
+    },
+    "基建_换班1_0": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    418,
+                    124,
+                    811,
+                    91
+                ],
+                "template": "Infrastructures/Infr_Substitute1.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "基建_换班1_0",
+            "基建_换班1_1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1292,
+                "y": 201
+            }
+        }
+    },
+    "基建_换班1_1": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    950,
+                    237,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班1_2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1612,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班1_2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1110,
+                    240,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班1_3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1932,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班1_3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    473,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班1_4"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 2252,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班1_4": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    625,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班1_5"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 2572,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班1_5": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    780,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2",
+            "[JumpBack]基建_换班确认",
+            "[JumpBack]子任务_点击返回"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 2892,
+                "y": 209
+            }
+        }
+    },
+    "基建_换班2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    240,
+                    77,
+                    188,
+                    75
+                ],
+                "expected": [
+                    "设施详情"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    885,
+                    328,
+                    37,
+                    27
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2_0",
+            "基建_换班2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 3212,
+                "y": 187
+            }
+        }
+    },
+    "基建_换班2_0": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    418,
+                    124,
+                    811,
+                    91
+                ],
+                "template": "Infrastructures/Infr_Substitute1.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "基建_换班2_0",
+            "基建_换班2_1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 3532,
+                "y": 201
+            }
+        }
+    },
+    "基建_换班2_1": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    950,
+                    237,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2_2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 3852,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班2_2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1110,
+                    240,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2_3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 4172,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班2_3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    473,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2_4"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 4492,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班2_4": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    625,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班2_5"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 4812,
+                "y": 219
+            }
+        }
+    },
+    "基建_换班2_5": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    780,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3",
+            "[JumpBack]基建_换班确认",
+            "[JumpBack]子任务_点击返回"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 5132,
+                "y": 209
+            }
+        }
+    },
+    "基建_换班3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    240,
+                    77,
+                    188,
+                    75
+                ],
+                "expected": [
+                    "设施详情"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    702,
+                    468,
+                    37,
+                    27
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3_0",
+            "基建_换班3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 5452,
+                "y": 1544
+            }
+        }
+    },
+    "基建_换班3_0": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    418,
+                    124,
+                    811,
+                    91
+                ],
+                "template": "Infrastructures/Infr_Substitute1.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "基建_换班3_0",
+            "基建_换班3_1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 5772,
+                "y": 1559
+            }
+        }
+    },
+    "基建_换班3_1": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    473,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3_2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 6092,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班3_2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    625,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3_3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 6412,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班3_3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    789,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3_4"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 6732,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班3_4": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    950,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班3_5"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7052,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班3_5": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1100,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班4_0"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7372,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班4_0": {
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    890,
+                    610,
+                    4,
+                    4
+                ],
+                "end": [
+                    [
+                        890,
+                        298,
+                        4,
+                        4
+                    ]
+                ],
+                "duration": 3000
+            }
+        },
+        "next": [
+            "基建_换班4_1"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7692,
+                "y": 1546
+            }
+        }
+    },
+    "基建_换班4_1": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    473,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班4_2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8012,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班4_2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    625,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班4_3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8332,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班4_3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    789,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班4_4"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8652,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班4_4": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    950,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "基建_换班4_5"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8972,
+                "y": 1577
+            }
+        }
+    },
+    "基建_换班4_5": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    1100,
+                    496,
+                    50,
+                    50
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]基建_换班确认",
+            "基建_交易",
+            "基建_退出",
+            "[JumpBack]子任务_点击返回"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9292,
+                "y": 1567
+            }
+        }
+    },
+    "基建_换班确认": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    889,
+                    627,
+                    218,
+                    87
+                ],
+                "expected": [
+                    "确定"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 9622,
+                "y": 1704
+            }
+        }
+    },
+    "基建_收取资源": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    422,
+                    423,
+                    145,
+                    140
+                ],
+                "template": "Infrastructures/Infr_Recourse.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "基建_驻员状况"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7372,
+                "y": 137
+            }
+        }
+    },
+    "基建_收取资源_不换班": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    412,
+                    425,
+                    331,
+                    288
+                ],
+                "template": "Infrastructures/Infr_Recourse.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]子任务_获得物品",
+            "基建_收取资源_不换班",
+            "基建_交付默认确认"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9292,
+                "y": 1250
+            }
+        }
+    },
+    "基建_自己交付": {
+        "post_wait_freezes": {
+            "time": 2000,
+            "threshold": 0.95
+        },
+        "next": [
+            "[JumpBack]基建_自己交付1",
+            "基建_拜访好友",
+            "通用-返回主页"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 12523,
+                "y": 1163
+            }
+        }
+    },
+    "基建_自己交付1": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    272,
+                    89,
+                    909,
+                    603
+                ],
+                "template": [
+                    "Infrastructures/构建订单3.png",
+                    "Infrastructures/构建订单1.png",
+                    "Infrastructures/构建订单4.png"
+                ],
+                "threshold": 0.9
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    90,
+                    128,
+                    -90,
+                    -128
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_自己交付是",
+            "基建_自己交付否",
+            "[JumpBack]子任务_获得物品",
+            "基建_1号物品售罄"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13596,
+                "y": 627
+            }
+        }
+    },
+    "基建_自己交付否": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    392,
+                    261,
+                    543,
+                    154
+                ],
+                "expected": [
+                    "订单兑换",
+                    "是否进行合成"
+                ]
+            }
+        },
+        "pre_wait_freezes": 100,
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    447,
+                    431,
+                    65,
+                    36
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 1458
+            }
+        }
+    },
+    "基建_自己交付是": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    489,
+                    277,
+                    340,
+                    126
+                ],
+                "expected": [
+                    "是否确认提交订单"
+                ]
+            }
+        },
+        "pre_wait_freezes": 100,
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    767,
+                    428,
+                    70,
+                    36
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "$__mpe_code": {
+            "position": {
+                "x": 14272,
+                "y": 701
+            }
+        }
+    },
+    "基建_获取资源": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    342,
+                    575,
+                    227,
+                    134
+                ],
+                "expected": [
+                    "收取资源"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_全部收取",
+            "基建_获取资源"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 12,
+                "y": 22
+            }
+        }
     },
     "基建_行星指挥部_返回": {
-        "recognition": "OCR",
-        "expected": [
-            "行星指挥部"
-        ],
-        "roi": [
-            137,
-            105,
-            143,
-            35
-        ],
-        "action": "Click",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    137,
+                    105,
+                    143,
+                    35
+                ],
+                "expected": [
+                    "行星指挥部"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    52,
+                    24,
+                    102,
+                    43
+                ]
+            }
+        },
         "post_delay": 1000,
-        "target": [
-            52,
-            24,
-            102,
-            43
-        ],
         "next": [
             "基建_交付默认确认",
             "基建_行星指挥部_返回"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9292,
+                "y": 843
+            }
+        }
+    },
+    "基建_返回按钮": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    14,
+                    10,
+                    126,
+                    72
+                ],
+                "template": "StartUp/BackButton.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "基建_交易",
+            "基建_退出",
+            "基建_返回按钮"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9292,
+                "y": 158
+            }
+        }
+    },
+    "基建_退出": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    523,
+                    282,
+                    155,
+                    51
+                ],
+                "expected": [
+                    "研发中心"
+                ]
+            }
+        },
+        "post_delay": 2000,
+        "next": [
+            "进入首页"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 9622,
+                "y": 408
+            }
+        }
+    },
+    "基建_驻员状况": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    54,
+                    554,
+                    176,
+                    89
+                ],
+                "expected": [
+                    "驻员",
+                    "状况"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_驻员预设1",
+            "基建_驻员状况"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 7692,
+                "y": 282
+            }
+        }
+    },
+    "基建_驻员预设1": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    960,
+                    180,
+                    120,
+                    90
+                ],
+                "expected": [
+                    "驻员",
+                    "预设"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]基建_使用",
+            "基建_驻员预设2"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8012,
+                "y": 288
+            }
+        }
+    },
+    "基建_驻员预设2": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    960,
+                    320,
+                    120,
+                    90
+                ],
+                "expected": [
+                    "驻员",
+                    "预设"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]基建_使用",
+            "基建_驻员预设3"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8332,
+                "y": 477
+            }
+        }
+    },
+    "基建_驻员预设3": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    960,
+                    460,
+                    120,
+                    90
+                ],
+                "expected": [
+                    "驻员",
+                    "预设"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]基建_使用",
+            "基建_驻员预设4"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8652,
+                "y": 432
+            }
+        }
+    },
+    "基建_驻员预设4": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    960,
+                    600,
+                    120,
+                    90
+                ],
+                "expected": [
+                    "驻员",
+                    "预设"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]基建_使用",
+            "基建_返回按钮"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 8972,
+                "y": 387
+            }
+        }
+    },
+    "$__mpe_external_子任务_进入首页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 8972,
+                "y": 1486
+            }
+        }
+    },
+    "$__mpe_external_通用-返回主页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 2335
+            }
+        }
+    },
+    "$__mpe_external_子任务_获得物品_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 248
+            }
+        }
+    },
+    "$__mpe_external_子任务_点击返回_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 9622,
+                "y": 148
+            }
+        }
+    },
+    "$__mpe_external_进入首页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 9942,
+                "y": 510
+            }
+        }
     }
 }

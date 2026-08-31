@@ -18,14 +18,15 @@ py -m venv .venv
 
 ## 启动游戏任务
 
-打开 LAA 本体时不会连接或启动模拟器。勾选“启动游戏”并点击“开始任务”后，`agent/ensure_mumu.py` 会依次完成：
+打开 LAA 本体时不会连接或启动模拟器。勾选“启动游戏”并点击“开始任务”后，`agent/ensure_mumu.py`（pretask）会依次完成：
 
 1. 验证上次保存的 ADB；连接健康时直接复用并跳过模拟器扫描。
 2. 普通重连失败后，在没有其他在线 ADB 设备时重启 ADB Server。
 3. 仍无法连接时查找 MuMu 12，并按用户设置、历史成功实例、唯一运行实例的顺序选择。
 4. 调用 `MuMuManager.exe` 启动实例并等待 Android 就绪。
 5. 从实例信息读取实际 ADB 地址和端口，连接设备并写入当前 MFA 配置。
-6. 根据资源选择启动官服或 B 服游戏。
+
+pretask **不会**打开交错战线。开游戏由 pipeline「启动游戏」任务中的 `StartApp` 负责（官服 / B 服包名见 `启动游戏.json` 与 `bilibili/pipeline/startup.json`）。
 
 定位顺序包括环境变量、上次成功缓存、Windows 卸载注册表，以及各磁盘常见安装目录。程序不会递归扫描整块磁盘。
 
@@ -85,9 +86,10 @@ Pipeline 调试可使用 MaaDebugger：
 | 日志提示发现多个实例 | 在“启动游戏”任务设置中明确选择实例编号 |
 | ADB 显示 `offline` | 程序会先重连；不存在其他在线设备时才会重启 ADB Server |
 | MuMu 已启动但 ADB 失败 | 在多开器中确认 Android 已完全启动，并检查防火墙或被占用端口 |
-| 提示游戏包不存在 | 确认所选资源与实例中安装的官服/B 服一致 |
+| 提示游戏包不存在 / 官服起不来 | 确认 MFA 所选资源与 MuMu 实例中安装的官服/B 服一致；官服包名看 `pipeline/base/启动游戏.json`，B 服看 `bilibili/pipeline/startup.json`。pretask 不会开游戏 |
 | 双击源码中的文件无法运行 | 使用完整 Release 包，或先按 `tools/install.py` 流程组装运行目录 |
 | OCR 模型加载失败 | 确认完整包中有 `resource/model/ocr/` 下的模型文件 |
+| Agent / Custom 无响应 | 先跑 `Install-Agent-Deps.bat`（或 `pip install -r agent/requirements.txt`），并确认 `python`/`py` 在 PATH |
 
 日志默认位于程序目录的 `debug/`。排错时优先查看最新日志中的 `[MuMu pretask]`、ADB 和 Agent 启动记录。
 

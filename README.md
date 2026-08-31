@@ -30,9 +30,9 @@
 2. **安装 Python 3.10+**（勾选 *Add python.exe to PATH*），然后双击包内 `Install-Agent-Deps.bat` 安装 Agent 依赖  
    （订单好友 / 自动启 MuMu / 竞技场·芯片等自定义逻辑都需要）
 3. 若使用 **添加订单好友 / 拉黑订单好友**：复制 `config/orders_source.example.json` 为 `config/orders_source.json`，填入你的订单页 URL；正文每行 `UID|类型`（如 `123456|8-1`）
-4. 确认 **MuMu** 可用（可先手动开，或勾选「启动游戏」让 pretask 自动启）
+4. 确认 **MuMu** 可用（可先手动开；勾选「启动游戏」时 pretask 只会自动启模拟器/ADB，**不会**替你开游戏客户端）
 5. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
-6. 选择资源（官服 / B 服）、勾选任务后开始运行
+6. 选择资源（**官服 / B 服**须与模拟器里安装的客户端一致）、勾选任务后开始运行
 
 > 当前安装包显示名仍可能为模板默认的 `MaaXXX`，后续会随 `interface.json` 一并调整。
 
@@ -57,7 +57,8 @@
 
 | 任务 | 说明 |
 |------|------|
-| 启动游戏 | `进入首页`：StartApp / 关公告 / 签到，直到大厅 |
+| 启动游戏 | 入口 `进入首页`：pipeline 内 `StartApp` 开客户端 → 关公告 / 签到 → 大厅。官服包名在 `pipeline/base/启动游戏.json`；B 服由 `resource/bilibili/pipeline/startup.json` 覆盖。pretask（`ensure_mumu`）只负责 MuMu/ADB，不开游戏 |
+| 添加 / 拉黑订单好友 | 需配置 `config/orders_source.json`；状态写在 `config/orders_state.json` |
 | 每日免费礼包 / 限时贸易 | 补给站相关 |
 | 模拟军演 | 首页出击后进军演（option 可调战力阈值） |
 | 基建 | 收菜 / 换班 / 好友交付等 |
@@ -65,6 +66,7 @@
 | 周本 | 活动探索 · 碎星虚影等（option：关卡） |
 | 领取奖励 | 邮箱 + 每日 + 通行证 |
 | 关闭游戏 / 活动 / 历战试炼 | 收尾与活动向 |
+| 竞技场 / 芯片筛选 | Agent Custom（需已安装 Agent 依赖） |
 
 自研草稿仍保留在 `pipeline/周常/`、`周本任务.json` 等，可与 base 并存，注意**节点名勿冲突**。
 
@@ -73,10 +75,10 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent 示例（如 `number_lt`）与订单好友 / MuMu pretask
+* [x] Agent 示例（如 `number_lt`）与订单好友
+* [x] MuMu pretask（`ensure_mumu`：只启模拟器/ADB，开游戏走 pipeline `StartApp`）
 * [x] 发版包附带 `Install-Agent-Deps.bat` 与订单源示例
 * [ ] 实机验收与选项打磨
-* [ ] 自研周常与 MCCA 主线进一步整合
 * [ ] 嵌入式 Python（免本机安装）
 ## 待开发功能
 

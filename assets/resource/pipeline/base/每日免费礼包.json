@@ -1,93 +1,180 @@
 {
-    "每日免费礼包": {
-        "next": [
-            "[JumpBack]子任务_关闭公告",
-            "补给站",
-            "[JumpBack]子任务_进入首页"
-        ]
+    "$__mpe_config_每日免费礼包": {
+        "$__mpe_code": {
+            "prefix": "",
+            "coordinateMode": "absolute-v1",
+            "lastSyncTime": 1788080418297,
+            "isModifiedExternally": false,
+            "isDeleted": false,
+            "filePath": "G:\\GameTools\\MaaXXX-win-x86_64-v0.3.0\\resource\\base\\pipeline\\每日免费礼包.json",
+            "savedViewport": {
+                "x": 370,
+                "y": 178,
+                "zoom": 1.19
+            },
+            "filename": "每日免费礼包",
+            "version": "v1.9.1"
+        }
     },
-    "补给站": {
-        "recognition": "OCR",
-        "expected": [
-            "补给站"
-        ],
-        "roi": [
-            1008,
-            593,
-            111,
-            118
-        ],
-        "action": "Click",
-        "next": [
-            "每日礼包",
-            "补给站"
-        ]
+    "$__mpe_external_子任务_关闭公告_每日免费礼包": {
+        "$__mpe_code": {
+            "position": {
+                "x": 332,
+                "y": 12
+            }
+        }
     },
-    "每日礼包": {
-        "recognition": "OCR",
-        "expected": [
-            "礼包"
-        ],
-        "roi": [
-            362,
-            57,
-            166,
-            89
-        ],
-        "action": "Click",
+    "$__mpe_external_子任务_获得物品_每日免费礼包": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1932,
+                "y": 220
+            }
+        }
+    },
+    "$__mpe_external_子任务_进入首页_每日免费礼包": {
+        "$__mpe_code": {
+            "position": {
+                "x": 332,
+                "y": 152
+            }
+        }
+    },
+    "$__mpe_external_进入首页_每日免费礼包": {
+        "$__mpe_code": {
+            "position": {
+                "x": 1932,
+                "y": 405
+            }
+        }
+    },
+    "DailyGift": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    20,
+                    325,
+                    203,
+                    81
+                ],
+                "expected": [
+                    "礼包"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
         "post_delay": 2000,
         "next": [
-            "每日礼包_确认",
+            "DailyGiftYes",
             "进入首页"
-        ]
-    },
-    "每日礼包_确认": {
-        "recognition": "OCR",
-        "expected": "免费",
-        "roi": [
-            273,
-            522,
-            985,
-            79
         ],
-        "action": "Click",
+        "$__mpe_code": {
+            "position": {
+                "x": 652,
+                "y": 275
+            }
+        }
+    },
+    "DailyGiftYes": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    255,
+                    580,
+                    990,
+                    68
+                ],
+                "expected": "免费"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
         "next": [
-            "免费礼包",
+            "Purchase",
             "进入首页"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 972,
+                "y": 233
+            }
+        }
     },
-    "免费礼包": {
-        "recognition": "OCR",
-        "expected": [
-            "免费"
-        ],
-        "roi": [
-            163,
-            9,
-            409,
-            239
-        ],
-        "next": [
-            "购买",
-            "免费礼包"
-        ]
-    },
-    "购买": {
-        "recognition": "OCR",
-        "expected": [
-            "购买"
-        ],
-        "roi": [
-            758,
-            513,
-            191,
-            75
-        ],
-        "action": "Click",
+    "Purchase": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    758,
+                    513,
+                    191,
+                    75
+                ],
+                "expected": [
+                    "购买"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
         "post_delay": 1000,
         "next": [
             "[JumpBack]子任务_获得物品",
             "进入首页"
-        ]
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 1604,
+                "y": 53
+            }
+        }
+    },
+    "Shop": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    1008,
+                    593,
+                    111,
+                    118
+                ],
+                "expected": [
+                    "补给站"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "DailyGift",
+            "Shop"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 332,
+                "y": 302
+            }
+        }
+    },
+    "每日免费礼包": {
+        "next": [
+            "[JumpBack]子任务_关闭公告",
+            "Shop",
+            "[JumpBack]子任务_进入首页"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": -46,
+                "y": 69
+            }
+        }
     }
 }
