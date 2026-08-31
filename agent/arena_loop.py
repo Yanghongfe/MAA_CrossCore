@@ -92,19 +92,26 @@ def decide_arena_action(simulations, refreshes, candidate_ok, repeat, challenged
     return ACTION_REFRESH
 
 
+def bounded_sleep_seconds(remaining):
+    """Clamp the polling sleep at timing boundaries."""
+    return max(0.0, min(0.1, remaining))
+
+
 class ArenaLoop(CustomAction):
     @staticmethod
     def _cancelled(ctx):
         return cancelled(ctx)
 
     def _sleep(self, ctx, seconds):
-        deadline = time.time() + seconds
-        while time.time() < deadline:
+        deadline = time.monotonic() + max(0.0, seconds)
+        while True:
             if self._cancelled(ctx):
                 log.info("检测到用户停止任务，立即终止竞技场操作")
                 return False
-            time.sleep(min(0.1, deadline - time.time()))
-        return True
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return True
+            time.sleep(bounded_sleep_seconds(remaining))
 
     def _saved_options(self):
         """Read MFA's persisted selection; MFA does not export PI options as env vars."""
@@ -349,6 +356,9 @@ class ArenaLoop(CustomAction):
     def _is_reward_page(self, ctx, img, allow_color_fallback=False):
         if self._soft_hit(ctx, NODE_REWARD, img):
             return True
+        # 动画和不同分辨率会让标题轻微移动，扩大标题区域但仍要求命中“获得物品”。
+        if self._soft_hit(ctx, NODE_REWARD, img, roi=[600, 150, 760, 330], threshold=0.15):
+            return True
         if not allow_color_fallback:
             return False
         title_white = self._color_ratio(img, [760, 235, 420, 125], "white")
@@ -356,8 +366,11 @@ class ArenaLoop(CustomAction):
         return title_white > 0.075 and modal_dark > 0.60
 
     def _is_victory_page(self, ctx, img):
-        # “战斗胜利”OCR在实机日志中置信度接近1；仅凭大块明暗比例会把战斗HUD误判为胜利页。
-        return self._soft_hit(ctx, NODE_RESULT, img)
+        # 只接受“战斗胜利”OCR；扩大关键文字区域兼容结算动画位移，不用全屏明暗误判战斗 HUD。
+        return (
+            self._soft_hit(ctx, NODE_RESULT, img)
+            or self._soft_hit(ctx, NODE_RESULT, img, roi=[0, 0, 1100, 340], threshold=0.15)
+        )
 
     def _dismiss_post_battle_overlay(self, ctx):
         """Recover when a previous run was stopped on victory/reward pages."""
@@ -605,9 +618,10 @@ class ArenaLoop(CustomAction):
                 return False
 
         challenged = 0
-        deadline = time.time() + 1200
+        completion_reason = None
+        deadline = time.monotonic() + 1200
         try:
-            while time.time() < deadline:
+            while time.monotonic() < deadline:
                 ensure_running(context)
                 img = self._shot(context)
                 if not self._is_arena_list(context, img):
@@ -615,7 +629,7 @@ class ArenaLoop(CustomAction):
                         log.warning("读取次数前发现仍在挑战准备页，返回列表恢复状态")
                         self._click(context, *BTN_BACK)
                         if not self._sleep(context, 0.8):
-                            break
+                            return False
                         continue
                     log.warning("当前不是竞技场对手列表，禁止读取次数并结束任务")
                     return False
@@ -624,13 +638,14 @@ class ArenaLoop(CustomAction):
                 if sim_cur is None:
                     log.warning("模拟次数暂时无法识别，本轮不刷新、不挑战也不结束，重新读取")
                     if not self._sleep(context, 0.35):
-                        break
+                        return False
                     continue
                 if sim_cur == 0:
                     if self._confirm_zero_counter(
                         context, "ArenaReadChallenges", ROI_SIM, 10, "模拟次数"
                     ):
                         log.info("模拟次数归零，停止挑战")
+                        completion_reason = ACTION_STOP_SIM_EMPTY
                         break
                     continue
                 if refresh_cur == 0 and not self._confirm_zero_counter(
@@ -658,18 +673,21 @@ class ArenaLoop(CustomAction):
 
                 if decision == ACTION_STOP_SIM_EMPTY:
                     log.info("模拟次数归零，停止挑战")
+                    completion_reason = decision
                     break
                 if decision == ACTION_STOP_CUSTOM_TARGET:
                     log.info("已达目标次数(%s)，停止挑战", target)
+                    completion_reason = decision
                     break
                 if decision == ACTION_RETRY_COUNTER:
                     log.warning("刷新次数暂时无法识别且当前对手不符合要求，本轮不执行操作，重新读取")
                     if not self._sleep(context, 0.35):
-                        break
+                        return False
                     continue
                 if decision == ACTION_STOP_REFRESH_EMPTY:
                     remaining = sim_cur if sim_cur is not None else "未知"
                     log.info("刷新次数归零，当前对手不符合挑战要求，剩余挑战次数（%s）次", remaining)
+                    completion_reason = decision
                     break
                 if decision == ACTION_REFRESH:
                     if opp is None:
@@ -687,14 +705,14 @@ class ArenaLoop(CustomAction):
                         log.warning("未能点击刷新按钮，中止竞技场")
                         return False
                     if not self._sleep(context, 1.2):
-                        break
+                        return False
                     continue
 
                 ensure_running(context)
                 log.info("满足条件，进入挑战：%s 对手=%s 积分=%s", top["name"], opp, pts)
                 self._select_row_and_attack(context, top)
                 if not self._sleep(context, 0.4):
-                    break
+                    return False
                 if not self._click_confirm_challenge(context):
                     return False
                 log.info("等待胜利与奖励关键页面，不再固定等待26秒")
@@ -706,7 +724,15 @@ class ArenaLoop(CustomAction):
                 log.info("已挑战=%s 剩余模拟=%s 对方战力=%s 挑战%s", challenged, sim_cur, opp, "成功/已提交" if success else "失败/未知")
         except ActionStopped:
             log.info("检测到MFA停止状态，竞技场立即停止且不再执行点击")
+            return False
+        except Exception:
+            log.exception("竞技场执行异常，任务标记为失败并停止后续队列")
+            return False
 
-        log.info("竞技场结束，共挑战 %s 次", challenged)
+        if completion_reason is None:
+            log.error("竞技场未满足明确结束条件（主循环超时），任务失败并停止后续队列")
+            return False
+
+        log.info("竞技场结束，共挑战 %s 次，结束原因=%s", challenged, completion_reason)
         return True
 

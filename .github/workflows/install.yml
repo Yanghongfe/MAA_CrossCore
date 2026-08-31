@@ -144,6 +144,7 @@ jobs:
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-filter-total-level.patch"
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-chip-task-checkbox.patch"
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-pretask-path-resolution.patch"
+          git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-stop-on-task-failure.patch"
           git -C .tmp/MFAAvalonia-src apply "$GITHUB_WORKSPACE/ui_custom/MFAAvalonia/laa-no-autostart.patch"
 
           case "${{ matrix.os }}-${{ matrix.arch }}" in

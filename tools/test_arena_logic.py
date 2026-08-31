@@ -17,6 +17,7 @@ from arena_loop import (  # noqa: E402
     REPEAT_CUSTOM,
     REPEAT_ZERO,
     ArenaLoop,
+    bounded_sleep_seconds,
     decide_arena_action,
 )
 
@@ -43,6 +44,9 @@ def check(expected, *, simulations, refreshes, candidate_ok, repeat=REPEAT_ZERO,
 
 
 def main():
+    assert bounded_sleep_seconds(-0.000001) == 0.0
+    assert bounded_sleep_seconds(0.05) == 0.05
+    assert bounded_sleep_seconds(1.0) == 0.1
     check(ACTION_STOP_SIM_EMPTY, simulations=0, refreshes=15, candidate_ok=True)
     check(ACTION_RETRY_COUNTER, simulations=None, refreshes=15, candidate_ok=True)
     check(ACTION_CHALLENGE, simulations=3, refreshes=0, candidate_ok=True)
@@ -75,7 +79,7 @@ def main():
     assert loop._is_arena_list(counter_only, object()) is False
     confirm = _RecognitionContext({"ConfirmStart": True})
     assert loop._is_arena_list(confirm, object()) is False
-    print("ARENA_LOGIC_OK (11 tests)")
+    print("ARENA_LOGIC_OK (14 tests)")
 
 
 if __name__ == "__main__":

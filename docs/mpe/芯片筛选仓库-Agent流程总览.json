@@ -1,0 +1,87 @@
+{
+    "$__mpe_config_芯片筛选仓库Agent流程总览": {
+        "$__mpe_code": {
+            "prefix": "", "coordinateMode": "absolute-v1",
+            "filename": "芯片筛选仓库-Agent流程总览", "version": "v1.9.2",
+            "savedViewport": { "x": 40, "y": 40, "zoom": 0.7 }
+        }
+    },
+    "MPE芯片_入口ChipDetailReadTask": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_读取两个任务勾选框",
+        "$__mpe_code": { "position": { "x": 80, "y": 160 } }
+    },
+    "MPE芯片_读取两个任务勾选框": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": ["MPE芯片_清理四星及以下", "MPE芯片_判断是否执行自定义筛选"],
+        "$__mpe_code": { "position": { "x": 420, "y": 160 } }
+    },
+    "MPE芯片_清理四星及以下": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_快捷选择确认分解并返回",
+        "$__mpe_code": { "position": { "x": 760, "y": -20 } }
+    },
+    "MPE芯片_快捷选择确认分解并返回": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_判断是否执行自定义筛选",
+        "$__mpe_code": { "position": { "x": 1100, "y": -20 } }
+    },
+    "MPE芯片_判断是否执行自定义筛选": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": ["MPE芯片_接续进入仓库芯片页", "MPE芯片_两个选项均完成或未勾选"],
+        "$__mpe_code": { "position": { "x": 1440, "y": 160 } }
+    },
+    "MPE芯片_接续进入仓库芯片页": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_回到第一页读取容量",
+        "$__mpe_code": { "position": { "x": 1780, "y": 0 } }
+    },
+    "MPE芯片_回到第一页读取容量": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_依次打开栏位读取详情和锁定状态",
+        "$__mpe_code": { "position": { "x": 2120, "y": 0 } }
+    },
+    "MPE芯片_依次打开栏位读取详情和锁定状态": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_按CF3总等级方案判断",
+        "$__mpe_code": { "position": { "x": 2460, "y": 0 } }
+    },
+    "MPE芯片_按CF3总等级方案判断": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": ["MPE芯片_状态正确不操作", "MPE芯片_点击上锁", "MPE芯片_点击解锁"],
+        "$__mpe_code": { "position": { "x": 2800, "y": 0 } }
+    },
+    "MPE芯片_状态正确不操作": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_继续下一栏位或翻页",
+        "$__mpe_code": { "position": { "x": 3140, "y": -220 } }
+    },
+    "MPE芯片_点击上锁": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_继续下一栏位或翻页",
+        "$__mpe_code": { "position": { "x": 3140, "y": 0 } }
+    },
+    "MPE芯片_点击解锁": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_继续下一栏位或翻页",
+        "$__mpe_code": { "position": { "x": 3140, "y": 220 } }
+    },
+    "MPE芯片_继续下一栏位或翻页": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": ["MPE芯片_依次打开栏位读取详情和锁定状态", "MPE芯片_下滑下一页", "MPE芯片_全部芯片完成"],
+        "$__mpe_code": { "position": { "x": 3480, "y": 0 } }
+    },
+    "MPE芯片_下滑下一页": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "next": "MPE芯片_依次打开栏位读取详情和锁定状态",
+        "$__mpe_code": { "position": { "x": 3820, "y": 240 } }
+    },
+    "MPE芯片_全部芯片完成": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "$__mpe_code": { "position": { "x": 3820, "y": 0 } }
+    },
+    "MPE芯片_两个选项均完成或未勾选": {
+        "recognition": "DirectHit", "action": "DoNothing",
+        "$__mpe_code": { "position": { "x": 1780, "y": 420 } }
+    }
+}

@@ -23,6 +23,7 @@ $patches = @(
     (Join-Path $PSScriptRoot 'laa-chip-filter-total-level.patch'),
     (Join-Path $PSScriptRoot 'laa-chip-task-checkbox.patch'),
     (Join-Path $PSScriptRoot 'laa-pretask-path-resolution.patch'),
+    (Join-Path $PSScriptRoot 'laa-stop-on-task-failure.patch'),
     (Join-Path $PSScriptRoot 'laa-no-autostart.patch')
 )
 

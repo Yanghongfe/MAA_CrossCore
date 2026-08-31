@@ -24,7 +24,7 @@ MAIN_UI_CONTROLS = {
     "member": {"label": "队员", "point": (1260, 970), "node": "NavMainMember"},
     "build": {"label": "构建", "point": (1390, 970), "node": "NavMainBuild"},
     "supply_station": {"label": "补给站", "point": (1520, 970), "node": "NavMainSupplyStation"},
-    "sortie": {"label": "出击", "point": (1708, 920), "node": "NavMainSortie"},
+    "sortie": {"label": "出击", "point": (1780, 970), "node": "NavMainSortie"},
     "profile": {"label": "个人信息", "point": (300, 75), "node": None},
     "top_inbox": {"label": "顶部入口一", "point": (1530, 65), "node": None},
     "top_inventory": {"label": "仓库", "point": (1723, 63), "node": None},
