@@ -319,9 +319,16 @@ class ArenaLoop(CustomAction):
             if self._cancelled(ctx):
                 return False
             img = self._shot(ctx)
-            if (victory_seen or reward_seen) and self._is_arena_list(ctx, img):
+            if reward_seen and self._is_arena_list(ctx, img):
                 log.info("竞技场奖励处理完成，已确认返回对手列表")
                 return True
+            if victory_seen and self._is_arena_list(ctx, img):
+                # 胜利页与奖励弹窗之间会短暂露出竞技场列表。
+                # 必须继续等待并实际关闭奖励弹窗，不能把这一帧当成结算完成。
+                log.info("胜利后短暂返回竞技场列表，继续等待获得物品弹窗")
+                if not self._sleep(ctx, 0.8):
+                    return False
+                continue
             if self._is_reward_page(ctx, img, allow_color_fallback=victory_seen):
                 log.info("识别到竞技场获得物品页面，点击空白处返回列表")
                 self._click(ctx, *BLANK_CLOSE)

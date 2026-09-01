@@ -1,4 +1,4 @@
-"""Run a non-destructive chip scan against a connected MuMu instance."""
+"""Run the production arena Pipeline directly for focused integration testing."""
 
 from __future__ import annotations
 
@@ -11,8 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 INSTALL = ROOT / "install"
 os.environ.setdefault("MAAFW_BINARY_PATH", str(INSTALL / "runtimes" / "win-x64" / "native"))
-os.environ.setdefault("LAA_CHIP_FILTER_PREVIEW", "1")
-os.environ.setdefault("TEMP", str(ROOT / ".tmp" / "preview"))
+os.environ.setdefault("TEMP", str(ROOT / ".tmp" / "arena-test"))
 os.environ.setdefault("TMP", os.environ["TEMP"])
 sys.path.insert(0, str(ROOT / "agent"))
 
@@ -21,7 +20,7 @@ from maa.context import ContextEventSink
 from maa.resource import Resource
 from maa.tasker import Tasker
 
-from chip_pipeline import ChipPipelineAction, ChipPipelineRecognition
+from arena_pipeline import ArenaPipelineAction, ArenaPipelineRecognition
 
 
 class DiagnosticSink(ContextEventSink):
@@ -33,21 +32,19 @@ class DiagnosticSink(ContextEventSink):
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--limit", type=int, default=19)
     parser.add_argument("--adb", default=r"E:\MuMuPlayer-12.0\shell\adb.exe")
     parser.add_argument("--address", default="127.0.0.1:16416")
-    parser.add_argument("--apply", action="store_true", help="Actually correct lock states")
-    parser.add_argument("--mode", choices=("filter", "cleanup", "both"), default="filter")
+    parser.add_argument("--strategy", default="尽量完成挑战")
+    parser.add_argument("--repeat", default="自定次数")
+    parser.add_argument("--count", type=int, default=1)
+    parser.add_argument("--power-gap", type=int, default=5000)
     args = parser.parse_args()
-
-    os.environ["LAA_CHIP_TASK_MODE"] = args.mode
-    os.environ["LAA_CHIP_FILTER_SCAN_LIMIT"] = str(max(1, args.limit))
-    os.environ["LAA_CHIP_FILTER_DRY_RUN"] = "0" if args.apply else "1"
+    os.environ["ARENA_STRATEGY"] = args.strategy
+    os.environ["ARENA_REPEAT"] = args.repeat
+    os.environ["ARENA_COUNT"] = str(max(1, args.count))
+    os.environ["ARENA_POWER_GAP"] = str(max(0, args.power_gap))
     os.environ.setdefault(
         "MAA_INSTANCE_CONFIG", str(INSTALL / "config" / "instances" / "default.json")
-    )
-    os.environ.setdefault(
-        "LAA_CHIP_PLAN_FILE", str(INSTALL / "config" / "chip_filter_plan.json")
     )
     temp_dir = Path(os.environ["TEMP"])
     temp_dir.mkdir(parents=True, exist_ok=True)
@@ -56,26 +53,21 @@ def main() -> int:
     resource = Resource()
     if not resource.post_bundle(INSTALL / "resource").wait().succeeded:
         raise RuntimeError("Failed to load Maa resource bundle")
-    if not resource.register_custom_action("chip_atomic", ChipPipelineAction()):
-        raise RuntimeError("Failed to register chip atomic action")
-    if not resource.register_custom_recognition("chip_state", ChipPipelineRecognition()):
-        raise RuntimeError("Failed to register chip state recognition")
+    if not resource.register_custom_action("arena_atomic", ArenaPipelineAction()):
+        raise RuntimeError("Failed to register arena atomic action")
+    if not resource.register_custom_recognition("arena_state", ArenaPipelineRecognition()):
+        raise RuntimeError("Failed to register arena state recognition")
 
-    controller = AdbController(
-        args.adb,
-        args.address,
-        agent_path=INSTALL / "libs" / "MaaAgentBinary",
-    )
+    controller = AdbController(args.adb, args.address, agent_path=INSTALL / "libs" / "MaaAgentBinary")
     if not controller.post_connection().wait().succeeded:
         raise RuntimeError("Failed to connect MuMu ADB controller")
-
     tasker = Tasker()
     if not tasker.bind(resource, controller) or not tasker.inited:
         raise RuntimeError("Failed to initialize Maa tasker")
     tasker.add_context_sink(DiagnosticSink())
-    job = tasker.post_task("ChipDetailReadTask").wait()
+    job = tasker.post_task("ArenaTask").wait()
     print(
-        "CHIP_PREVIEW_STATUS",
+        "ARENA_TEST_STATUS",
         f"succeeded={job.succeeded}",
         f"failed={job.status.failed}",
         f"raw={job.status._status.name}",

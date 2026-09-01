@@ -13,21 +13,21 @@ def image_size(image):
 
 def scale_point(size, point):
     width, height = size
-    return (
-        round(point[0] * width / REFERENCE_SIZE[0]),
-        round(point[1] * height / REFERENCE_SIZE[1]),
-    )
+    x = round(point[0] * width / REFERENCE_SIZE[0])
+    y = round(point[1] * height / REFERENCE_SIZE[1])
+    return max(0, min(width - 1, x)), max(0, min(height - 1, y))
 
 
 def scale_roi(image, roi):
     width, height = image_size(image)
     x, y, roi_width, roi_height = roi
-    return [
-        round(x * width / REFERENCE_SIZE[0]),
-        round(y * height / REFERENCE_SIZE[1]),
-        max(1, round(roi_width * width / REFERENCE_SIZE[0])),
-        max(1, round(roi_height * height / REFERENCE_SIZE[1])),
-    ]
+    if roi_width == 0 or roi_height == 0:
+        return [0, 0, 0, 0]
+    left = max(0, min(width - 1, round(x * width / REFERENCE_SIZE[0])))
+    top = max(0, min(height - 1, round(y * height / REFERENCE_SIZE[1])))
+    right = max(left + 1, min(width, round((x + roi_width) * width / REFERENCE_SIZE[0])))
+    bottom = max(top + 1, min(height, round((y + roi_height) * height / REFERENCE_SIZE[1])))
+    return [left, top, right - left, bottom - top]
 
 
 def scale_swipe(size, swipe):

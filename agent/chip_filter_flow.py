@@ -14,6 +14,22 @@ import numpy as np
 
 from maa.custom_action import CustomAction
 
+from chip_domain import (
+    ALL_SKILLS,
+    MAIN_SKILLS,
+    SUB_SKILLS,
+    chip_detail_signature,
+    has_stable_detail,
+    normalize_ocr,
+    parse_level,
+    validate_chip_detail,
+    validate_filter_plan,
+)
+from chip_plan_service import PROJECT_ROOT, load_filter_plan
+from chip_recognition import (
+    confirms_same_unlock,
+    evaluate_chip,
+)
 from navigation import HOME_BUTTON, is_idle_main_ui, is_main_ui
 from stop_guard import ActionStopped, ensure_running
 from viewport import REFERENCE_SIZE, image_size, scale_point, scale_roi, scale_swipe
@@ -21,38 +37,16 @@ from viewport import REFERENCE_SIZE, image_size, scale_point, scale_roi, scale_s
 
 log = logging.getLogger("laa.chip_filter")
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RESULT_FILE = PROJECT_ROOT / "config" / "chip_scan_latest.json"
-PLAN_FILE = PROJECT_ROOT / "config" / "chip_filter_plan.json"
-DEFAULT_PLAN_FILES = (
-    PROJECT_ROOT / "default" / "chip_filter_plan.json",
-    PROJECT_ROOT / "assets" / "default" / "chip_filter_plan.json",
-)
-
-MAIN_SKILLS = (
-    "穿甲", "切割", "征服", "重击",
-    "支援", "精力", "蓄能", "收割",
-    "屏障", "铁壁", "灵巧", "暴怒",
-    "致命", "腐蚀", "集中", "金刚",
-    "痛击", "扩大", "物攻", "能量",
-    "装填", "光幕", "钝化", "特防",
-    "神威", "神力", "神速", "振奋",
-    "消除", "重伤", "连击", "乘风",
-    "反击", "协击", "引爆",
-)
-SUB_SKILLS = ("攻击", "耐久", "防御", "速度", "瞄准", "暴伤", "命中", "坚韧")
-ALL_SKILLS = MAIN_SKILLS + SUB_SKILLS
 
 WAREHOUSE_BUTTON = (1723, 63)  # 芯片筛选1.0 图1“仓库按钮”标注中心。
 ITEM_TAB = (1510, 70)
 CHIP_TAB = (1800, 70)          # 图4“芯片区”标注中心。
 DETAIL_CLOSE_BLANK = (300, 700)
-DETAIL_LOCK_TOGGLE = (1207, 158)  # 芯片筛选2.0“上锁/弃置键”标注中心。
-LOCKED_SCORE = 0.85
-UNLOCKED_SCORE = 0.75
+DETAIL_LOCK_TOGGLE = (1207, 196)  # 横坐标固定；纵坐标随详情首行位置对齐。
 CHIP_ROW_SCROLL_X = 1300
 CHIP_ROW_SCROLL_START_Y = 929
-CHIP_ROW_SCROLL_END_Y = 747
+CHIP_ROW_SCROLL_END_Y = 748
 CHIP_ROW_SCROLL_DURATION = 1000
 CAPACITY_ROI = [960, 20, 330, 80]
 INVENTORY_GRID_ROI = [55, 145, 1450, 790]
@@ -108,17 +102,6 @@ DETAIL_NAMES_ROI = [780, 280, 270, 390]
 DETAIL_LEVELS_ROI = [1020, 280, 180, 390]
 
 
-def normalize_ocr(text):
-    return re.sub(r"[^\u4e00-\u9fffA-Za-z0-9]", "", str(text or ""))
-
-
-def parse_level(text):
-    """Extract the only legal chip-skill levels without accepting unrelated digits."""
-    normalized = normalize_ocr(text)
-    match = re.search(r"(?:等级)?([123])$", normalized)
-    return int(match.group(1)) if match else None
-
-
 def parse_decompose_selected_count(text):
     match = re.search(r"已\s*选择\s*(\d+)\s*[/／]", str(text or ""))
     return int(match.group(1)) if match else None
@@ -144,27 +127,6 @@ def quality_option_is_selected(image, point):
     return float(yellow.mean()) >= 0.04
 
 
-def validate_chip_detail(rows):
-    """Convert four OCR rows into a typed chip detail, or reject partial reads."""
-    if len(rows) != 4:
-        return None
-    names = [row[0] for row in rows]
-    levels = [row[1] for row in rows]
-    if names[0] not in MAIN_SKILLS or any(name not in SUB_SKILLS for name in names[1:]):
-        return None
-    if len(set(names)) != len(names):
-        return None
-    if any(level not in (1, 2, 3) for level in levels):
-        return None
-    return {
-        "main_skill": {"name": names[0], "level": levels[0]},
-        "sub_skills": [
-            {"name": name, "level": level}
-            for name, level in zip(names[1:], levels[1:])
-        ],
-    }
-
-
 def instance_config_path():
     configured = os.environ.get("MAA_INSTANCE_CONFIG")
     candidates = [
@@ -174,93 +136,6 @@ def instance_config_path():
         PROJECT_ROOT / "gui" / "config" / "instances" / "default.json",
     ]
     return next((path for path in candidates if path and path.exists()), candidates[1])
-
-
-def load_filter_plan(path=None):
-    requested = Path(path) if path else PLAN_FILE
-    source = requested if requested.exists() else next(
-        (candidate for candidate in DEFAULT_PLAN_FILES if candidate.exists()), requested
-    )
-    data = json.loads(source.read_text(encoding="utf-8-sig"))
-    validate_filter_plan(data)
-    return data
-
-
-def validate_filter_plan(data):
-    if data.get("version") != 3:
-        raise ValueError("仅支持CF3芯片筛选方案")
-    levels = data.get("levels", {})
-    if not all(str(level) in levels for level in (1, 2, 3)):
-        raise ValueError("芯片筛选方案缺少主词条等级配置")
-    for level in (1, 2, 3):
-        level_rule = levels[str(level)]
-        mode = level_rule.get("mode")
-        if mode not in ("lock", "unlock", "conditional"):
-            raise ValueError("主词条%d级包含未知处理方式" % level)
-        if mode != "conditional":
-            continue
-        conditions = level_rule.get("conditions")
-        if not isinstance(conditions, dict):
-            raise ValueError("主词条%d级缺少条件锁定配置" % level)
-        missing = [name for name in MAIN_SKILLS if name not in conditions]
-        if missing:
-            raise ValueError(
-                "主词条%d级尚有未配置类别：%s" % (level, "、".join(missing))
-            )
-        for main_name in MAIN_SKILLS:
-            condition = conditions[main_name]
-            effective = condition.get("effective_sub_skills")
-            minimum_total = condition.get("minimum_total_level")
-            if (
-                not isinstance(effective, list)
-                or not effective
-                or any(name not in SUB_SKILLS for name in effective)
-                or len(set(effective)) != len(effective)
-                or minimum_total not in (2, 3, 4, 5, 6)
-            ):
-                raise ValueError("主词条%d级的%s条件配置无效" % (level, main_name))
-
-
-def should_lock_chip(detail, plan):
-    main = detail["main_skill"]
-    level_rule = plan["levels"].get(str(main["level"]), {})
-    mode = level_rule.get("mode")
-    if mode == "lock":
-        return True
-    if mode == "unlock":
-        return False
-    if mode != "conditional":
-        raise ValueError("芯片筛选方案包含未知处理方式：%s" % mode)
-
-    condition = level_rule.get("conditions", {}).get(main["name"])
-    if not condition:
-        return False
-    effective = set(condition.get("effective_sub_skills", []))
-    minimum_total = int(condition.get("minimum_total_level", 0) or 0)
-    if not effective or minimum_total not in (2, 3, 4, 5, 6):
-        return False
-    effective_total = sum(
-        sub_skill["level"]
-        for sub_skill in detail["sub_skills"]
-        if sub_skill["name"] in effective
-    )
-    return effective_total >= minimum_total
-
-
-def chip_detail_signature(detail):
-    """Return only the fields that identify a filtering decision."""
-    return (
-        detail["main_skill"]["name"],
-        detail["main_skill"]["level"],
-        tuple((item["name"], item["level"]) for item in detail["sub_skills"]),
-    )
-
-
-def has_stable_detail(readings, required=3):
-    if len(readings) < required:
-        return False
-    signatures = [chip_detail_signature(item) for item in readings[-required:]]
-    return all(value == signatures[0] for value in signatures[1:])
 
 
 class ChipFilterFlow(CustomAction):
@@ -341,6 +216,12 @@ class ChipFilterFlow(CustomAction):
             return ""
 
     def _saved_task_options(self):
+        test_mode = os.environ.get("LAA_CHIP_TASK_MODE")
+        if test_mode in ("cleanup", "filter", "both"):
+            return {
+                "cleanup": test_mode in ("cleanup", "both"),
+                "filter": test_mode in ("filter", "both"),
+            }
         if os.environ.get("LAA_CHIP_FILTER_PREVIEW") == "1":
             return {"cleanup": False, "filter": True}
         try:
@@ -713,49 +594,39 @@ class ChipFilterFlow(CustomAction):
                 pass
         return max(scores, default=0.0)
 
-    def _slot_lock_score(self, context, image, point):
-        x, y = point
-        override = {
-            "ChipLockedBadge": {
-                # Use a wide top-left search area. The badge shifts slightly between
-                # rows and after deterministic inventory scrolling.
-                "roi": scale_roi(image, [x - 145, y - 145, 120, 120]),
-                "threshold": 0.1,
-            }
-        }
-        detail = context.run_recognition("ChipLockedBadge", image, pipeline_override=override)
-        return self._recognition_score(detail)
+    @staticmethod
+    def _read_detail_lock_visual(image, point):
+        image_width, image_height = image_size(image)
+        center_x = round(point[0] * image_width / REFERENCE_SIZE[0])
+        center_y = round(point[1] * image_height / REFERENCE_SIZE[1])
+        scale_x = image_width / REFERENCE_SIZE[0]
+        scale_y = image_height / REFERENCE_SIZE[1]
+        radius_x = max(5, round(14 * scale_x))
+        search_y = max(4, round(10 * scale_y))
+        gray = np.asarray(image)[..., :3].astype(np.float32).mean(axis=2)
+        bright = gray >= 160
 
-    def _read_slot_lock_state(self, context, point):
-        scores = []
-        for index in range(3):
-            scores.append(self._slot_lock_score(context, self._shot(context), point))
-            locked_votes = sum(score >= LOCKED_SCORE for score in scores)
-            unlocked_votes = sum(score <= UNLOCKED_SCORE for score in scores)
-            if locked_votes >= 2 and unlocked_votes == 0:
-                self._last_lock_scores = scores
-                log.info("芯片栏位锁状态评分：%s（已锁）", ", ".join("%.3f" % score for score in scores))
-                return True
-            if unlocked_votes >= 2 and locked_votes == 0:
-                self._last_lock_scores = scores
-                log.info("芯片栏位锁状态评分：%s（未锁）", ", ".join("%.3f" % score for score in scores))
-                return False
-            if locked_votes and unlocked_votes:
-                self._last_lock_scores = scores
-                log.warning("芯片栏位锁状态帧间冲突：%s", ", ".join("%.3f" % score for score in scores))
-                return None
-            if index < 2:
-                self._sleep(context, 0.05)
-        locked_votes = sum(score >= LOCKED_SCORE for score in scores)
-        unlocked_votes = sum(score <= UNLOCKED_SCORE for score in scores)
-        log.info(
-            "芯片栏位锁状态评分：%s（锁定票=%d，未锁票=%d）",
-            ", ".join("%.3f" % score for score in scores), locked_votes, unlocked_votes,
-        )
-        self._last_lock_scores = scores
-        if locked_votes >= 2 and unlocked_votes == 0:
+        body_top = None
+        x1 = max(0, center_x - radius_x)
+        x2 = min(image_width, center_x + radius_x + 1)
+        body_threshold = max(4, round((x2 - x1) * 0.62))
+        for y in range(max(0, center_y - search_y), min(image_height, center_y + search_y + 1)):
+            if int(bright[y, x1:x2].sum()) >= body_threshold:
+                body_top = y
+                break
+        if body_top is None:
+            return None
+
+        connector_x1 = max(0, center_x + round(3 * scale_x))
+        connector_x2 = min(image_width, center_x + round(9 * scale_x) + 1)
+        connector_y1 = max(0, body_top - max(4, round(10 * scale_y)))
+        connector = bright[connector_y1:body_top, connector_x1:connector_x2]
+        if connector.size == 0:
+            return None
+        density = float(connector.mean())
+        if density >= 0.10:
             return True
-        if unlocked_votes >= 2 and locked_votes == 0:
+        if density <= 0.075:
             return False
         return None
 
@@ -810,7 +681,12 @@ class ChipFilterFlow(CustomAction):
                 rows = [(names[index][1], levels[index][1]) for index in range(4)]
             detail = validate_chip_detail(rows)
             if detail:
-                detail["_lock_toggle_point"] = DETAIL_LOCK_TOGGLE
+                _, image_height = image_size(image)
+                first_name_y = round(names[0][0] * REFERENCE_SIZE[1] / image_height)
+                detail["_lock_toggle_point"] = (
+                    DETAIL_LOCK_TOGGLE[0],
+                    max(150, min(215, first_name_y - 166)),
+                )
                 readings.append(detail)
                 if has_stable_detail(readings):
                     return detail
@@ -842,8 +718,6 @@ class ChipFilterFlow(CustomAction):
     def _process_slot(self, context, slot, plan, results, summary, dry_run=False):
         started = time.perf_counter()
         summary["attempted"] += 1
-        locked_before = self._read_slot_lock_state(context, slot["point"])
-        lock_scores_before = list(getattr(self, "_last_lock_scores", []))
         self._click(context, slot["point"], "第%d个芯片栏位" % slot["index"])
         self._sleep(context, 0.32)
         if not self._is_detail_open(context, self._shot(context)):
@@ -861,17 +735,23 @@ class ChipFilterFlow(CustomAction):
             self._sleep(context, 0.22)
             return
 
-        desired_locked = should_lock_chip(detail, plan)
+        desired_locked = evaluate_chip(detail, plan)["desired_locked"]
+        lock_toggle_point = detail["_lock_toggle_point"]
+        locked_before = self._read_detail_lock_visual(
+            self._shot(context), lock_toggle_point
+        )
+        if locked_before is None:
+            log.warning("芯片%d详情锁形状无法可靠确认，已跳过且不会点击", slot["index"])
+            summary["lock_state_failed"] += 1
+            self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
+            self._sleep(context, 0.25)
+            return
 
         # Unlocking is destructive to the user's protection state. Require a
         # second independent stable read and the same negative decision.
         if locked_before is True and desired_locked is False:
             confirmed_detail = self._read_detail(context)
-            unlock_confirmed = (
-                confirmed_detail is not None
-                and chip_detail_signature(confirmed_detail) == chip_detail_signature(detail)
-                and should_lock_chip(confirmed_detail, plan) is False
-            )
+            unlock_confirmed = confirms_same_unlock(detail, confirmed_detail, plan)
             if not unlock_confirmed:
                 log.warning(
                     "芯片%d解锁前二次详情复核不一致，保留原锁且跳过该芯片：首次=%s",
@@ -889,53 +769,36 @@ class ChipFilterFlow(CustomAction):
                     "change_needed": None,
                     "verified": False,
                     "unlock_guard": "detail_confirmation_failed",
-                    "lock_scores_before": lock_scores_before,
+                    "lock_visual_before": "locked",
                     "elapsed_ms": round((time.perf_counter() - started) * 1000),
                 })
                 results.append(detail)
                 summary["read"] += 1
                 return
 
-        lock_toggle_point = tuple(detail.pop("_lock_toggle_point"))
-        if locked_before is None:
-            log.warning("芯片%d锁状态无法可靠确认，已读取详情但不会点击锁定区域", slot["index"])
-            summary["lock_state_failed"] += 1
-            self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
-            self._sleep(context, 0.25)
-            detail.update({
-                "slot": slot["index"],
-                "locked_before": None,
-                "desired_locked": desired_locked,
-                "changed": False,
-                "change_needed": None,
-                "verified": False,
-                "lock_scores_before": lock_scores_before,
-                "elapsed_ms": round((time.perf_counter() - started) * 1000),
-                "lock_toggle_point": {"x": lock_toggle_point[0], "y": lock_toggle_point[1]},
-            })
-            results.append(detail)
-            summary["read"] += 1
-            return
+        detail.pop("_lock_toggle_point", None)
         changed = locked_before != desired_locked
+        verified = True
         if changed and not dry_run:
             action = "上锁" if desired_locked else "取消上锁"
             self._click(context, lock_toggle_point, action)
-            self._sleep(context, 0.6)
+            self._sleep(context, 0.7)
+            state_after = self._read_detail_lock_visual(
+                self._shot(context), lock_toggle_point
+            )
+            verified = state_after == desired_locked
         self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
         self._sleep(context, 0.25)
 
-        verified = True
         if changed and dry_run:
             summary["planned"] += 1
         elif changed:
-            state_after = self._read_slot_lock_state(context, slot["point"])
-            verified = state_after == desired_locked
             if verified:
                 summary["locked" if desired_locked else "unlocked"] += 1
             else:
                 summary["verify_failed"] += 1
                 log.warning(
-                    "芯片%d执行%s后锁定标记复核失败；切换按钮只允许点击一次，已停止处理该栏位",
+                    "芯片%d执行%s后详情锁形状复核失败；切换按钮只允许点击一次，已停止处理该栏位",
                     slot["index"], action,
                 )
         else:
@@ -948,7 +811,7 @@ class ChipFilterFlow(CustomAction):
             "changed": changed and not dry_run,
             "change_needed": changed,
             "verified": verified,
-            "lock_scores_before": lock_scores_before,
+            "lock_visual_before": "locked" if locked_before else "unlocked",
             "elapsed_ms": round((time.perf_counter() - started) * 1000),
             "lock_toggle_point": {"x": lock_toggle_point[0], "y": lock_toggle_point[1]},
         })

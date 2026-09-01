@@ -2,9 +2,35 @@
     "限时贸易所购买": {
         "next": [
             "[JumpBack]子任务_关闭公告",
+            "Buyit",
+            "LimitedStoreReady",
+            "time_limited",
             "Shop1",
             "[JumpBack]子任务_进入首页"
         ]
+    },
+    "LimitedStoreReady": {
+        "recognition": "OCR",
+        "expected": [
+            "^限时贸易所$"
+        ],
+        "roi": [
+            250,
+            60,
+            240,
+            100
+        ],
+        "action": "DoNothing",
+        "next": [
+            "Buy_something",
+            "进入首页"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 320,
+                "y": 160
+            }
+        }
     },
     "Shop1": {
         "recognition": "OCR",
@@ -12,12 +38,13 @@
             "补给站"
         ],
         "roi": [
-            1005,
-            421,
-            112,
-            289
+            0,
+            0,
+            0,
+            0
         ],
         "action": "Click",
+        "post_delay": 2500,
         "next": [
             "time_limited",
             "Shop1"
@@ -28,7 +55,7 @@
         "expected": [
             "限时贸易所"
         ],
-      "roi" :[41,569,179,62],
+        "roi": [0, 0, 0, 0],
         "action": "Click",
         "post_delay": 2000,
         "next": [
@@ -38,6 +65,7 @@
     },
     "Buy_something": {
         "recognition": "OCR",
+        "roi": [0, 0, 0, 0],
         "expected": ["亚金合金","亚金电池","亚金组件","亚金半导体","涅槃剂","晶片",
                     "幻金能源","幻金碳","荧晶精华瓶","荧晶单元","亚金外壳","亚金蓄能器",
                     "亚金装置","亚金二极管","凝胶","结晶体","幻金聚变器","幻金刚石",
@@ -53,20 +81,20 @@
     "Buyit":  {
         "recognition": "OCR",
         "expected": [
-            "购买"
+            "^购买$"
         ],
         "roi": [
-            758,
-            513,
-            191,
-            75
+            0,
+            0,
+            0,
+            0
         ],
         "action": "Click",
         "post_delay": 1000,
         "next": [
             "[JumpBack]子任务_获得物品",
-            "Buy_something",
             "Buyit",
+            "Buy_something",
             "进入首页"
         ]
     }
