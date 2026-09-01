@@ -58,7 +58,7 @@ pretask **不会**打开交错战线。开游戏由 pipeline「启动游戏」�
 | `assets/interface.json` | 资源、任务、选项、Agent 和 pretask 配置 |
 | `assets/resource/pipeline/` | Pipeline 识别与动作流程 |
 | `assets/resource/image/` | 经过裁剪的识别模板 |
-| `agent/` | 竞技场、芯片筛选、导航及 MuMu 启动逻辑 |
+| `agent/` | 订单好友、竞技场、芯片、周本 Custom、导航及 MuMu pretask |
 | `ui_custom/MFAAvalonia/` | LAA 使用的 MFAAvalonia 可复现补丁 |
 
 ### Pipeline 与 Agent 分工

@@ -3,17 +3,57 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788193046566,
+            "lastSyncTime": 1788269058506,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MaaXXX-win-x86_64-v0.3.0\\resource\\pipeline\\base\\基建.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\base\\基建.json",
             "savedViewport": {
-                "x": -2768,
-                "y": -48,
-                "zoom": 0.26
+                "x": -5597,
+                "y": -148,
+                "zoom": 0.46
             },
             "filename": "基建",
             "version": "v1.9.2"
+        }
+    },
+    "$__mpe_external_子任务_点击返回_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 9488,
+                "y": 52
+            }
+        }
+    },
+    "$__mpe_external_子任务_获得物品_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 248
+            }
+        }
+    },
+    "$__mpe_external_子任务_进入首页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 8972,
+                "y": 1486
+            }
+        }
+    },
+    "$__mpe_external_进入首页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 9942,
+                "y": 510
+            }
+        }
+    },
+    "$__mpe_external_通用-返回主页_基建": {
+        "$__mpe_code": {
+            "position": {
+                "x": 14102,
+                "y": 2335
+            }
         }
     },
     "基地": {
@@ -110,8 +150,34 @@
         },
         "$__mpe_code": {
             "position": {
-                "x": 14102,
-                "y": 388
+                "x": 14092,
+                "y": 485
+            }
+        }
+    },
+    "基建_2号物品售罄": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "基建_自己交付2",
+                "method": 4,
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    50,
+                    50,
+                    50
+                ],
+                "count": 300
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 14063,
+                "y": 1422
             }
         }
     },
@@ -182,8 +248,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 9622,
-                "y": 1256
+                "x": 9692,
+                "y": 1254
             }
         }
     },
@@ -195,6 +261,7 @@
         "next": [
             "基建_拜访好友结束",
             "[JumpBack]基建_自己交付1",
+            "[JumpBack]基建_自己交付2",
             "[JumpBack]基建_拜访下一位好友"
         ],
         "on_error": [
@@ -202,8 +269,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 13298,
-                "y": 1713
+                "x": 13044,
+                "y": 1380
             }
         }
     },
@@ -750,8 +817,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12182,
-                "y": 412
+                "x": 12184,
+                "y": 477
             }
         }
     },
@@ -1420,8 +1487,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 9292,
-                "y": 1567
+                "x": 9294,
+                "y": 1592
             }
         }
     },
@@ -1514,13 +1581,14 @@
         },
         "next": [
             "[JumpBack]基建_自己交付1",
+            "[JumpBack]基建_自己交付2",
             "基建_拜访好友",
             "通用-返回主页"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12523,
-                "y": 1163
+                "x": 12388,
+                "y": 1043
             }
         }
     },
@@ -1535,9 +1603,7 @@
                     603
                 ],
                 "template": [
-                    "Infrastructures/构建订单3.png",
-                    "Infrastructures/构建订单1.png",
-                    "Infrastructures/构建订单4.png"
+                    "Infrastructures/构建订单3.png"
                 ],
                 "threshold": 0.9
             }
@@ -1563,8 +1629,51 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 13596,
-                "y": 627
+                "x": 13482,
+                "y": 476
+            }
+        }
+    },
+    "基建_自己交付2": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    272,
+                    89,
+                    909,
+                    603
+                ],
+                "template": [
+                    "Infrastructures/构建订单4.png",
+                    "Infrastructures/构建订单1.png"
+                ],
+                "threshold": 0.9
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    90,
+                    128,
+                    -90,
+                    -128
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_自己交付是",
+            "基建_自己交付否",
+            "[JumpBack]子任务_获得物品",
+            "基建_2号物品售罄"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13498,
+                "y": 1046
             }
         }
     },
@@ -1599,8 +1708,8 @@
         "post_delay": 1000,
         "$__mpe_code": {
             "position": {
-                "x": 14102,
-                "y": 1458
+                "x": 14282,
+                "y": 1114
             }
         }
     },
@@ -1634,8 +1743,8 @@
         "post_delay": 1000,
         "$__mpe_code": {
             "position": {
-                "x": 14272,
-                "y": 701
+                "x": 14431,
+                "y": 750
             }
         }
     },
@@ -1788,8 +1897,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 7692,
-                "y": 282
+                "x": 7718,
+                "y": 267
             }
         }
     },
@@ -1829,10 +1938,10 @@
             "type": "OCR",
             "param": {
                 "roi": [
-                    960,
-                    320,
-                    120,
-                    90
+                    974,
+                    316,
+                    82,
+                    63
                 ],
                 "expected": [
                     "驻员",
@@ -1914,46 +2023,6 @@
             "position": {
                 "x": 8972,
                 "y": 387
-            }
-        }
-    },
-    "$__mpe_external_子任务_进入首页_基建": {
-        "$__mpe_code": {
-            "position": {
-                "x": 8972,
-                "y": 1486
-            }
-        }
-    },
-    "$__mpe_external_通用-返回主页_基建": {
-        "$__mpe_code": {
-            "position": {
-                "x": 14102,
-                "y": 2335
-            }
-        }
-    },
-    "$__mpe_external_子任务_获得物品_基建": {
-        "$__mpe_code": {
-            "position": {
-                "x": 14102,
-                "y": 248
-            }
-        }
-    },
-    "$__mpe_external_子任务_点击返回_基建": {
-        "$__mpe_code": {
-            "position": {
-                "x": 9622,
-                "y": 148
-            }
-        }
-    },
-    "$__mpe_external_进入首页_基建": {
-        "$__mpe_code": {
-            "position": {
-                "x": 9942,
-                "y": 510
             }
         }
     }

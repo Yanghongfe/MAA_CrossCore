@@ -3,17 +3,17 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788080418297,
+            "lastSyncTime": 1788262091860,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "G:\\GameTools\\MaaXXX-win-x86_64-v0.3.0\\resource\\base\\pipeline\\每日免费礼包.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MaaXXX-win-x86_64-v0.4.2\\resource\\pipeline\\base\\每日免费礼包.json",
             "savedViewport": {
-                "x": 370,
-                "y": 178,
-                "zoom": 1.19
+                "x": -161,
+                "y": 8,
+                "zoom": 0.57
             },
             "filename": "每日免费礼包",
-            "version": "v1.9.1"
+            "version": "v1.9.2"
         }
     },
     "$__mpe_external_子任务_关闭公告_每日免费礼包": {
@@ -27,8 +27,8 @@
     "$__mpe_external_子任务_获得物品_每日免费礼包": {
         "$__mpe_code": {
             "position": {
-                "x": 1932,
-                "y": 220
+                "x": 1948,
+                "y": 192
             }
         }
     },
@@ -94,14 +94,15 @@
         "action": {
             "type": "Click"
         },
+        "post_delay": 1000,
         "next": [
             "Purchase",
             "进入首页"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 972,
-                "y": 233
+                "x": 932,
+                "y": 185
             }
         }
     },
@@ -121,7 +122,15 @@
             }
         },
         "action": {
-            "type": "Click"
+            "type": "Click",
+            "param": {
+                "target": [
+                    847,
+                    527,
+                    51,
+                    16
+                ]
+            }
         },
         "post_delay": 1000,
         "next": [
