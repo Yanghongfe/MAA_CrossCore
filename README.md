@@ -11,7 +11,8 @@
 
 本项目基于 [MaaFramework](https://github.com/MaaXYZ/MaaFramework) 提供的项目模板进行开发，面向游戏 **《交错战线》** 的自动化助手（开发中）。
 
-仓库地址：[Yanghongfe/MAA_Practice](https://github.com/Yanghongfe/MAA_Practice)
+仓库地址：[Yanghongfe/MAA_CrossCore](https://github.com/Yanghongfe/MAA_CrossCore)  
+（旧名 `MAA_Practice` 会自动跳转到此仓。）
 
 > [!IMPORTANT]
 > **当前主线任务流依赖 / 参考了 [MCCA](https://github.com/MaaXYZ/MCCA)（交错战线社区助手）。**  
@@ -24,11 +25,11 @@
 
 ## 使用方式
 
-0. 从 [Releases](https://github.com/Yanghongfe/MAA_Practice/releases) 下载 Windows 包，例如：  
+0. 从 [Releases](https://github.com/Yanghongfe/MAA_CrossCore/releases) 下载 Windows 包，例如：  
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
 2. **安装 Python 3.10+**（勾选 *Add python.exe to PATH*），然后双击包内 `Install-Agent-Deps.bat` 安装 Agent 依赖  
-   （订单好友 / 自动启 MuMu / 竞技场·芯片等自定义逻辑都需要）
+   （订单好友 / 自动启 MuMu / 竞技场·芯片·周本 Custom 等都需要）
 3. 若使用 **添加订单好友 / 拉黑订单好友**：复制 `config/orders_source.example.json` 为 `config/orders_source.json`，填入你的订单页 URL；正文每行 `UID|类型`（如 `123456|8-1`）
 4. 确认 **MuMu** 可用（可先手动开；勾选「启动游戏」时 pretask 只会自动启模拟器/ADB，**不会**替你开游戏客户端）
 5. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
@@ -59,14 +60,14 @@
 |------|------|
 | 启动游戏 | 入口 `进入首页`：pipeline 内 `StartApp` 开客户端 → 关公告 / 签到 → 大厅。官服包名在 `pipeline/base/启动游戏.json`；B 服由 `resource/bilibili/pipeline/startup.json` 覆盖。pretask（`ensure_mumu`）只负责 MuMu/ADB，不开游戏 |
 | 添加 / 拉黑订单好友 | 需配置 `config/orders_source.json`；状态写在 `config/orders_state.json` |
-| 每日免费礼包 / 限时贸易 | 补给站相关 |
-| 模拟军演 | 首页出击后进军演（option 可调战力阈值） |
+| 活动 / 每日免费礼包 / 限时贸易 | 活动与补给站相关 |
 | 基建 | 收菜 / 换班 / 好友交付等 |
 | 每日探索 | 出击选择 + 通用扫荡清体力（option：关卡/层数/次数） |
-| 周本 | 活动探索 · 碎星虚影等（option：关卡） |
+| 创生微粒刷取 | 每周门票扫荡（pipeline `创生微粒刷取.json`） |
+| 周本 | 活动探索 · 碎星虚影等（option：关卡）；部分逻辑含 Agent `weekly_flow` |
 | 领取奖励 | 邮箱 + 每日 + 通行证 |
-| 关闭游戏 / 活动 / 历战试炼 | 收尾与活动向 |
-| 竞技场 / 芯片筛选 | Agent Custom（需已安装 Agent 依赖） |
+| 关闭游戏 / 历战试炼 | 收尾与活动向 |
+| 竞技场 / 芯片筛选-仓库 | Agent Custom（`arena_loop` / `chip_filter_flow`，需已安装 Agent 依赖） |
 
 自研草稿仍保留在 `pipeline/周常/`、`周本任务.json` 等，可与 base 并存，注意**节点名勿冲突**。
 
@@ -75,11 +76,13 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent 示例（如 `number_lt`）与订单好友
+* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 / 周本 Custom
 * [x] MuMu pretask（`ensure_mumu`：只启模拟器/ADB，开游戏走 pipeline `StartApp`）
 * [x] 发版包附带 `Install-Agent-Deps.bat` 与订单源示例
+* [x] 创生微粒刷取 pipeline
 * [ ] 实机验收与选项打磨
 * [ ] 嵌入式 Python（免本机安装）
+
 ## 待开发功能
 
 开发前建议先开 Issue 声明要做的内容，避免重复劳动。
@@ -104,8 +107,11 @@
 
 感谢以下开发者对本项目作出的贡献：
 
-<a href="https://github.com/Yanghongfe/MAA_Practice/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Yanghongfe/MAA_Practice" alt="贡献者" />
+<a href="https://github.com/Yanghongfe/MAA_CrossCore/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Yanghongfe/MAA_CrossCore" alt="贡献者" />
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks)
+
+> GitHub **Contributors** 按「已合入默认分支、且 commit 邮箱已绑定到 GitHub 账号」统计。  
+> 当前仓库已识别：`Yanghongfe`、`huangtong601-ops`、`qing4368-svg`。若页面头像少一个人，多半是 contrib.rocks 缓存（最长约 3 天）；以 [Contributors 页](https://github.com/Yanghongfe/MAA_CrossCore/graphs/contributors) 为准。
