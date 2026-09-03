@@ -131,14 +131,19 @@ def install_python_runtime():
     if os_name not in ("win", "macos"):
         return
 
-    embedded_src = working_dir / "install" / "python"
+    embedded_src = (working_dir / "install" / "python").resolve()
+    embedded_dst = (install_path / "python").resolve()
     if not embedded_src.is_dir():
         print("Warning: embedded Python not found; release will still require system Python.")
         return
 
+    if embedded_src == embedded_dst:
+        print(f"Embedded Python already in place: {embedded_dst}")
+        return
+
     shutil.copytree(
         embedded_src,
-        install_path / "python",
+        embedded_dst,
         dirs_exist_ok=True,
     )
 
@@ -147,14 +152,19 @@ def install_agent_dependency_wheels():
     if os_name == "android":
         return
 
-    deps_src = working_dir / "install" / "deps"
+    deps_src = (working_dir / "install" / "deps").resolve()
+    deps_dst = (install_path / "deps").resolve()
     if not deps_src.is_dir() or not any(deps_src.glob("*.whl")):
         print("Warning: install/deps wheel cache not found; first Agent run may download online.")
         return
 
+    if deps_src == deps_dst:
+        print(f"Agent dependency wheels already in place: {deps_dst}")
+        return
+
     shutil.copytree(
         deps_src,
-        install_path / "deps",
+        deps_dst,
         dirs_exist_ok=True,
     )
 

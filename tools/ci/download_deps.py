@@ -27,8 +27,8 @@ def platform_tag(target_os: str | None, target_arch: str | None) -> str:
         return "macosx_10_9_x86_64"
     if os_type in ("linux", "Linux"):
         if arch in ("arm64", "aarch64"):
-            return "linux_aarch64"
-        return "linux_x86_64"
+            return "manylinux2014_aarch64"
+        return "manylinux2014_x86_64"
     raise ValueError(f"Unsupported target: {os_type}/{arch}")
 
 
