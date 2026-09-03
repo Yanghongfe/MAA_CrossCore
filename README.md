@@ -28,8 +28,8 @@
 0. 从 [Releases](https://github.com/Yanghongfe/MAA_CrossCore/releases) 下载 Windows 包，例如：  
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
-2. **安装 Python 3.10+**（勾选 *Add python.exe to PATH*），然后双击包内 `Install-Agent-Deps.bat` 安装 Agent 依赖  
-   （订单好友 / 自动启 MuMu / 竞技场·芯片·周本 Custom 等都需要）
+2. **Windows / macOS 正式包已内置便携 Python**（`python/` 目录）和离线依赖包（`deps/`），首次运行 Agent 任务时会自动安装，**一般无需本机安装 Python**。  
+   若仍报错，可双击 `Install-Agent-Deps.bat`（Windows）手动重装 Agent 依赖。
 3. 若使用 **添加订单好友 / 拉黑订单好友**：复制 `config/orders_source.example.json` 为 `config/orders_source.json`，填入你的订单页 URL；正文每行 `UID|类型`（如 `123456|8-1`）
 4. 确认 **MuMu** 可用（可先手动开；勾选「启动游戏」时 pretask 只会自动启模拟器/ADB，**不会**替你开游戏客户端）
 5. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
@@ -46,7 +46,7 @@
 1. 推荐使用 [MuMu 模拟器](https://mumu.163.com/) 运行游戏；[模拟器支持情况](https://maa.plus/docs/zh-cn/manual/device/windows.html) 可参考 MAA 官方文档。
 2. 模拟器建议使用 `16:9` 分辨率，例如 `1920×1080`、`1280×720`。
 3. 软件内更新后若看不到新任务选项，可关闭程序后删除根目录 `config/config.json` 再打开（需重新配置部分选项）。
-4. Agent 报错 / Action is null：先确认已跑过 `Install-Agent-Deps.bat`，且命令行能执行 `python` 或 `py -3`。
+4. Agent 报错 / Action is null：确认使用的是最新 Release 包（含 `python/` 与 `deps/`）；Windows 可再跑 `Install-Agent-Deps.bat`。
 5. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
 
 ## 功能说明
@@ -78,10 +78,9 @@
 * [x] 节点名汉化（原英文 entry 已改为中文）
 * [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 Custom
 * [x] MuMu pretask（`ensure_mumu`：只启模拟器/ADB，开游戏走 pipeline `StartApp`）
-* [x] 发版包附带 `Install-Agent-Deps.bat` 与订单源示例
+* [x] 发版包内置便携 Python + 离线 deps（Windows/macOS，M9A 同款思路）
 * [x] 创生微粒刷取 pipeline
 * [ ] 实机验收与选项打磨
-* [ ] 嵌入式 Python（免本机安装）
 
 ## 待开发功能
 

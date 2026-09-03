@@ -99,6 +99,66 @@ def install_deps():
 
 
 
+def configure_interface_agent(interface: dict):
+    if os_name == "win":
+        python_exec = r"./python/python.exe"
+    elif os_name == "macos":
+        python_exec = r"./python/bin/python3"
+    elif os_name == "linux":
+        python_exec = "python3"
+    else:
+        return
+
+    agent = interface.setdefault("agent", {})
+    agent["child_exec"] = python_exec
+    agent["child_args"] = ["-u", "./agent/main.py"]
+
+    pretask = interface.get("pretask")
+    if not pretask:
+        return
+
+    pretasks = pretask if isinstance(pretask, list) else [pretask]
+    for item in pretasks:
+        item["exec"] = python_exec
+        args = item.get("args") or []
+        item["args"] = [
+            "./agent/ensure_mumu.py" if isinstance(arg, str) and "ensure_mumu.py" in arg else arg
+            for arg in args
+        ]
+
+
+def install_python_runtime():
+    if os_name not in ("win", "macos"):
+        return
+
+    embedded_src = working_dir / "install" / "python"
+    if not embedded_src.is_dir():
+        print("Warning: embedded Python not found; release will still require system Python.")
+        return
+
+    shutil.copytree(
+        embedded_src,
+        install_path / "python",
+        dirs_exist_ok=True,
+    )
+
+
+def install_agent_dependency_wheels():
+    if os_name == "android":
+        return
+
+    deps_src = working_dir / "install" / "deps"
+    if not deps_src.is_dir() or not any(deps_src.glob("*.whl")):
+        print("Warning: install/deps wheel cache not found; first Agent run may download online.")
+        return
+
+    shutil.copytree(
+        deps_src,
+        install_path / "deps",
+        dirs_exist_ok=True,
+    )
+
+
 def install_resource():
 
     configure_ocr_model()
@@ -122,6 +182,7 @@ def install_resource():
         interface = jsonc.load(f)
 
     interface["version"] = version
+    configure_interface_agent(interface)
 
     with open(install_path / "interface.json", "w", encoding="utf-8") as f:
         jsonc.dump(interface, f, ensure_ascii=False, indent=4)
@@ -170,6 +231,8 @@ if __name__ == "__main__":
     install_deps()
     install_resource()
     install_chores()
+    install_python_runtime()
+    install_agent_dependency_wheels()
     install_agent()
 
     print(f"Install to {install_path} successfully.")

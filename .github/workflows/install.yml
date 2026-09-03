@@ -107,6 +107,21 @@ jobs:
         run: |
           rm -rf MFA/runtimes
       
+      - name: Prepare embedded Python
+        if: matrix.os == 'win' || matrix.os == 'macos'
+        shell: bash
+        run: |
+          python tools/ci/setup_embed_python.py --target-os ${{ matrix.os }} --target-arch ${{ matrix.arch }}
+
+      - name: Download agent dependency wheels
+        if: matrix.os != 'android'
+        shell: bash
+        run: |
+          python tools/ci/download_deps.py \
+            --deps-dir install/deps \
+            --target-os ${{ matrix.os }} \
+            --target-arch ${{ matrix.arch }}
+
       - name: Install
         shell: bash
         run: |

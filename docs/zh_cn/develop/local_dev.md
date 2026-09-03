@@ -6,7 +6,7 @@
 
 - Windows x64
 - MuMu 模拟器 12，且目标实例中已安装《交错战线》
-- Python 3.10 或更高版本，并安装 `maafw`、`numpy`、`opencv-python`
+- **开发环境**需本机 Python 3.10+ 与 `maafw`；**Release 包（Windows/macOS）已内置 `python/` 与 `deps/`，用户无需自行安装 Python**
 - 从 Release 下载完整程序包；仅下载 GitHub 源码不会包含 MFAAvalonia、MaaFramework 运行库和 OCR 模型
 
 开发环境可在仓库根目录创建虚拟环境：
@@ -89,7 +89,7 @@ Pipeline 调试可使用 MaaDebugger：
 | 提示游戏包不存在 / 官服起不来 | 确认 MFA 所选资源与 MuMu 实例中安装的官服/B 服一致；官服包名看 `pipeline/base/启动游戏.json`，B 服看 `bilibili/pipeline/startup.json`。pretask 不会开游戏 |
 | 双击源码中的文件无法运行 | 使用完整 Release 包，或先按 `tools/install.py` 流程组装运行目录 |
 | OCR 模型加载失败 | 确认完整包中有 `resource/model/ocr/` 下的模型文件 |
-| Agent / Custom 无响应 | 先跑 `Install-Agent-Deps.bat`（或 `pip install -r agent/requirements.txt`），并确认 `python`/`py` 在 PATH |
+| Agent / Custom 无响应 | Release 包确认存在 `python/` 与 `deps/`；开发环境执行 `pip install -r agent/requirements.txt` |
 
 日志默认位于程序目录的 `debug/`。排错时优先查看最新日志中的 `[MuMu pretask]`、ADB 和 Agent 启动记录。
 

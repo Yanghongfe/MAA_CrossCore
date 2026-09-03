@@ -14,12 +14,24 @@ index 54e6302..eac968d 100644
 +            {
 +                var localPythonCandidates = new[]
 +                {
++                    Path.Combine(AppPaths.DataRoot, "python", "python.exe"),
++                    Path.Combine(AppPaths.DataRoot, "python", "bin", "python3"),
 +                    Path.Combine(AppPaths.DataRoot, ".venv", "Scripts", "python.exe"),
 +                    Path.GetFullPath(Path.Combine(AppPaths.DataRoot, "..", ".venv", "Scripts", "python.exe")),
 +                    Path.Combine(AppPaths.DataRoot, ".venv", "bin", "python3"),
 +                    Path.GetFullPath(Path.Combine(AppPaths.DataRoot, "..", ".venv", "bin", "python3"))
 +                };
 +                executablePath = localPythonCandidates.FirstOrDefault(File.Exists) ?? executablePath;
++            }
++            else if (!File.Exists(executablePath))
++            {
++                var bundledPythonCandidates = new[]
++                {
++                    Path.GetFullPath(Path.Combine(AppPaths.DataRoot, exec.TrimStart('.', '/', '\\'))),
++                    Path.Combine(AppPaths.DataRoot, "python", "python.exe"),
++                    Path.Combine(AppPaths.DataRoot, "python", "bin", "python3")
++                };
++                executablePath = bundledPythonCandidates.FirstOrDefault(File.Exists) ?? executablePath;
 +            }
 +
 +            if (!File.Exists(executablePath))
@@ -77,6 +89,8 @@ index 085803b..5a94f30 100644
 +        {
 +            var localPythonCandidates = new[]
 +            {
++                Path.Combine(AppPaths.DataRoot, "python", "python.exe"),
++                Path.Combine(AppPaths.DataRoot, "python", "bin", "python3"),
 +                Path.Combine(AppPaths.DataRoot, ".venv", "Scripts", "python.exe"),
 +                Path.GetFullPath(Path.Combine(AppPaths.DataRoot, "..", ".venv", "Scripts", "python.exe"))
 +            };

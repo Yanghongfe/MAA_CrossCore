@@ -2,25 +2,23 @@
 setlocal
 cd /d "%~dp0"
 
-where py >nul 2>&1
-if %ERRORLEVEL%==0 goto :use_py
-where python >nul 2>&1
-if %ERRORLEVEL%==0 goto :use_python
-echo [ERROR] Python not found. Install Python 3.10+ and enable "Add python.exe to PATH".
-pause
-exit /b 1
+set "PY="
+if exist "%~dp0python\python.exe" set "PY=%~dp0python\python.exe"
+if not defined PY where py >nul 2>&1 && set "PY=py -3"
+if not defined PY where python >nul 2>&1 && set "PY=python"
 
-:use_py
-echo Using: py -3
-py -3 -m pip install -U -r "%~dp0agent\requirements.txt"
-goto :after_pip
+if not defined PY (
+  echo [ERROR] Python not found. Re-download the latest release package or install Python 3.10+.
+  pause
+  exit /b 1
+)
 
-:use_python
-echo Using: python
-python -m pip install -U -r "%~dp0agent\requirements.txt"
-goto :after_pip
-
-:after_pip
+echo Using: %PY%
+%PY% -m pip install -U -r "%~dp0agent\requirements.txt" --find-links "%~dp0deps" --no-index
+if errorlevel 1 (
+  echo Local deps install failed, trying online mirrors...
+  %PY% -m pip install -U -r "%~dp0agent\requirements.txt"
+)
 if errorlevel 1 (
   echo [ERROR] pip install failed.
   pause

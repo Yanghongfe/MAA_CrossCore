@@ -3,17 +3,33 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788191167088,
+            "lastSyncTime": 1788449456091,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MaaXXX-win-x86_64-v0.3.0\\resource\\pipeline\\base\\通用-扫荡.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MAAlocalhost\\resource\\pipeline\\base\\通用-扫荡.json",
             "savedViewport": {
-                "x": 521,
-                "y": 141,
-                "zoom": 0.26
+                "x": -172,
+                "y": -90,
+                "zoom": 0.37
             },
             "filename": "通用-扫荡",
             "version": "v1.9.2"
+        }
+    },
+    "$__mpe_external_通用-返回主页_通用-扫荡": {
+        "$__mpe_code": {
+            "position": {
+                "x": 4172,
+                "y": 1160
+            }
+        }
+    },
+    "$__mpe_external_重连网络_通用-扫荡": {
+        "$__mpe_code": {
+            "position": {
+                "x": 2997,
+                "y": 489
+            }
         }
     },
     "使用10燃料": {
@@ -126,8 +142,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 3288,
-                "y": 841
+                "x": 2887,
+                "y": 1498
             }
         }
     },
@@ -152,8 +168,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2184,
-                "y": 49
+                "x": 2077,
+                "y": 45
             }
         }
     },
@@ -184,8 +200,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 985,
-                "y": 512
+                "x": 902,
+                "y": 476
             }
         }
     },
@@ -217,8 +233,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 688,
-                "y": 724
+                "x": 700,
+                "y": 1183
             }
         }
     },
@@ -249,8 +265,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2266,
-                "y": 434
+                "x": 1542,
+                "y": 662
             }
         }
     },
@@ -302,8 +318,8 @@
         },
         "$__mpe_code": {
             "position": {
-                "x": 1610,
-                "y": 645
+                "x": 1281,
+                "y": 441
             }
         }
     },
@@ -334,8 +350,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1292,
-                "y": 200
+                "x": 1288,
+                "y": -26
             }
         }
     },
@@ -365,8 +381,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 1612,
-                "y": 310
+                "x": 1681,
+                "y": 207
             }
         }
     },
@@ -374,13 +390,14 @@
         "enabled": true,
         "next": [
             "检查体力-红",
+            "次数到10次",
             "检查体力-白",
             "[JumpBack]重连网络"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2587,
-                "y": 348
+                "x": 2309,
+                "y": 736
             }
         }
     },
@@ -402,8 +419,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 3815,
-                "y": 965
+                "x": 3607,
+                "y": 838
             }
         }
     },
@@ -439,8 +456,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2841,
-                "y": -8
+                "x": 2649,
+                "y": 8
             }
         }
     },
@@ -466,8 +483,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2943,
-                "y": 710
+                "x": 2730,
+                "y": 741
             }
         }
     },
@@ -494,8 +511,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 3435,
-                "y": 1060
+                "x": 3397,
+                "y": 1452
             }
         }
     },
@@ -562,8 +579,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2275,
-                "y": 1111
+                "x": 2203,
+                "y": 1126
             }
         }
     },
@@ -600,8 +617,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 2577,
-                "y": 1092
+                "x": 1963,
+                "y": 953
             }
         }
     },
@@ -901,19 +918,28 @@
             }
         }
     },
-    "$__mpe_external_通用-返回主页_通用-扫荡": {
-        "$__mpe_code": {
-            "position": {
-                "x": 4172,
-                "y": 1160
+    "次数到10次": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    433,
+                    506,
+                    59,
+                    24
+                ],
+                "expected": [
+                    "10"
+                ]
             }
-        }
-    },
-    "$__mpe_external_重连网络_通用-扫荡": {
+        },
+        "next": [
+            "开始战斗"
+        ],
         "$__mpe_code": {
             "position": {
-                "x": 2892,
-                "y": 419
+                "x": 2539,
+                "y": 1544
             }
         }
     }

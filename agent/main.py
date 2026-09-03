@@ -1,4 +1,19 @@
+import os
 import sys
+from pathlib import Path
+
+# Embedded Python does not put the script directory on sys.path.
+_agent_dir = Path(__file__).resolve().parent
+_root = _agent_dir.parent
+if str(_agent_dir) not in sys.path:
+    sys.path.insert(0, str(_agent_dir))
+if Path.cwd().resolve() != _root.resolve():
+    os.chdir(_root)
+
+from bootstrap import ensure_dependencies, prepare_runtime
+
+prepare_runtime()
+ensure_dependencies()
 
 from maa.agent.agent_server import AgentServer
 from maa.toolkit import Toolkit
@@ -34,7 +49,7 @@ def main():
         print("Usage: python main.py <socket_id>")
         print("socket_id is provided by AgentIdentifier.")
         sys.exit(1)
-        
+
     socket_id = sys.argv[-1]
 
     AgentServer.start_up(socket_id)

@@ -3,14 +3,14 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788269058506,
+            "lastSyncTime": 1788452169837,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\base\\基建.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MAAlocalhost\\resource\\pipeline\\base\\基建.json",
             "savedViewport": {
-                "x": -5597,
-                "y": -148,
-                "zoom": 0.46
+                "x": -3029,
+                "y": 56,
+                "zoom": 0.26
             },
             "filename": "基建",
             "version": "v1.9.2"
@@ -1603,7 +1603,9 @@
                     603
                 ],
                 "template": [
-                    "Infrastructures/构建订单3.png"
+                    "Infrastructures/构建订单3.png",
+                    "Infrastructures/构建订单_8-1.png",
+                    "Infrastructures/构建订单16-2.png"
                 ],
                 "threshold": 0.9
             }
