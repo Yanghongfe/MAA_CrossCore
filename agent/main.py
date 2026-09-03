@@ -9,12 +9,20 @@ import number_lt  # noqa: F401  # 注册 number_lt 自定义识别
 import order_fetch  # noqa: F401  # 注册 取下一单、输入当前UID
 from arena_pipeline import ArenaPipelineAction, ArenaPipelineRecognition
 from chip_pipeline import ChipPipelineAction, ChipPipelineRecognition
+from jdc_select_character import JdcSelectCharacter
+from jdc_build_team import JdcBuildTeam
+from jdc_route_push import JdcRoutePush
+from jdc_reset_state import JdcResetState
 
 
 AgentServer.custom_action("arena_atomic")(ArenaPipelineAction)
 AgentServer.custom_recognition("arena_state")(ArenaPipelineRecognition)
 AgentServer.custom_action("chip_atomic")(ChipPipelineAction)
 AgentServer.custom_recognition("chip_state")(ChipPipelineRecognition)
+AgentServer.custom_action("jdc_select_character")(JdcSelectCharacter)
+AgentServer.custom_action("jdc_build_team")(JdcBuildTeam)
+AgentServer.custom_action("jdc_route_push")(JdcRoutePush)
+AgentServer.custom_action("jdc_reset_state")(JdcResetState)
 
 print("[agent] custom actions ready: 取下一单, 输入当前UID, 取下一待删好友, 删除登记完成")
 
