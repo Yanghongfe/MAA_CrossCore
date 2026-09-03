@@ -1,0 +1,473 @@
+{
+    "角斗场": {
+        "next": [
+            "首页_出击",
+            "[JumpBack]子任务_进入首页"
+        ]
+    },
+    "模拟军演": {
+        "recognition": "OCR",
+        "expected": "模拟军演",
+        "roi": [
+            152,
+            263,
+            247,
+            183
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_军演竞技"
+        ]
+    },
+    "模拟军演_军演竞技": {
+        "recognition": "OCR",
+        "expected": "军演竞技",
+        "roi": [
+            152,
+            263,
+            247,
+            183
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场"
+        ]
+    },
+    "模拟军演_角斗场": {
+        "recognition": "OCR",
+        "expected": "角斗场",
+        "roi": [
+            152,
+            263,
+            247,
+            183
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_测试版"
+        ]
+    },
+    "模拟军演_角斗场_测试版": {
+        "recognition": "OCR",
+        "expected": "角斗场",
+        "roi": [
+            404,
+            233,
+            472,
+            262
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_随机模式"
+        ]
+    },
+    "模拟军演_角斗场_随机模式": {
+        "recognition": "OCR",
+        "expected": "随机模式",
+        "roi": [
+            959,
+            505,
+            200,
+            110
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_入场确认"
+        ]
+    },
+    "模拟军演_角斗场_入场确认": {
+        "recognition": "OCR",
+        "expected": "入场确认",
+        "roi": [
+            263,
+            172,
+            749,
+            323
+        ],
+        "next": [
+            "模拟军演_角斗场_可免费入场次数大于0",
+            "模拟军演_角斗场_可免费入场次数为0"
+        ]
+    },
+    "模拟军演_角斗场_可免费入场次数为0": {
+        "recognition": "OCR",
+        "expected": "0",
+        "roi": [
+            511,
+            425,
+            251,
+            31
+        ],
+        "action": "Click",
+        "target": [
+            172,
+            22,
+            86,
+            53
+        ],
+        "post_delay": 2000,
+        "next": [
+            "[JumpBack]子任务_进入首页"
+        ]
+    },
+    "模拟军演_角斗场_可免费入场次数大于0": {
+        "recognition": "OCR",
+        "expected": [
+            "1",
+            "2",
+            "3"
+        ],
+        "roi": [
+            511,
+            425,
+            251,
+            31
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_随机模式_使用体力入场"
+        ]
+    },
+    "模拟军演_角斗场_随机模式_使用体力入场": {
+        "recognition": "OCR",
+        "expected": [
+            "使用体力入场"
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_随机模式_选角色"
+        ]
+    },
+    "模拟军演_角斗场_随机模式_选角色": {
+        "recognition": "OCR",
+        "expected": "确定",
+        "roi": [
+            150,
+            480,
+            950,
+            100
+        ],
+        "action": "Custom",
+        "custom_action": "jdc_select_character",
+        "custom_action_param": {
+            "left_name_roi": [
+                182,
+                296,
+                159,
+                30
+            ],
+            "middle_name_roi": [
+                532,
+                295,
+                156,
+                29
+            ],
+            "right_name_roi": [
+                884,
+                295,
+                156,
+                29
+            ],
+            "left_confirm": [
+                215,
+                515,
+                133,
+                42
+            ],
+            "middle_confirm": [
+                566,
+                513,
+                131,
+                44
+            ],
+            "right_confirm": [
+                911,
+                514,
+                136,
+                43
+            ]
+        },
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_编队入口",
+            "模拟军演_角斗场_随机模式_选角色"
+        ]
+    },
+    "模拟军演_角斗场_编队入口": {
+        "recognition": "OCR",
+        "roi": [
+            9,
+            611,
+            129,
+            47
+        ],
+        "expected": "当前编队",
+        "action": "Click",
+        "target": [
+            165,
+            588,
+            96,
+            91
+        ],
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_编队_检测平面"
+        ]
+    },
+    "模拟军演_角斗场_编队_检测平面": {
+        "recognition": "DirectHit",
+        "next": [
+            "模拟军演_角斗场_编队_已是平面",
+            "模拟军演_角斗场_编队_平面"
+        ]
+    },
+    "模拟军演_角斗场_编队_已是平面": {
+        "recognition": "OCR",
+        "expected": "此面向敌",
+        "roi": [
+            671,
+            339,
+            45,
+            125
+        ],
+        "next": [
+            "模拟军演_角斗场_编队_清空队伍"
+        ]
+    },
+    "模拟军演_角斗场_编队_平面": {
+        "recognition": "OCR",
+        "expected": "平面",
+        "roi": [
+            492,
+            652,
+            105,
+            29
+        ],
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_编队_清空队伍"
+        ]
+    },
+    "模拟军演_角斗场_编队_清空队伍": {
+        "recognition": "OCR",
+        "expected": "清空队伍",
+        "roi": [
+            47,
+            544,
+            87,
+            80
+        ],
+        "action": "Click",
+        "target": [
+            67,
+            558,
+            45,
+            37
+        ],
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_编队_执行"
+        ]
+    },
+    "模拟军演_角斗场_编队_执行": {
+        "recognition": "OCR",
+        "expected": "此面向敌",
+        "roi": [
+            670,
+            325,
+            70,
+            150
+        ],
+        "action": "Custom",
+        "custom_action": "jdc_build_team",
+        "custom_action_param": {
+            "character_list_roi": [
+                775,
+                88,
+                483,
+                591
+            ],
+            "formation_roi": [
+                191,
+                169,
+                465,
+                462
+            ],
+            "clear_team_roi": [
+                51,
+                554,
+                80,
+                68
+            ],
+            "swipe_duration": 600,
+            "post_character_delay": 500
+        },
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_编队_返回"
+        ]
+    },
+    "模拟军演_角斗场_编队_返回": {
+        "recognition": "OCR",
+        "expected": "清空队伍",
+        "roi": [
+            51,
+            554,
+            80,
+            68
+        ],
+        "action": "Click",
+        "target": [
+            34,
+            25,
+            137,
+            48
+        ],
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_推关"
+        ]
+    },
+    "模拟军演_角斗场_推关": {
+        "recognition": "OCR",
+        "expected": "回合",
+        "roi": [
+            156,
+            101,
+            1074,
+            443
+        ],
+        "action": "Custom",
+        "custom_action": "jdc_route_push",
+        "custom_action_param": {
+            "stage_search_roi": [
+                156,
+                101,
+                1074,
+                443
+            ],
+            "star_roi": [
+                1080,
+                610,
+                180,
+                70
+            ]
+        },
+        "post_delay": 2000,
+        "timeout": 1200000,
+        "rate_limit": 1000,
+        "next": [
+            // "模拟军演_角斗场_关卡确认_等待"
+            "模拟军演_角斗场_全部领取",
+            "模拟军演_角斗场_战斗胜利_等待"
+        ]
+    },
+    // "模拟军演_角斗场_关卡确认_等待": {
+    //     "recognition": "OCR",
+    //     "expected": "确定",
+    //     "roi": [
+    //         871,
+    //         628,
+    //         375,
+    //         41
+    //     ],
+    //     "post_delay": 2000,
+    //     "next": [
+    //         "模拟军演_角斗场_关卡确认"
+    //     ]
+    // },
+    // "模拟军演_角斗场_关卡确认": {
+    //     "roi": [
+    //         871,
+    //         628,
+    //         375,
+    //         41
+    //     ],
+    //     "action": "Click",
+    //     "post_delay": 2000,
+    //     "next": [
+    //         "模拟军演_角斗场_战斗胜利_等待"
+    //     ]
+    // },
+    "模拟军演_角斗场_战斗胜利_等待": {
+        "recognition": "OCR",
+        // "expected": "奖励",
+        // "roi": [582, 496, 123, 52],
+        "expected": "战斗胜利",
+        "roi": [
+            31,
+            38,
+            326,
+            89
+        ],
+        "post_delay": 5000,
+        "next": [
+            "模拟军演_角斗场_战斗胜利"
+        ]
+    },
+    "模拟军演_角斗场_战斗胜利": {
+        "recognition": "OCR",
+        "expected": "战斗胜利",
+        "roi": [
+            31,
+            38,
+            326,
+            89
+        ],
+        "action": "Click",
+        "pre_delay": 5000,
+        "post_delay": 2000,
+        "timeout": 300000,
+        "rate_limit": 1000,
+        "next": [
+            "模拟军演_角斗场_全部领取",
+            "模拟军演_角斗场_随机模式_选角色",
+            "模拟军演_角斗场_推关"
+        ]
+    },
+    "模拟军演_角斗场_全部领取": {
+        "recognition": "OCR",
+        "expected": "全部领取",
+        "roi": [
+            587,
+            477,
+            145,
+            42
+        ],
+        "pre_delay": 2000,
+        "action": "Click",
+        "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_全部领取_完成点击"
+        ]
+    },
+    "模拟军演_角斗场_全部领取_完成点击": {
+        "pre_delay": 5000,
+        "roi": [
+            587,
+            477,
+            145,
+            42
+        ],
+        "action": "Click",
+        "next": [
+            "通用-返回主页"
+        ]
+    },
+    "模拟军演_角斗场_全部领取_完成": {
+        "pre_delay": 5000,
+        "action": "Custom",
+        "custom_action": "jdc_reset_state",
+        "next": [
+            "通用-返回主页"
+        ]
+    }
+}

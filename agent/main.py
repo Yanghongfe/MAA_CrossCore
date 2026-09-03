@@ -10,11 +10,19 @@ import order_fetch  # noqa: F401  # 注册 取下一单、输入当前UID
 from arena_loop import ArenaLoop
 from chip_filter_flow import ChipFilterFlow
 from weekly_complete import WeeklyFlow
-
+from jdc_select_character import JdcSelectCharacter
+from jdc_build_team import JdcBuildTeam
+from jdc_route_push import JdcRoutePush
+from jdc_reset_state import JdcResetState
 
 AgentServer.custom_action("arena_loop")(ArenaLoop)
 AgentServer.custom_action("chip_filter_flow")(ChipFilterFlow)
 AgentServer.custom_action("weekly_flow")(WeeklyFlow)
+AgentServer.custom_action("jdc_select_character")(JdcSelectCharacter)
+AgentServer.custom_action("jdc_build_team")(JdcBuildTeam)
+AgentServer.custom_action("jdc_route_push")(JdcRoutePush)
+AgentServer.custom_action("jdc_reset_state")(JdcResetState)
+
 
 print("[agent] custom actions ready: 取下一单, 输入当前UID, 取下一待删好友, 删除登记完成")
 
