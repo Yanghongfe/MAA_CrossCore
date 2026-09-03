@@ -7,10 +7,16 @@ import argparse
 import platform
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REQUIREMENTS = ROOT / "agent" / "requirements.txt"
+
+# PyPI has no win_arm64 wheel for opencv-python; agent code does not import cv2.
+SKIP_PACKAGES_BY_PLATFORM: dict[str, set[str]] = {
+    "win_arm64": {"opencv-python", "opencv-python-headless"},
+}
 
 
 def platform_tag(target_os: str | None, target_arch: str | None) -> str:
@@ -23,13 +29,37 @@ def platform_tag(target_os: str | None, target_arch: str | None) -> str:
         return "win_amd64"
     if os_type in ("macos", "Darwin"):
         if arch in ("arm64", "aarch64"):
-            return "macosx_11_0_arm64"
-        return "macosx_10_9_x86_64"
+            # maafw wheels are tagged macosx_13_0_arm64 on PyPI
+            return "macosx_13_0_arm64"
+        return "macosx_13_0_x86_64"
     if os_type in ("linux", "Linux"):
         if arch in ("arm64", "aarch64"):
             return "manylinux2014_aarch64"
         return "manylinux2014_x86_64"
     raise ValueError(f"Unsupported target: {os_type}/{arch}")
+
+
+def filtered_requirements(requirements_file: Path, tag: str) -> tuple[Path, tempfile.TemporaryDirectory | None]:
+    skip = SKIP_PACKAGES_BY_PLATFORM.get(tag, set())
+    if not skip:
+        return requirements_file, None
+
+    lines = requirements_file.read_text(encoding="utf-8").splitlines()
+    kept = []
+    for line in lines:
+        name = line.strip().split("[", 1)[0].split("==", 1)[0].split(">=", 1)[0].strip()
+        if name.lower() in {pkg.lower() for pkg in skip}:
+            print(f"Skipping {name} for {tag}: no matching wheel on PyPI")
+            continue
+        kept.append(line)
+
+    if not kept:
+        raise ValueError(f"No requirements left for {tag} after filtering")
+
+    temp_dir = tempfile.TemporaryDirectory(prefix="agent-reqs-")
+    temp_path = Path(temp_dir.name) / "requirements.txt"
+    temp_path.write_text("\n".join(kept) + "\n", encoding="utf-8")
+    return temp_path, temp_dir
 
 
 def download_dependencies(
@@ -43,6 +73,7 @@ def download_dependencies(
         print(f"Missing requirements file: {requirements_file}")
         return False
 
+    req_file, temp_dir = filtered_requirements(requirements_file, tag)
     py_ver = "312"
     exe = python_executable or sys.executable
     cmd = [
@@ -51,7 +82,7 @@ def download_dependencies(
         "pip",
         "download",
         "-r",
-        str(requirements_file),
+        str(req_file),
         "-d",
         str(deps_dir),
         "--platform",
@@ -69,6 +100,9 @@ def download_dependencies(
     except subprocess.CalledProcessError as exc:
         print(f"Platform-specific download failed: {exc}")
         return False
+    finally:
+        if temp_dir is not None:
+            temp_dir.cleanup()
 
 
 def main() -> int:

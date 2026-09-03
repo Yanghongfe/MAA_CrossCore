@@ -141,7 +141,7 @@ def install_macos(dest_dir: Path, arch: str) -> Path:
             item.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     site_packages = dest_dir / "lib" / "python3.12" / "site-packages"
-    pip_platform = "macosx_11_0_arm64" if pbs_arch == "aarch64" else "macosx_10_9_x86_64"
+    pip_platform = "macosx_13_0_arm64" if pbs_arch == "aarch64" else "macosx_13_0_x86_64"
     bootstrap_pip_with_host_python(site_packages, pip_platform)
 
     python3 = bin_dir / "python3"

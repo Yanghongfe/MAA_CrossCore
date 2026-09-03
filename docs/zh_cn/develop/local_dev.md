@@ -25,7 +25,7 @@ CI 打包时（`tools/install.py`）会把以下内容写入解压目录：
 | 路径 | 作用 |
 | --- | --- |
 | `python/` | 便携 Python 解释器（Windows：`python.exe`；macOS：`bin/python3`） |
-| `deps/*.whl` | `maafw`、`numpy`、`opencv-python` 等离线 wheel |
+| `deps/*.whl` | `maafw`、`numpy` 等离线 wheel |
 | `agent/` | Agent 源码、`bootstrap.py`、`ensure_mumu.py` |
 | `interface.json` | 已改写：`agent.child_exec` 与 `pretask.exec` 指向 `./python/...` |
 
