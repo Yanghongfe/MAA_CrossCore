@@ -3,10 +3,6 @@
 本目录暂存尚未迁移的历史 Python Custom Action 流程。竞技场与芯片筛选
 已经完成迁移，不再维护独立的“Agent流程总览”副本。
 
-在 <https://mpe.codax.site/stable/> 中使用“导入（粘贴板）”查看：
-
-- `第五关周本-Agent流程总览.json` -> `agent/weekly_complete.py`
-
 竞技场与芯片筛选应直接在 MPE 中打开正式运行文件：
 
 - `assets/resource/pipeline/base/模拟军演.json`

@@ -64,7 +64,7 @@
 | 基建 | 收菜 / 换班 / 好友交付等 |
 | 每日探索 | 出击选择 + 通用扫荡清体力（option：关卡/层数/次数） |
 | 创生微粒刷取 | 每周门票扫荡（pipeline `创生微粒刷取.json`） |
-| 周本 | 活动探索 · 碎星虚影等（option：关卡）；部分逻辑含 Agent `weekly_flow` |
+| 周本 | 活动探索 · 碎星虚影；关卡仅「第一关45微晶 / 第五关120微晶」（纯 pipeline） |
 | 领取奖励 | 邮箱 + 每日 + 通行证 |
 | 关闭游戏 / 历战试炼 | 收尾与活动向 |
 | 竞技场 / 芯片筛选-仓库 | Agent Custom（`arena_loop` / `chip_filter_flow`，需已安装 Agent 依赖） |
@@ -76,7 +76,7 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 / 周本 Custom
+* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 Custom
 * [x] MuMu pretask（`ensure_mumu`：只启模拟器/ADB，开游戏走 pipeline `StartApp`）
 * [x] 发版包附带 `Install-Agent-Deps.bat` 与订单源示例
 * [x] 创生微粒刷取 pipeline

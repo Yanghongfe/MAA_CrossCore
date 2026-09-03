@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Shared navigation coordinates from record/20260827-104742-f25144."""
 
-from collections import deque
-
 BACK_BUTTON = (164, 60)
 HOME_BUTTON = (328, 71)
 IDLE_MAIN_WAKE = (960, 540)
@@ -37,20 +35,13 @@ MAIN_UI_CONTROLS = {
     "event_banner": {"label": "活动横幅", "point": (350, 970), "node": None},
 }
 
-MAX_DIRECT_PAGE_STEPS = 2
-
 # Shared page graph used when one task hands control to another. New tasks must
 # extend this graph instead of assuming that every task starts from the home page.
 PAGE_GRAPH = {
     "main": {"secondary", "base", "warehouse"},
-    "secondary": {"main", "arena_hub", "activity_choice"},
+    "secondary": {"main", "arena_hub"},
     "arena_hub": {"secondary", "arena"},
     "arena": {"arena_hub"},
-    "activity_choice": {"secondary", "weekly_choice"},
-    "weekly_choice": {"activity_choice", "boss_choice"},
-    "boss_choice": {"weekly_choice", "battle_prep"},
-    "battle_prep": {"boss_choice", "map"},
-    "map": {"battle_prep"},
     "base": {"main", "base_staff", "base_order"},
     "warehouse": {"main", "chip_inventory"},
     "chip_inventory": {"warehouse"},
@@ -60,32 +51,6 @@ PAGE_GRAPH = {
     "synthesis_catalog": {"base_order", "synthesis_detail"},
     "synthesis_detail": {"synthesis_catalog"},
 }
-
-
-def page_distance(current, target, graph=None):
-    """Return the shortest known page transition count, or None if unknown."""
-    graph = graph or PAGE_GRAPH
-    if current == target:
-        return 0
-    queue = deque([(current, 0)])
-    visited = {current}
-    while queue:
-        page, distance = queue.popleft()
-        for next_page in graph.get(page, ()):
-            if next_page == target:
-                return distance + 1
-            if next_page not in visited:
-                visited.add(next_page)
-                queue.append((next_page, distance + 1))
-    return None
-
-
-def should_return_home(current, target, max_direct_steps=MAX_DIRECT_PAGE_STEPS):
-    """Use the home button when a cross-task handoff is more than two pages."""
-    if current == "main":
-        return False
-    distance = page_distance(current, target)
-    return distance is not None and distance > max_direct_steps
 
 
 def is_main_ui(context, image):

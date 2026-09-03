@@ -280,9 +280,14 @@ def main():
     # 准备排除目录列表
     exclude_paths = [Path(d).resolve() for d in args.exclude_dirs]
 
+    # MFAAvalonia 布局等非 pipeline JSON，不应套 pipeline.schema
+    exclude_names = {"mfa_layout.json"}
+
     def is_excluded(file_path):
-        """检查文件是否在排除目录中"""
+        """检查文件是否在排除目录中，或属于非 pipeline 白名单文件名"""
         file_path = Path(file_path).resolve()
+        if file_path.name in exclude_names:
+            return True
         for exclude_path in exclude_paths:
             try:
                 file_path.relative_to(exclude_path)

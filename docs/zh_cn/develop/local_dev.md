@@ -67,7 +67,7 @@ pretask **不会**打开交错战线。开游戏由 pipeline「启动游戏」�
 - Agent 只提供边界清晰的原子能力，例如复杂 OCR、数值判断、配置读写和单次稳定识别。
 - 新功能不得把完整页面流程写成单个 Custom Action；应由 Pipeline 组合多个原子能力。
 - 正式 Pipeline JSON 直接保存 `$__mpe_code`，同组成员可在 MPE 中阅读真实运行流程。
-- 竞技场、芯片筛选和第五关周本仍含历史单体 Agent，后续维护时逐步迁回 Pipeline。
+- 竞技场、芯片筛选仍含历史单体 Agent，后续维护时逐步迁回 Pipeline。
 
 Pipeline 调试可使用 MaaDebugger：
 
