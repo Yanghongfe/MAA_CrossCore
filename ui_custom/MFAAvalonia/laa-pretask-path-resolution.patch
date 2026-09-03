@@ -2,7 +2,7 @@ diff --git a/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs b/MFAAvalonia/Extensio
 index 54e6302..eac968d 100644
 --- a/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs
 +++ b/MFAAvalonia/Extensions/MaaFW/MaaProcessor.cs
-@@ -2449,19 +2449,40 @@ public class MaaProcessor
+@@ -2449,19 +2449,52 @@ public class MaaProcessor
              if (preTask.Resource is { Count: > 0 }
                  && !preTask.Resource.Any(name => string.Equals(name, resourceName, StringComparison.OrdinalIgnoreCase))) continue;
  
@@ -72,7 +72,7 @@ index 085803b..5a94f30 100644
  
  namespace MFAAvalonia.Extensions.MaaFW;
  
-@@ -42,6 +43,31 @@ public static class PathFinder
+@@ -42,6 +43,33 @@ public static class PathFinder
  
      private static string FindOnWindows(string fileName)
      {
