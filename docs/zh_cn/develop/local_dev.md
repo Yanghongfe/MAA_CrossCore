@@ -6,15 +6,48 @@
 
 - Windows x64
 - MuMu 模拟器 12，且目标实例中已安装《交错战线》
-- **开发环境**需本机 Python 3.10+ 与 `maafw`；**Release 包（Windows/macOS）已内置 `python/` 与 `deps/`，用户无需自行安装 Python**
-- 从 Release 下载完整程序包；仅下载 GitHub 源码不会包含 MFAAvalonia、MaaFramework 运行库和 OCR 模型
+- **开发环境**需本机 Python 3.10+ 与 `maafw`
+- **Release 包（Windows / macOS）**已内置 `python/` 与 `deps/`，用户一般无需自行安装 Python
+- **Release 包（Linux）**仍使用系统 `python3`，需自行安装 Agent 依赖
+- 从 Release 下载完整程序包；仅下载 GitHub 源码不会包含 MFAAvalonia、MaaFramework 运行库、OCR 模型和内置 Python
 
 开发环境可在仓库根目录创建虚拟环境：
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install maafw numpy opencv-python
+.\.venv\Scripts\python.exe -m pip install -r agent/requirements.txt
 ```
+
+## Release 包中的 Python / Agent（Windows / macOS）
+
+CI 打包时（`tools/install.py`）会把以下内容写入解压目录：
+
+| 路径 | 作用 |
+| --- | --- |
+| `python/` | 便携 Python 解释器（Windows：`python.exe`；macOS：`bin/python3`） |
+| `deps/*.whl` | `maafw`、`numpy`、`opencv-python` 等离线 wheel |
+| `agent/` | Agent 源码、`bootstrap.py`、`ensure_mumu.py` |
+| `interface.json` | 已改写：`agent.child_exec` 与 `pretask.exec` 指向 `./python/...` |
+
+用户侧流程：
+
+1. **pretask**（勾选「启动游戏」时）：MFAAvalonia 用内置 Python 执行 `./agent/ensure_mumu.py`（仅标准库，不依赖 `maafw`）。
+2. **Agent 任务**：客户端用 `./python/python.exe -u ./agent/main.py <socket_id>` 拉起 Agent。
+3. **`agent/main.py`** 启动时会 `chdir` 到程序根目录、把 `agent/` 加入 `sys.path`（嵌入式 Python 默认不会加脚本目录），再调用 **`bootstrap.ensure_dependencies()`**：优先从 `deps/` 离线安装，失败再尝试镜像在线安装。
+
+手动重装依赖（Windows）：双击根目录 **`Install-Agent-Deps.bat`**（优先用 `python/python.exe`，再从 `deps/` 离线装）。
+
+源码仓库里的 `assets/interface.json` 仍写 `"python"` 与 `{PROJECT_DIR}/...`，仅供开发；**发版后的 `interface.json` 才会被改写**，请勿用源码里的路径对照 Release 包排错。
+
+本地调试 pretask 脚本（不经过 MFA）：
+
+```powershell
+.\install\python\python.exe .\agent\ensure_mumu.py
+# 或开发环境：
+python .\agent\ensure_mumu.py
+```
+
+`agent/ensure_mumu.cmd` 供资源目录 shim 或手动调用，会优先找 `../python/python.exe`，否则回退本机 `py -3` / `python`。
 
 ## 启动游戏任务
 
@@ -58,8 +91,8 @@ pretask **不会**打开交错战线。开游戏由 pipeline「启动游戏」�
 | `assets/interface.json` | 资源、任务、选项、Agent 和 pretask 配置 |
 | `assets/resource/pipeline/` | Pipeline 识别与动作流程 |
 | `assets/resource/image/` | 经过裁剪的识别模板 |
-| `agent/` | 订单好友、竞技场、芯片、周本 Custom、导航及 MuMu pretask |
-| `ui_custom/MFAAvalonia/` | LAA 使用的 MFAAvalonia 可复现补丁 |
+| `agent/` | 订单好友、竞技场/芯片/角斗场 Custom、`bootstrap.py`、MuMu pretask |
+| `ui_custom/MFAAvalonia/` | LAA 使用的 MFAAvalonia 可复现补丁（含 pretask 路径解析） |
 
 ### Pipeline 与 Agent 分工
 
@@ -67,7 +100,7 @@ pretask **不会**打开交错战线。开游戏由 pipeline「启动游戏」�
 - Agent 只提供边界清晰的原子能力，例如复杂 OCR、数值判断、配置读写和单次稳定识别。
 - 新功能不得把完整页面流程写成单个 Custom Action；应由 Pipeline 组合多个原子能力。
 - 正式 Pipeline JSON 直接保存 `$__mpe_code`，同组成员可在 MPE 中阅读真实运行流程。
-- 竞技场、芯片筛选仍含历史单体 Agent，后续维护时逐步迁回 Pipeline。
+- 竞技场、芯片筛选已改为 Pipeline + Agent 原子能力；角斗场使用 `jdc_*` Custom。历史文件 `arena_loop.py` / `chip_filter_flow.py` 仍保留在仓库中，新维护请以 pipeline 为准。
 
 Pipeline 调试可使用 MaaDebugger：
 
@@ -87,9 +120,11 @@ Pipeline 调试可使用 MaaDebugger：
 | ADB 显示 `offline` | 程序会先重连；不存在其他在线设备时才会重启 ADB Server |
 | MuMu 已启动但 ADB 失败 | 在多开器中确认 Android 已完全启动，并检查防火墙或被占用端口 |
 | 提示游戏包不存在 / 官服起不来 | 确认 MFA 所选资源与 MuMu 实例中安装的官服/B 服一致；官服包名看 `pipeline/base/启动游戏.json`，B 服看 `bilibili/pipeline/startup.json`。pretask 不会开游戏 |
-| 双击源码中的文件无法运行 | 使用完整 Release 包，或先按 `tools/install.py` 流程组装运行目录 |
+| 双击源码中的文件无法运行 | 使用完整 Release 包，或按 `tools/install.py` 组装运行目录 |
 | OCR 模型加载失败 | 确认完整包中有 `resource/model/ocr/` 下的模型文件 |
-| Agent / Custom 无响应 | Release 包确认存在 `python/` 与 `deps/`；开发环境执行 `pip install -r agent/requirements.txt` |
+| pretask 报找不到 `python` / 路径在 `resource\base` 下 | 使用含内置 Python 的最新 Release；旧包或源码直跑需本机 Python。发版包内 `interface.json` 应为 `./python/python.exe` |
+| Agent / Custom 无响应、`No module named bootstrap` | Release 包确认存在 `python/`、`deps/`、`agent/bootstrap.py`；Windows 可跑 `Install-Agent-Deps.bat`。开发环境：`pip install -r agent/requirements.txt` |
+| Agent 首次启动较慢 | 正常：正在从 `deps/` 离线安装 `maafw`，完成后后续启动会快很多 |
 
 日志默认位于程序目录的 `debug/`。排错时优先查看最新日志中的 `[MuMu pretask]`、ADB 和 Agent 启动记录。
 

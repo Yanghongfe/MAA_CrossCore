@@ -28,8 +28,9 @@
 0. 从 [Releases](https://github.com/Yanghongfe/MAA_CrossCore/releases) 下载 Windows 包，例如：  
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
-2. **Windows / macOS 正式包已内置便携 Python**（`python/` 目录）和离线依赖包（`deps/`），首次运行 Agent 任务时会自动安装，**一般无需本机安装 Python**。  
-   若仍报错，可双击 `Install-Agent-Deps.bat`（Windows）手动重装 Agent 依赖。
+2. **Windows / macOS 正式包已内置便携 Python**（解压目录下的 `python/`）和离线依赖包（`deps/`）。首次运行带 Agent 的任务时，`agent/bootstrap.py` 会从 `deps/` 自动安装 `maafw` 等依赖，**一般无需本机安装 Python**。  
+   若仍报错，可双击 `Install-Agent-Deps.bat`（Windows）手动重装 Agent 依赖。  
+   **Linux 包不含内置 Python**，需本机 `python3` 并自行 `pip install -r agent/requirements.txt`。
 3. 若使用 **添加订单好友 / 拉黑订单好友**：复制 `config/orders_source.example.json` 为 `config/orders_source.json`，填入你的订单页 URL；正文每行 `UID|类型`（如 `123456|8-1`）
 4. 确认 **MuMu** 可用（可先手动开；勾选「启动游戏」时 pretask 只会自动启模拟器/ADB，**不会**替你开游戏客户端）
 5. 运行解压目录中的 `MFAAvalonia.exe`（以实际文件名为准）
@@ -46,7 +47,7 @@
 1. 推荐使用 [MuMu 模拟器](https://mumu.163.com/) 运行游戏；[模拟器支持情况](https://maa.plus/docs/zh-cn/manual/device/windows.html) 可参考 MAA 官方文档。
 2. 模拟器建议使用 `16:9` 分辨率，例如 `1920×1080`、`1280×720`。
 3. 软件内更新后若看不到新任务选项，可关闭程序后删除根目录 `config/config.json` 再打开（需重新配置部分选项）。
-4. Agent 报错 / Action is null：确认使用的是最新 Release 包（含 `python/` 与 `deps/`）；Windows 可再跑 `Install-Agent-Deps.bat`。
+4. Agent 报错 / Action is null：确认使用的是最新 Release 包（解压后根目录应含 `python/`、`deps/`、`agent/`）；Windows 可再跑 `Install-Agent-Deps.bat`。旧版包或只下了源码仓库会缺少这些目录。
 5. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
 
 ## 功能说明
@@ -67,7 +68,8 @@
 | 周本 | 活动探索 · 碎星虚影；关卡仅「第一关45微晶 / 第五关120微晶」（纯 pipeline） |
 | 领取奖励 | 邮箱 + 每日 + 通行证 |
 | 关闭游戏 / 历战试炼 | 收尾与活动向 |
-| 竞技场 / 芯片筛选-仓库 | Agent Custom（`arena_loop` / `chip_filter_flow`，需已安装 Agent 依赖） |
+| 竞技场 / 芯片筛选-仓库 | Pipeline 编排 + Agent 原子能力（`arena_atomic` / `chip_atomic` 等；Release 包首次运行自动装依赖） |
+| 角斗场 | Pipeline 编排 + Agent Custom（`jdc_*` 选角、配队、路线等） |
 
 自研草稿仍保留在 `pipeline/周常/`、`周本任务.json` 等，可与 base 并存，注意**节点名勿冲突**。
 
@@ -76,8 +78,8 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 Custom
-* [x] MuMu pretask（`ensure_mumu`：只启模拟器/ADB，开游戏走 pipeline `StartApp`）
+* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 / 角斗场 Custom
+* [x] MuMu pretask（`ensure_mumu.py`：Release 包由内置 `./python/python.exe` 拉起，只启模拟器/ADB，开游戏走 pipeline `StartApp`）
 * [x] 发版包内置便携 Python + 离线 deps（Windows/macOS，M9A 同款思路）
 * [x] 创生微粒刷取 pipeline
 * [ ] 实机验收与选项打磨
