@@ -142,16 +142,34 @@
         "post_delay": 2000,
         "next": [
             "模拟军演_角斗场_全部领取_完成点击"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2572,
-                "y": 1327
+        ]
+    },
+    "模拟军演_角斗场_全部领取_完成点击": {
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "pre_delay": 5000,
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    587,
+                    477,
+                    145,
+                    42
+                ]
             }
-        }
+        },
+        "post_delay": 1000,
+        "next": [
+            "模拟军演_角斗场_全部领取_完成"
+        ]
     },
     "模拟军演_角斗场_全部领取_完成": {
-        "pre_delay": 5000,
+        "recognition": {
+            "type": "DirectHit"
+        },
+        "pre_delay": 1000,
         "action": {
             "type": "Custom",
             "param": {
@@ -160,39 +178,7 @@
         },
         "next": [
             "通用-返回主页"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2892,
-                "y": 1686
-            }
-        }
-    },
-    "模拟军演_角斗场_全部领取_完成点击": {
-        "recognition": {
-            "type": "DirectHit",
-            "param": {
-                "roi": [
-                    587,
-                    477,
-                    145,
-                    42
-                ]
-            }
-        },
-        "pre_delay": 5000,
-        "action": {
-            "type": "Click"
-        },
-        "next": [
-            "通用-返回主页"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2892,
-                "y": 1359
-            }
-        }
+        ]
     },
     "模拟军演_角斗场_可免费入场次数为0": {
         "recognition": {
@@ -220,7 +206,7 @@
         },
         "post_delay": 2000,
         "next": [
-            "[JumpBack]子任务_进入首页"
+            "通用-返回主页"
         ],
         "$__mpe_code": {
             "position": {
@@ -261,36 +247,31 @@
         }
     },
     "模拟军演_角斗场_战斗胜利": {
-        "recognition": {
-            "type": "OCR",
-            "param": {
-                "roi": [
-                    31,
-                    38,
-                    326,
-                    89
-                ],
-                "expected": "战斗胜利"
-            }
-        },
+        "recognition": "OCR",
+        "expected": "战斗胜利",
+        "roi": [
+            31,
+            38,
+            326,
+            89
+        ],
+        "action": "Click",
         "pre_delay": 5000,
-        "action": {
-            "type": "Click"
-        },
         "post_delay": 2000,
+        "next": [
+            "模拟军演_角斗场_战斗胜利_后处理等待"
+        ]
+    },
+    "模拟军演_角斗场_战斗胜利_后处理等待": {
+        "recognition": "DirectHit",
+        "post_delay": 5000,
         "timeout": 300000,
         "rate_limit": 1000,
         "next": [
             "模拟军演_角斗场_全部领取",
             "模拟军演_角斗场_随机模式_选角色",
             "模拟军演_角斗场_推关"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 2252,
-                "y": 1104
-            }
-        }
+        ]
     },
     "模拟军演_角斗场_战斗胜利_等待": {
         "recognition": {
@@ -305,7 +286,7 @@
                 "expected": "战斗胜利"
             }
         },
-        "post_delay": 5000,
+        "post_delay": 3000,
         "next": [
             "模拟军演_角斗场_战斗胜利"
         ],
@@ -354,6 +335,7 @@
         "rate_limit": 1000,
         "next": [
             "模拟军演_角斗场_全部领取",
+            "模拟军演_角斗场_战斗失败",
             "模拟军演_角斗场_战斗胜利_等待"
         ],
         "$__mpe_code": {
@@ -362,6 +344,30 @@
                 "y": 1180
             }
         }
+    },
+    "模拟军演_角斗场_战斗失败": {
+        "recognition": "OCR",
+        "expected": "战斗失败",
+        "roi": [
+            406,
+            54,
+            451,
+            116
+        ],
+        "pre_delay": 3000,
+        "action": "Click",
+        "target": [
+            440,
+            634,
+            141,
+            40
+        ],
+        "post_delay": 3000,
+        "timeout": 300000,
+        "rate_limit": 1000,
+        "next": [
+            "模拟军演_角斗场_全部领取"
+        ]
     },
     "模拟军演_角斗场_测试版": {
         "recognition": {
@@ -732,8 +738,7 @@
     },
     "角斗场": {
         "next": [
-            "首页_出击",
-            "[JumpBack]子任务_进入首页"
+            "模拟军演_角斗场_初始化"
         ],
         "$__mpe_code": {
             "position": {
@@ -741,6 +746,16 @@
                 "y": 69
             }
         }
+    },
+    "模拟军演_角斗场_初始化": {
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "jdc_reset_state",
+        "post_delay": 500,
+        "next": [
+            "首页_出击",
+            "[JumpBack]子任务_进入首页"
+        ]
     },
     "$__mpe_external_通用-返回主页_角斗场": {
         "$__mpe_code": {

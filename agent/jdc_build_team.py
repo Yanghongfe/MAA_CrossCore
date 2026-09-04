@@ -1,5 +1,6 @@
 import json
 import time
+import itertools
 
 from maa.custom_action import CustomAction
 from maa.context import Context
@@ -19,6 +20,20 @@ JDC_CHARACTER_NAME_BAND_HEIGHT = 0.36
 
 # 0 = 无限重编
 JDC_BUILD_MAX_RETRY = 0
+
+# ============================================================
+# 特殊组队规避
+# ============================================================
+
+# 软规避：有其它可选组合时尽量避开；
+# 实在无法凑够5人时仍允许。
+JDC_TEAM_AVOID_RULES = {
+    "洛贝拉": [
+        "拉"
+    ]
+}
+
+JDC_TEAM_AVOID_PENALTY = 1000000.0
 
 
 # ============================================================
@@ -145,78 +160,289 @@ def final_team_candidate_score(
     return score
 
 
+def team_total_score(
+    team,
+    owned
+):
+    """
+    对完整5人组合进行整体评分。
+    """
+
+    keys = [
+        "dps",
+        "np",
+        "heal",
+        "buff"
+    ]
+
+    score = 0.0
+    detail = {}
+
+    for key in keys:
+
+        current = jdc.team_metric(
+            team,
+            key,
+            jdc.JDC_MODES[
+                key
+            ]
+        )
+
+        target = float(
+            jdc.JDC_TARGET[
+                key
+            ]
+        )
+
+        factor = jdc.priority_factor(
+            jdc.JDC_PRIORITIES[
+                key
+            ]
+        )
+
+        if target > 0:
+
+            covered = min(
+                current,
+                target
+            )
+
+            overflow = max(
+                current - target,
+                0
+            )
+
+            deficit = max(
+                target - current,
+                0
+            )
+
+            base_part = (
+                covered
+                *
+                factor
+                *
+                2.0
+            )
+
+            overflow_part = (
+                overflow
+                *
+                factor
+                *
+                0.30
+            )
+
+            deficit_penalty = (
+                deficit
+                *
+                factor
+                *
+                2.5
+            )
+
+            key_score = (
+                base_part
+                +
+                overflow_part
+                -
+                deficit_penalty
+            )
+
+        else:
+
+            key_score = (
+                current
+                *
+                factor
+            )
+
+        detail[
+            key
+        ] = {
+            "current": current,
+            "target": target,
+            "score": key_score
+        }
+
+        score += (
+            key_score
+        )
+
+    team_names = {
+        c.get(
+            "name",
+            ""
+        )
+        for c in team
+    }
+
+    avoid_reasons = []
+
+    for preferred, avoided_names in (
+        JDC_TEAM_AVOID_RULES.items()
+    ):
+
+        if preferred not in team_names:
+            continue
+
+        for avoided in avoided_names:
+
+            if avoided not in team_names:
+                continue
+
+            score -= (
+                JDC_TEAM_AVOID_PENALTY
+            )
+
+            avoid_reasons.append(
+                f"{preferred}+{avoided}"
+            )
+
+    return (
+        score,
+        detail,
+        avoid_reasons
+    )
+
+
 def build_final_team(
     owned,
     size=5
 ):
 
-    team = []
-
-    remain = list(
+    if len(
         owned
-    )
+    ) <= size:
 
-    big_dps = sorted(
-        [
-            c
-            for c in remain
-            if float(
-                c.get(
-                    "dps",
-                    0
-                )
-            )
-            >=
-            85
-        ],
-        key=lambda c: -float(
-            c.get(
-                "dps",
-                0
-            )
+        print(
+            "[角斗场] 可用角色数量不超过5，"
+            "直接使用全部角色"
+        )
+
+        return list(
+            owned
+        )
+
+    combinations = list(
+        itertools.combinations(
+            owned,
+            size
         )
     )
 
-    for c in big_dps[:2]:
+    print(
+        "[角斗场] 开始枚举5人组合，"
+        f"共 {len(combinations)} 种"
+    )
 
-        team.append(c)
+    ranked = []
 
-    selected = {
-        c["name"]
-        for c in team
-    }
+    for combo in combinations:
 
-    remain = [
-        c
-        for c in remain
-        if c["name"]
-        not in selected
-    ]
+        team = list(
+            combo
+        )
 
-    while (
-        len(team) < size
-        and remain
-    ):
-
-        best = max(
-            remain,
-            key=lambda c: (
-                final_team_candidate_score(
-                    c,
-                    team
-                )
+        score, detail, avoid_reasons = (
+            team_total_score(
+                team,
+                owned
             )
         )
 
-        team.append(
-            best
+        ranked.append(
+            (
+                score,
+                team,
+                detail,
+                avoid_reasons
+            )
         )
 
-        remain.remove(
-            best
+    ranked.sort(
+        key=lambda item: -item[0]
+    )
+
+    best_score, best_team, best_detail, best_avoid = (
+        ranked[0]
+    )
+
+    print(
+        "[角斗场] 组合评分TOP5："
+    )
+
+    for (
+        score,
+        team,
+        detail,
+        avoid_reasons
+    ) in ranked[:5]:
+
+        names = [
+            c["name"]
+            for c in team
+        ]
+
+        metrics = (
+            f"DPS={detail['dps']['current']:.0f} "
+            f"NP={detail['np']['current']:.0f} "
+            f"Heal={detail['heal']['current']:.0f} "
+            f"Buff={detail['buff']['current']:.0f}"
         )
 
-    return team
+        line = (
+            f"  {score:.2f} "
+            f"{names} "
+            f"[{metrics}]"
+        )
+
+        if avoid_reasons:
+
+            line += (
+                " 规避="
+                +
+                ",".join(
+                    avoid_reasons
+                )
+            )
+
+        print(
+            line
+        )
+
+    print(
+        "[角斗场] 最优5人组合："
+        +
+        str(
+            [
+                c["name"]
+                for c in best_team
+            ]
+        )
+    )
+
+    print(
+        "[角斗场] 最优组合属性："
+        f"DPS={best_detail['dps']['current']:.0f} "
+        f"NP={best_detail['np']['current']:.0f} "
+        f"Heal={best_detail['heal']['current']:.0f} "
+        f"Buff={best_detail['buff']['current']:.0f}"
+    )
+
+    if best_avoid:
+
+        print(
+            "[角斗场] 注意：最优组合仍触发规避："
+            +
+            ",".join(
+                best_avoid
+            )
+        )
+
+    return list(
+        best_team
+    )
 
 
 # ============================================================
