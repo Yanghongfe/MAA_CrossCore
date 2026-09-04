@@ -22,7 +22,7 @@ def choose(infos, requested=None, cached=None):
         ),
     ):
         return ensure_mumu.choose_instance(
-            Path("MuMuManager.exe"), requested=requested
+            Path("MuMuManager.exe"), requested=requested, cached_index=cached
         )[0]
 
 
@@ -58,21 +58,23 @@ def test_main_instance_wins_when_all_stopped():
     assert choose(infos) == 0
 
 
-def test_ambiguous_stopped_instances_require_selection():
+def test_ambiguous_stopped_instances_use_lowest_index():
     infos = {
         1: {"index": 1, "disk_size_bytes": 100},
         2: {"index": 2, "disk_size_bytes": 500},
     }
-    assert choose(infos) is None
+    assert choose(infos) == 1
 
 
 def test_offline_connection_recovers_without_server_restart():
     runner = patch.object(ensure_mumu, "run", return_value=(0, "", ""))
     with (
         runner as mocked_run,
-        patch.object(ensure_mumu, "adb_state", side_effect=["offline", "device"]),
+        patch.object(ensure_mumu, "connection_usable", side_effect=[False, True]),
     ):
-        assert ensure_mumu.recover_existing_adb(Path("adb.exe"), "127.0.0.1:16416")
+        assert ensure_mumu.recover_existing_adb(
+            Path("adb.exe"), "127.0.0.1:16416", {}
+        )
     commands = [call.args[0][1] for call in mocked_run.call_args_list]
     assert commands == ["disconnect", "connect"]
 
@@ -80,11 +82,11 @@ def test_offline_connection_recovers_without_server_restart():
 def test_other_online_device_blocks_global_adb_restart():
     with (
         patch.object(ensure_mumu, "run", return_value=(0, "", "")) as mocked_run,
-        patch.object(ensure_mumu, "adb_state", side_effect=["offline", "offline"]),
+        patch.object(ensure_mumu, "connection_usable", side_effect=[False, False]),
         patch.object(ensure_mumu, "adb_devices", return_value={"emulator-5554": "device"}),
     ):
         assert not ensure_mumu.recover_existing_adb(
-            Path("adb.exe"), "127.0.0.1:16416"
+            Path("adb.exe"), "127.0.0.1:16416", {}
         )
     assert all(call.args[0][1] != "kill-server" for call in mocked_run.call_args_list)
 

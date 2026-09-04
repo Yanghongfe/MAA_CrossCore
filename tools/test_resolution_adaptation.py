@@ -68,7 +68,7 @@ def test_viewport_maps_reference_geometry_to_720p_and_1080p():
 
 
 def test_chip_detail_lock_visual_scales_to_720p_and_1080p():
-    for width, height in (PIPELINE_SIZE, FULL_HD_SIZE):
+    for width, height in (PIPELINE_SIZE, (1600, 900), FULL_HD_SIZE, (2560, 1440)):
         scale_x = width / FULL_HD_SIZE[0]
         scale_y = height / FULL_HD_SIZE[1]
         point = (1207, 196)
@@ -80,7 +80,8 @@ def test_chip_detail_lock_visual_scales_to_720p_and_1080p():
         image[body_top:body_top + max(8, round(16 * scale_y)), cx - radius:cx + radius + 1] = 255
         image[body_top - max(4, round(10 * scale_y)):body_top,
               cx + round(3 * scale_x):cx + round(9 * scale_x) + 1] = 255
-        assert ChipFilterFlow._read_detail_lock_visual(image, point) is True
+        located = ChipFilterFlow._locate_detail_lock(image)
+        assert located is not None and located[0] is True
 
 
 def test_creation_particle_pipeline_uses_maa_720p_coordinate_space():

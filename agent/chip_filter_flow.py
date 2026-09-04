@@ -43,7 +43,8 @@ WAREHOUSE_BUTTON = (1723, 63)  # 芯片筛选1.0 图1“仓库按钮”标注中
 ITEM_TAB = (1510, 70)
 CHIP_TAB = (1800, 70)          # 图4“芯片区”标注中心。
 DETAIL_CLOSE_BLANK = (300, 700)
-DETAIL_LOCK_TOGGLE = (1207, 196)  # 横坐标固定；纵坐标随详情首行位置对齐。
+DETAIL_LOCK_TOGGLE = (1207, 196)
+DETAIL_LOCK_SEARCH_ROI = [1178, 100, 58, 145]
 CHIP_ROW_SCROLL_X = 1300
 CHIP_ROW_SCROLL_START_Y = 929
 CHIP_ROW_SCROLL_END_Y = 748
@@ -595,27 +596,50 @@ class ChipFilterFlow(CustomAction):
         return max(scores, default=0.0)
 
     @staticmethod
-    def _read_detail_lock_visual(image, point):
+    def _locate_detail_lock(image):
+        """Locate the detail lock itself and return (locked, reference click point)."""
         image_width, image_height = image_size(image)
-        center_x = round(point[0] * image_width / REFERENCE_SIZE[0])
-        center_y = round(point[1] * image_height / REFERENCE_SIZE[1])
         scale_x = image_width / REFERENCE_SIZE[0]
         scale_y = image_height / REFERENCE_SIZE[1]
         radius_x = max(5, round(14 * scale_x))
-        search_y = max(4, round(10 * scale_y))
         gray = np.asarray(image)[..., :3].astype(np.float32).mean(axis=2)
         bright = gray >= 160
 
-        body_top = None
-        x1 = max(0, center_x - radius_x)
-        x2 = min(image_width, center_x + radius_x + 1)
-        body_threshold = max(4, round((x2 - x1) * 0.62))
-        for y in range(max(0, center_y - search_y), min(image_height, center_y + search_y + 1)):
-            if int(bright[y, x1:x2].sum()) >= body_threshold:
-                body_top = y
-                break
-        if body_top is None:
+        search_x, search_y, search_width, search_height = scale_roi(
+            image, DETAIL_LOCK_SEARCH_ROI
+        )
+        best = None
+        center_min = search_x + radius_x
+        center_max = search_x + search_width - radius_x
+        minimum_run = max(4, round(6 * scale_y))
+        for center_x in range(center_min, center_max + 1):
+            x1 = center_x - radius_x
+            x2 = center_x + radius_x + 1
+            body_threshold = max(4, round((x2 - x1) * 0.58))
+            run_start = None
+            run_score = 0
+            for y in range(search_y, min(image_height, search_y + search_height)):
+                count = int(bright[y, x1:x2].sum())
+                if count >= body_threshold:
+                    if run_start is None:
+                        run_start = y
+                        run_score = 0
+                    run_score += count
+                    continue
+                if run_start is not None and y - run_start >= minimum_run:
+                    candidate = (run_score, y - run_start, center_x, run_start)
+                    if best is None or candidate > best:
+                        best = candidate
+                run_start = None
+            end_y = min(image_height, search_y + search_height)
+            if run_start is not None and end_y - run_start >= minimum_run:
+                candidate = (run_score, end_y - run_start, center_x, run_start)
+                if best is None or candidate > best:
+                    best = candidate
+        if best is None:
             return None
+
+        _, body_height, center_x, body_top = best
 
         connector_x1 = max(0, center_x + round(3 * scale_x))
         connector_x2 = min(image_width, center_x + round(9 * scale_x) + 1)
@@ -624,10 +648,14 @@ class ChipFilterFlow(CustomAction):
         if connector.size == 0:
             return None
         density = float(connector.mean())
+        point = (
+            round(center_x * REFERENCE_SIZE[0] / image_width),
+            round((body_top + body_height / 2) * REFERENCE_SIZE[1] / image_height),
+        )
         if density >= 0.10:
-            return True
+            return True, point
         if density <= 0.075:
-            return False
+            return False, point
         return None
 
     def _read_skill_name(self, context, image, row):
@@ -681,12 +709,6 @@ class ChipFilterFlow(CustomAction):
                 rows = [(names[index][1], levels[index][1]) for index in range(4)]
             detail = validate_chip_detail(rows)
             if detail:
-                _, image_height = image_size(image)
-                first_name_y = round(names[0][0] * REFERENCE_SIZE[1] / image_height)
-                detail["_lock_toggle_point"] = (
-                    DETAIL_LOCK_TOGGLE[0],
-                    max(150, min(215, first_name_y - 166)),
-                )
                 readings.append(detail)
                 if has_stable_detail(readings):
                     return detail
@@ -705,7 +727,7 @@ class ChipFilterFlow(CustomAction):
                     "source": "warehouse_all_chips",
                     "scan_order": "left_to_right_top_to_bottom",
                     "capacity": capacity,
-                    "lock_toggle": {"x": DETAIL_LOCK_TOGGLE[0], "y": "dynamic_from_detail"},
+                    "lock_toggle": "located_from_detail_lock_shape",
                     "summary": summary,
                     "chips": results,
                 },
@@ -736,16 +758,14 @@ class ChipFilterFlow(CustomAction):
             return
 
         desired_locked = evaluate_chip(detail, plan)["desired_locked"]
-        lock_toggle_point = detail["_lock_toggle_point"]
-        locked_before = self._read_detail_lock_visual(
-            self._shot(context), lock_toggle_point
-        )
-        if locked_before is None:
+        lock_visual = self._locate_detail_lock(self._shot(context))
+        if lock_visual is None:
             log.warning("芯片%d详情锁形状无法可靠确认，已跳过且不会点击", slot["index"])
             summary["lock_state_failed"] += 1
             self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
             self._sleep(context, 0.25)
             return
+        locked_before, lock_toggle_point = lock_visual
 
         # Unlocking is destructive to the user's protection state. Require a
         # second independent stable read and the same negative decision.
@@ -760,7 +780,6 @@ class ChipFilterFlow(CustomAction):
                 summary["unlock_guard_failed"] += 1
                 self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
                 self._sleep(context, 0.25)
-                detail.pop("_lock_toggle_point", None)
                 detail.update({
                     "slot": slot["index"],
                     "locked_before": True,
@@ -776,17 +795,14 @@ class ChipFilterFlow(CustomAction):
                 summary["read"] += 1
                 return
 
-        detail.pop("_lock_toggle_point", None)
         changed = locked_before != desired_locked
         verified = True
         if changed and not dry_run:
             action = "上锁" if desired_locked else "取消上锁"
             self._click(context, lock_toggle_point, action)
             self._sleep(context, 0.7)
-            state_after = self._read_detail_lock_visual(
-                self._shot(context), lock_toggle_point
-            )
-            verified = state_after == desired_locked
+            visual_after = self._locate_detail_lock(self._shot(context))
+            verified = visual_after is not None and visual_after[0] == desired_locked
         self._click(context, DETAIL_CLOSE_BLANK, "详情外空白处")
         self._sleep(context, 0.25)
 
