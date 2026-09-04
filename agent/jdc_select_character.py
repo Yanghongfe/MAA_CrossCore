@@ -14,7 +14,7 @@ from maa.context import Context
 JDC_TARGET = {
     "dps": 100,
     "np": 90,
-    "heal": 80,
+    "heal": 70,
     "buff": 60
 }
 
@@ -34,7 +34,7 @@ JDC_PRIORITIES = {
 
 JDC_INCLUDE_DISABLED = False
 
-JDC_NAME_MATCH_RATIO = 0.72
+JDC_NAME_MATCH_RATIO = 0.50
 
 
 # ============================================================
