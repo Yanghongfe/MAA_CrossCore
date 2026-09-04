@@ -13,7 +13,7 @@ from maa.context import Context
 
 JDC_TARGET = {
     "dps": 100,
-    "np": 80,
+    "np": 90,
     "heal": 80,
     "buff": 60
 }
