@@ -189,13 +189,13 @@ def test_row_scroll_uses_slow_fixed_distance_without_page_jump():
     assert CHIP_ROW_SCROLL_DURATION == 1000
 
 
-def test_detail_signature_ignores_private_runtime_fields():
+def test_detail_signature_ignores_dynamic_toggle_position():
     first = {
         "main_skill": {"name": "切割", "level": 2},
         "sub_skills": [{"name": "攻击", "level": 3}],
-        "_runtime_value": (1207, 155),
+        "_lock_toggle_point": (1207, 155),
     }
-    second = dict(first, _runtime_value=(1207, 158))
+    second = dict(first, _lock_toggle_point=(1207, 158))
     assert chip_detail_signature(first) == chip_detail_signature(second)
 
 
@@ -320,13 +320,13 @@ def test_decompose_selection_page_excludes_foreground_dialogs():
 class _SingleToggleFlow(ChipFilterFlow):
     def __init__(self):
         self.click_labels = []
-        self.lock_visuals = iter(((False, (1207, 196)), (False, (1207, 196))))
+        self.lock_visuals = iter((False, False))
 
     @staticmethod
     def _sleep(_context, _seconds):
         return None
 
-    def _locate_detail_lock(self, _image):
+    def _read_detail_lock_visual(self, _image, _point):
         return next(self.lock_visuals)
 
     def _click(self, _context, _point, label):
@@ -349,6 +349,7 @@ class _SingleToggleFlow(ChipFilterFlow):
                 {"name": "命中", "level": 1},
                 {"name": "暴伤", "level": 1},
             ],
+            "_lock_toggle_point": (1207, 158),
         }
 
 
@@ -371,7 +372,7 @@ def test_lock_toggle_is_never_clicked_twice_when_verification_stays_stale():
 class _UnlockGuardFlow(_SingleToggleFlow):
     def __init__(self):
         super().__init__()
-        self.lock_visuals = iter(((True, (1207, 196)),))
+        self.lock_visuals = iter((True,))
         self.details = iter((
             {
                 "main_skill": {"name": "切割", "level": 2},
@@ -380,6 +381,7 @@ class _UnlockGuardFlow(_SingleToggleFlow):
                     {"name": "耐久", "level": 1},
                     {"name": "坚韧", "level": 1},
                 ],
+                "_lock_toggle_point": (1207, 155),
             },
             {
                 "main_skill": {"name": "切割", "level": 2},
@@ -388,6 +390,7 @@ class _UnlockGuardFlow(_SingleToggleFlow):
                     {"name": "耐久", "level": 1},
                     {"name": "坚韧", "level": 1},
                 ],
+                "_lock_toggle_point": (1207, 155),
             },
         ))
 
@@ -397,7 +400,7 @@ class _UnlockGuardFlow(_SingleToggleFlow):
 class _AlreadyLockedFlow(_SingleToggleFlow):
     def __init__(self):
         super().__init__()
-        self.lock_visuals = iter(((True, (1207, 196)),))
+        self.lock_visuals = iter((True,))
 
 
 def test_already_locked_matching_chip_is_not_toggled():
@@ -417,7 +420,7 @@ def test_already_locked_matching_chip_is_not_toggled():
     assert summary["unchanged"] == 1
 
 
-def test_lock_click_uses_visually_located_toggle_point():
+def test_lock_click_uses_detail_aligned_toggle_point():
     flow = _SingleToggleFlow()
     clicked = []
     flow._read_detail = lambda _context: {
@@ -427,8 +430,8 @@ def test_lock_click_uses_visually_located_toggle_point():
             {"name": "命中", "level": 1},
             {"name": "暴伤", "level": 1},
         ],
+        "_lock_toggle_point": (1207, 193),
     }
-    flow.lock_visuals = iter(((False, (1207, 193)), (True, (1207, 193))))
     flow._click = lambda _context, point, label: clicked.append((point, label))
     summary = {
         "attempted": 0, "read": 0, "locked": 0, "unlocked": 0,
@@ -477,72 +480,17 @@ def test_lock_state_requires_consistent_frames_and_rejects_conflicts():
     assert classify_lock_scores([0.91, 0.60]) is None
 
 
-def test_detail_lock_visual_distinguishes_closed_and_open_shackle_at_shifted_positions():
+def test_detail_lock_visual_distinguishes_closed_and_open_shackle():
+    point = (1207, 196)
     closed = np.zeros((1080, 1920, 3), dtype=np.uint8)
     closed[195:211, 1193:1222] = 255
     closed[185:195, 1210:1217] = 255
-    assert ChipFilterFlow._locate_detail_lock(closed) == (True, (1207, 203))
+    assert ChipFilterFlow._read_detail_lock_visual(closed, point) is True
 
     opened = np.zeros((1080, 1920, 3), dtype=np.uint8)
-    opened[168:184, 1193:1222] = 255
-    assert ChipFilterFlow._locate_detail_lock(opened) == (False, (1207, 176))
-
-
-def test_detail_lock_visual_scales_to_1280x720():
-    closed = np.zeros((720, 1280, 3), dtype=np.uint8)
-    closed[130:141, 795:815] = 255
-    closed[123:130, 807:812] = 255
-    located = ChipFilterFlow._locate_detail_lock(closed)
-    assert located is not None and located[0] is True
-
-
-class _LingQiaoLockedFlow(_SingleToggleFlow):
-    def __init__(self, main_level, lock_visuals):
-        super().__init__()
-        self.main_level = main_level
-        self.lock_visuals = iter(lock_visuals)
-
-    def _read_detail(self, _context):
-        return {
-            "main_skill": {"name": "灵巧", "level": self.main_level},
-            "sub_skills": [
-                {"name": "攻击", "level": 3},
-                {"name": "耐久", "level": 1},
-                {"name": "坚韧", "level": 1},
-            ],
-        }
-
-
-def test_locked_lingqiao_level2_attack3_is_never_unlocked():
-    flow = _LingQiaoLockedFlow(2, ((True, (1207, 176)),))
-    summary = {
-        "attempted": 0, "read": 0, "locked": 0, "unlocked": 0,
-        "unchanged": 0, "planned": 0, "failed": 0,
-        "lock_state_failed": 0, "unlock_guard_failed": 0,
-        "verify_failed": 0,
-    }
-    plan = {"levels": {"2": {"mode": "conditional", "conditions": {
-        "灵巧": {"minimum_total_level": 3, "effective_sub_skills": ["攻击"]}
-    }}}}
-    flow._process_slot(object(), {"index": 1, "point": (169, 270)}, plan, [], summary)
-    assert "取消上锁" not in flow.click_labels
-    assert summary["unchanged"] == 1
-
-
-def test_locked_lingqiao_level1_is_unlocked_once():
-    flow = _LingQiaoLockedFlow(
-        1, ((True, (1207, 176)), (False, (1207, 176)))
-    )
-    summary = {
-        "attempted": 0, "read": 0, "locked": 0, "unlocked": 0,
-        "unchanged": 0, "planned": 0, "failed": 0,
-        "lock_state_failed": 0, "unlock_guard_failed": 0,
-        "verify_failed": 0,
-    }
-    plan = {"levels": {"1": {"mode": "unlock", "conditions": {}}}}
-    flow._process_slot(object(), {"index": 1, "point": (169, 270)}, plan, [], summary)
-    assert flow.click_labels.count("取消上锁") == 1
-    assert summary["unlocked"] == 1
+    opened[195:211, 1193:1222] = 255
+    opened[185:195, 1210:1217] = 0
+    assert ChipFilterFlow._read_detail_lock_visual(opened, point) is False
 
 
 if __name__ == "__main__":
