@@ -459,3 +459,6 @@ debug
 # Local-only sync scripts (personal release path; not for the repo)
 /Sync-Local-Release.bat
 /tools/sync_local_release.py
+
+# Local reference copies (do not commit)
+assets/interface_别人的.json
