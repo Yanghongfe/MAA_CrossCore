@@ -63,8 +63,13 @@
         },
         {
             "name": "活动",
-            "entry": "活动_入口",
-            "doc": "[color:red]活动功能暂时只有困难最后一关，且版本更新后未必能继续使用[/color]"
+            "entry": "活动_任务",
+            "doc": "活动底层流程：进活动页、领取每日票、体力换票、进入困难关、按票数分批扫荡。后续新活动优先只替换节点识别与点击坐标。",
+            "option": [
+                "活动票兑换方式",
+                "通用队伍选择",
+                "活动掉落加成"
+            ]
         },
         {
             "name": "每日免费礼包",
@@ -188,6 +193,90 @@
         }
     ],
     "option": {
+        "活动票兑换方式": {
+            "type": "select",
+            "label": "刷关票兑换方式",
+            "default_case": "消耗完当前体力",
+            "cases": [
+                { "name": "消耗完当前体力", "option": ["活动使用体力药-消耗完"] },
+                { "name": "自定次数", "option": ["活动自定兑换次数", "活动使用体力药-自定"] }
+            ]
+        },
+        "活动自定兑换次数": {
+            "type": "input",
+            "label": "自定扫荡次数",
+            "inputs": [
+                {
+                    "name": "兑换次数",
+                    "label": "扫荡次数",
+                    "default": "1",
+                    "pipeline_type": "int",
+                    "verify": "^[1-9][0-9]*$",
+                    "pattern_msg": "请输入大于或等于 1 的整数"
+                }
+            ]
+        },
+        "活动使用体力药-消耗完": {
+            "type": "select",
+            "label": "体力药",
+            "default_case": "不使用",
+            "cases": [
+                { "name": "不使用" },
+                { "name": "使用", "option": ["活动体力药类型", "活动体力药数量"] }
+            ]
+        },
+        "活动使用体力药-自定": {
+            "type": "select",
+            "label": "体力药",
+            "default_case": "不使用",
+            "cases": [
+                { "name": "不使用" },
+                { "name": "使用", "option": ["活动体力药类型"] }
+            ]
+        },
+        "活动体力药类型": {
+            "type": "select",
+            "label": "体力药类型",
+            "default_case": "小药",
+            "cases": [
+                { "name": "小药" },
+                { "name": "大药" }
+            ]
+        },
+        "活动体力药数量": {
+            "type": "input",
+            "label": "使用体力药数目",
+            "inputs": [
+                {
+                    "name": "使用数量",
+                    "label": "使用数量",
+                    "default": "1",
+                    "pipeline_type": "int",
+                    "verify": "^[1-9][0-9]*$",
+                    "pattern_msg": "请输入大于或等于 1 的整数"
+                }
+            ]
+        },
+        "通用队伍选择": {
+            "type": "select",
+            "label": "队伍",
+            "default_case": "1",
+            "cases": [
+                { "name": "1" },
+                { "name": "2" },
+                { "name": "3" },
+                { "name": "4" }
+            ]
+        },
+        "活动掉落加成": {
+            "type": "switch",
+            "label": "使用每日双倍掉落",
+            "default_case": "Yes",
+            "cases": [
+                { "name": "Yes" },
+                { "name": "No" }
+            ]
+        },
         "MuMu实例": {
             "type": "select",
             "label": "MuMu实例",
