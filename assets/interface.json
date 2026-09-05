@@ -7,10 +7,8 @@
         "name": "自动启动 MuMu 12",
         "label": "仅在选择启动游戏时运行",
         "description": "自动查找 MuMu 12、启动实例并配置 ADB（不打开游戏；开游戏由「启动游戏」任务负责）。",
-        "exec": "python",
-        "args": [
-            "{PROJECT_DIR}/agent/ensure_mumu.py"
-        ]
+        "exec": "ensure_mumu.cmd",
+        "args": []
     },
     "controller": [
         {
@@ -35,9 +33,10 @@
         }
     ],
     "agent": {
-        "child_exec": "python",
+        "child_exec": "./python/python.exe",
         "child_args": [
-            "{PROJECT_DIR}/agent/main.py"
+            "-u",
+            "./agent/main.py"
         ]
     },
     "task": [
@@ -103,11 +102,13 @@
         {
             "name": "基建",
             "entry": "基建",
-            "doc": "收资源、换班、订单库交付（含构建票与稀有订单）；启用自动合成时仅合成当前缺少的素材数量。",
+            "doc": "收资源、换班、订单交付（And：图标+可交付；构建票另识别数额）。",
             "option": [
                 "是否访问每个好友换抽",
-                "稀有构建订单",
-                "普通构建订单"
+                "基建_构建票订单数额6-10",
+                "基建_构建票订单数额16-18",
+                "兑换经验订单",
+                "兑换星币订单"
             ]
         },
         {
@@ -192,8 +193,19 @@
             "label": "刷关票兑换方式",
             "default_case": "消耗完当前体力",
             "cases": [
-                { "name": "消耗完当前体力", "option": ["活动使用体力药-消耗完"] },
-                { "name": "自定次数", "option": ["活动自定兑换次数", "活动使用体力药-自定"] }
+                {
+                    "name": "消耗完当前体力",
+                    "option": [
+                        "活动使用体力药-消耗完"
+                    ]
+                },
+                {
+                    "name": "自定次数",
+                    "option": [
+                        "活动自定兑换次数",
+                        "活动使用体力药-自定"
+                    ]
+                }
             ]
         },
         "活动自定兑换次数": {
@@ -215,8 +227,16 @@
             "label": "体力药",
             "default_case": "不使用",
             "cases": [
-                { "name": "不使用" },
-                { "name": "使用", "option": ["活动体力药类型", "活动体力药数量"] }
+                {
+                    "name": "不使用"
+                },
+                {
+                    "name": "使用",
+                    "option": [
+                        "活动体力药类型",
+                        "活动体力药数量"
+                    ]
+                }
             ]
         },
         "活动使用体力药-自定": {
@@ -224,8 +244,15 @@
             "label": "体力药",
             "default_case": "不使用",
             "cases": [
-                { "name": "不使用" },
-                { "name": "使用", "option": ["活动体力药类型"] }
+                {
+                    "name": "不使用"
+                },
+                {
+                    "name": "使用",
+                    "option": [
+                        "活动体力药类型"
+                    ]
+                }
             ]
         },
         "活动体力药类型": {
@@ -233,8 +260,12 @@
             "label": "体力药类型",
             "default_case": "小药",
             "cases": [
-                { "name": "小药" },
-                { "name": "大药" }
+                {
+                    "name": "小药"
+                },
+                {
+                    "name": "大药"
+                }
             ]
         },
         "活动体力药数量": {
@@ -256,10 +287,18 @@
             "label": "队伍",
             "default_case": "1",
             "cases": [
-                { "name": "1" },
-                { "name": "2" },
-                { "name": "3" },
-                { "name": "4" }
+                {
+                    "name": "1"
+                },
+                {
+                    "name": "2"
+                },
+                {
+                    "name": "3"
+                },
+                {
+                    "name": "4"
+                }
             ]
         },
         "活动掉落加成": {
@@ -267,8 +306,12 @@
             "label": "使用每日双倍掉落",
             "default_case": "Yes",
             "cases": [
-                { "name": "Yes" },
-                { "name": "No" }
+                {
+                    "name": "Yes"
+                },
+                {
+                    "name": "No"
+                }
             ]
         },
         "MuMu实例": {
@@ -533,36 +576,110 @@
             ],
             "type": "switch"
         },
-        "稀有构建订单": {
+        "基建_构建票订单数额6-10": {
+            "type": "checkbox",
+            "label": "构建票订单（6-10）",
+            "default_case": [
+                "6",
+                "8"
+            ],
+            "cases": [
+                {
+                    "name": "6",
+                    "label": "6票",
+                    "pipeline_override": {
+                        "基建_构建票6_可交付": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "8",
+                    "label": "8票",
+                    "pipeline_override": {
+                        "基建_构建票8_可交付": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "10",
+                    "label": "10票",
+                    "pipeline_override": {
+                        "基建_构建票10_可交付": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "基建_构建票订单数额16-18": {
+            "type": "checkbox",
+            "label": "构建票订单（16-18）",
+            "default_case": [
+                "16"
+            ],
+            "cases": [
+                {
+                    "name": "16",
+                    "label": "16票",
+                    "pipeline_override": {
+                        "基建_构建票16_可交付": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "18票",
+                    "pipeline_override": {
+                        "基建_构建票18_可交付": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "兑换经验订单": {
             "type": "switch",
-            "label": "稀有构建订单",
+            "label": "兑换经验订单",
             "default_case": "Yes",
             "cases": [
                 {
-                    "name": "Yes"
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "基建_经验_可交付": {
+                            "enabled": true
+                        }
+                    }
                 },
                 {
                     "name": "No",
                     "pipeline_override": {
-                        "基建_自己交付1": {
+                        "基建_经验_可交付": {
                             "enabled": false
                         }
                     }
                 }
             ]
         },
-        "普通构建订单": {
+        "兑换星币订单": {
             "type": "switch",
-            "label": "普通构建订单",
+            "label": "兑换星币订单",
             "default_case": "Yes",
             "cases": [
                 {
-                    "name": "Yes"
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "基建_星币_可交付": {
+                            "enabled": true
+                        }
+                    }
                 },
                 {
                     "name": "No",
                     "pipeline_override": {
-                        "基建_自己交付2": {
+                        "基建_星币_可交付": {
                             "enabled": false
                         }
                     }

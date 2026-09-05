@@ -3,17 +3,17 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788093526676,
+            "lastSyncTime": 1788608618093,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\base\\通用.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MAAlocalhost\\resource\\pipeline\\base\\通用.json",
             "savedViewport": {
-                "x": 80,
-                "y": -817,
+                "x": -274,
+                "y": -1394,
                 "zoom": 0.8
             },
             "filename": "通用",
-            "version": "v1.9.1"
+            "version": "v1.9.3"
         }
     },
     "$__mpe_external_NERI_通用": {
@@ -248,6 +248,7 @@
                 ]
             }
         },
+        "pre_delay": 1000,
         "action": {
             "type": "Click"
         },
