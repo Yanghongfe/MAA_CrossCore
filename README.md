@@ -25,7 +25,7 @@
 
 ## 使用方式
 
-0. 从 [Releases](https://github.com/Yanghongfe/MAA_CrossCore/releases) 下载 Windows 包，例如：  
+0. 从 [Releases](https://github.com/Yanghongfe/MAA_CrossCore/releases) 下载 Windows 包（当前主线约 **v0.5.x**，以 Releases 页最新 tag 为准），例如：  
    `MaaXXX-win-x86_64-v0.x.x.zip`
 1. 解压压缩包
 2. **Windows / macOS 正式包已内置便携 Python**（解压目录下的 `python/`）和离线依赖包（`deps/`）。首次运行带 Agent 的任务时，`agent/bootstrap.py` 会从 `deps/` 自动安装 `maafw` 等依赖，**一般无需本机安装 Python**。  
@@ -48,7 +48,8 @@
 2. 模拟器建议使用 `16:9` 分辨率，例如 `1920×1080`、`1280×720`。
 3. 软件内更新后若看不到新任务选项，可关闭程序后删除根目录 `config/config.json` 再打开（需重新配置部分选项）。
 4. Agent 报错 / Action is null：确认使用的是最新 Release 包（解压后根目录应含 `python/`、`deps/`、`agent/`）；Windows 可再跑 `Install-Agent-Deps.bat`。旧版包或只下了源码仓库会缺少这些目录。
-5. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
+5. pretask 报找不到 `python`、路径落在 `resource\base\...`：说明 `interface.json` 里 pretask 被改成了 Release 路径，但本地 MFAAvalonia **未打 pretask 路径补丁**。请用最新 Release 包，或确保 B 服/官服资源里存在 `resource/base/ensure_mumu.cmd`（源码开发目录在 `assets/resource/base/`）。
+6. 开发调试也可用 MaaDebugger，详见 [本地开发手册](./docs/zh_cn/develop/local_dev.md)。
 
 ## 功能说明
 
@@ -61,15 +62,16 @@
 |------|------|
 | 启动游戏 | 入口 `进入首页`：pipeline 内 `StartApp` 开客户端 → 关公告 / 签到 → 大厅。官服包名在 `pipeline/base/启动游戏.json`；B 服由 `resource/bilibili/pipeline/startup.json` 覆盖。pretask（`ensure_mumu`）只负责 MuMu/ADB，不开游戏 |
 | 添加 / 拉黑订单好友 | 需配置 `config/orders_source.json`；状态写在 `config/orders_state.json` |
-| 活动 / 每日免费礼包 / 限时贸易 | 活动与补给站相关 |
-| 基建 | 收菜 / 换班 / 好友交付等 |
-| 每日探索 | 出击选择 + 通用扫荡清体力（option：关卡/层数/次数） |
-| 创生微粒刷取 | 每周门票扫荡（pipeline `创生微粒刷取.json`） |
-| 周本 | 活动探索 · 碎星虚影；关卡仅「第一关45微晶 / 第五关120微晶」（纯 pipeline） |
-| 领取奖励 | 邮箱 + 每日 + 通行证 |
+| **活动** | 进活动页、领每日票、体力换票、困难关分批扫荡（`activity_atomic` / `activity_state`；option：兑换方式 / 队伍 / 双倍掉落） |
+| 每日免费礼包 / 限时贸易所购买 | 补给站相关 |
+| **基建** | 收菜 / 换班 / 订单交付；option：好友换抽、构建票 6–18、经验/星币订单等 |
+| **每日探索** | 入口 `出击任务列表` → `通用-出击选择` + `通用-扫荡`；option：**关卡选择**（资源采集 / 跃升行动等，含嵌套层数）、**是否手动选择次数**（开启燃料时嵌套手动次数）。流程示意见 `assets/resource/pipeline/base/每日探索-现行Pipeline流程示意.json` |
+| 创生微粒刷取 | 每周 3 张超维跃升门票扫荡（`创生微粒刷取.json`） |
+| 周本 | 活动探索 · 碎星虚影；关卡「第一关45微晶 / 第五关120微晶」 |
+| 领取奖励(邮箱+每日+通行证) | 邮箱 + 每日 + 通行证 |
 | 关闭游戏 / 历战试炼 | 收尾与活动向 |
-| 竞技场 / 芯片筛选-仓库 | Pipeline 编排 + Agent 原子能力（`arena_atomic` / `chip_atomic` 等；Release 包首次运行自动装依赖） |
-| 角斗场 | Pipeline 编排 + Agent Custom（`jdc_*` 选角、配队、路线等） |
+| 竞技场 / 芯片筛选-仓库 | Pipeline + Agent 原子能力（`arena_atomic` / `chip_atomic`） |
+| 角斗场 | Pipeline + Agent Custom（`jdc_*` 选角、配队、路线等） |
 
 自研草稿仍保留在 `pipeline/周常/`、`周本任务.json` 等，可与 base 并存，注意**节点名勿冲突**。
 
@@ -78,10 +80,11 @@
 * [x] 基于 MCCA 的任务骨架（`pipeline/base` + `interface.json`）
 * [x] 官服 / B 服资源路径（B 服包名覆盖见 `resource/bilibili`）
 * [x] 节点名汉化（原英文 entry 已改为中文）
-* [x] Agent：订单好友、`number_lt`、MuMu pretask、竞技场 / 芯片 / 角斗场 Custom
-* [x] MuMu pretask（`ensure_mumu.py`：Release 包由内置 `./python/python.exe` 拉起，只启模拟器/ADB，开游戏走 pipeline `StartApp`）
+* [x] Agent：订单好友、`number_lt`、MuMu pretask、**活动**（`activity_atomic`）、竞技场 / 芯片 / 角斗场 Custom
+* [x] MuMu pretask（`ensure_mumu.py`：Release 包由内置 `./python/python.exe` 拉起；本地可通过 `resource/base/ensure_mumu.cmd` shim）
 * [x] 发版包内置便携 Python + 离线 deps（Windows/macOS，M9A 同款思路）
 * [x] 创生微粒刷取 pipeline
+* [x] 每日探索 option 与 MCCA 对齐（关卡嵌套层数、手动次数 / 燃料开关）
 * [ ] 实机验收与选项打磨
 
 ## 待开发功能
@@ -95,8 +98,11 @@
 
 ## 开发相关
 
+源码仓库路径为 **`assets/resource/`**（不是根目录 `resource/` 镜像）。改完 pipeline / `interface.json` 后，Release 本地联调可将 `assets/` 同步到解压目录（个人脚本见 `.gitignore`，维护者自用）。
+
 * [如何开发](./docs/zh_cn/develop/how_to_develop.md)
 * [本地开发手册（MuMu + MaaDebugger）](./docs/zh_cn/develop/local_dev.md)
+* [开发专用说明（协作 / MPE 规则）](./开发专用.md)
 * [PR 规范](./docs/zh_cn/develop/pull_request_guidelines.md)
 * [常见问题](./docs/zh_cn/develop/faq.md)
 
@@ -113,6 +119,3 @@
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks)
-
-> GitHub **Contributors** 按「已合入默认分支、且 commit 邮箱已绑定到 GitHub 账号」统计。  
-> 当前仓库已识别：`Yanghongfe`、`huangtong601-ops`、`qing4368-svg`。若页面头像少一个人，多半是 contrib.rocks 缓存（最长约 3 天）；以 [Contributors 页](https://github.com/Yanghongfe/MAA_CrossCore/graphs/contributors) 为准。
