@@ -455,3 +455,7 @@ tools/ImageCropper/**/*.png
 
 config
 debug
+
+# Local-only sync scripts (personal release path; not for the repo)
+/Sync-Local-Release.bat
+/tools/sync_local_release.py

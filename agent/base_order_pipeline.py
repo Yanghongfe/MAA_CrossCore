@@ -109,15 +109,25 @@ def load_order_settings():
     }
     try:
         data = json.loads(_instance_config_path().read_text(encoding="utf-8"))
-        task = next(
-            item for item in data.get("TaskItems", [])
-            if item.get("entry") == "BaseOrderTask"
-        )
+        task = None
+        for entry in ("基建", "BaseOrderTask"):
+            task = next(
+                (item for item in data.get("TaskItems", []) if item.get("entry") == entry),
+                None,
+            )
+            if task is not None:
+                break
+        if task is None:
+            raise LookupError("未找到基建或基建-订单库任务配置")
         options = {item.get("name"): item for item in task.get("option", [])}
         costs = _checkbox_cases(
             options.get("构建票订单数额6-10"), ["6", "8", "10"], ["6", "8"]
         ) | _checkbox_cases(
+            options.get("基建_构建票订单数额6-10"), ["6", "8", "10"], []
+        ) | _checkbox_cases(
             options.get("构建票订单数额16-18"), ["16", "18"], ["16"]
+        ) | _checkbox_cases(
+            options.get("基建_构建票订单数额16-18"), ["16", "18"], []
         )
         settings["build_costs"] = {int(value) for value in costs if value.isdigit()}
         settings["build_synth"] = _checkbox_enabled(
