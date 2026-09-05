@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Architecture guards for Pipeline-owned arena, chip, and base-order flows."""
+"""Architecture guards for Pipeline-owned arena and chip task flows."""
 
 from pathlib import Path
 import ast
@@ -31,21 +31,15 @@ def referenced_nodes(data):
 def test_runtime_entries_use_atomic_agents_not_legacy_whole_task_actions():
     arena = load_pipeline("模拟军演.json")
     chip = load_pipeline("chip.json")
-    base_order = load_pipeline("基建-订单库.json")
     assert arena["ArenaTask"]["custom_action"] == "arena_atomic"
     assert chip["ChipDetailReadTask"]["custom_action"] == "chip_atomic"
-    assert base_order["BaseOrderTask"]["custom_action"] == "base_order_atomic"
-    serialized = json.dumps(
-        {"arena": arena, "chip": chip, "base_order": base_order},
-        ensure_ascii=False,
-    )
+    serialized = json.dumps({"arena": arena, "chip": chip}, ensure_ascii=False)
     assert '"arena_loop"' not in serialized
     assert '"chip_filter_flow"' not in serialized
-    assert '"base_order_flow"' not in serialized
 
 
 def test_every_local_pipeline_edge_has_a_node_and_mpe_layout():
-    for filename in ("模拟军演.json", "chip.json", "基建-订单库.json"):
+    for filename in ("模拟军演.json", "chip.json"):
         data = load_pipeline(filename)
         for reference in referenced_nodes(data):
             if reference.startswith("["):
@@ -98,22 +92,6 @@ def test_pipeline_exposes_required_control_flow_branches():
         "芯片_阶段清理", "芯片_阶段筛选", "芯片_清理确认分解",
         "芯片_筛选单枚", "芯片_筛选滑动", "芯片_筛选完成",
     ))
-
-
-def test_base_order_flow_is_pipeline_owned_and_resolution_aware():
-    pipeline = load_pipeline("基建-订单库.json")
-    assert all(name in pipeline for name in (
-        "订单库_接续自己的订单库", "订单库_接续好友订单库",
-        "订单库_自己的决定", "订单库_好友决定", "订单库_选择素材类别",
-        "订单库_合成返回订单库", "订单库_完成返回主界面",
-    ))
-    source = (ROOT / "agent" / "base_order_pipeline.py").read_text(encoding="utf-8-sig")
-    assert "scale_point" in source
-    assert "scale_roi" in source
-    assert "for index in range(60)" not in source
-    assert "while time.time() < deadline" not in source.replace(
-        "while time.time() < deadline:\n            ensure_running(context)", ""
-    )
 
 
 if __name__ == "__main__":

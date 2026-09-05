@@ -23,7 +23,7 @@
         "action": "DoNothing",
         "next": [
             "Buy_something",
-            "进入首页"
+            "限时贸易所购买_完成"
         ],
         "$__mpe_code": {
             "position": {
@@ -60,7 +60,7 @@
         "post_delay": 2000,
         "next": [
             "Buy_something",
-            "进入首页"
+            "限时贸易所购买_完成"
         ]
     },
     "Buy_something": {
@@ -74,7 +74,7 @@
         "post_delay": 1000,
         "next": [
             "Buyit", 
-            "进入首页",
+            "限时贸易所购买_完成",
             "Buy_something"
         ]
     },
@@ -95,7 +95,17 @@
             "[JumpBack]子任务_获得物品",
             "Buyit",
             "Buy_something",
-            "进入首页"
+            "限时贸易所购买_完成"
         ]
+    },
+    "限时贸易所购买_完成": {
+        "action": "DoNothing",
+        "focus": "限时贸易所购买任务完成，停留在补给站",
+        "$__mpe_code": {
+            "position": {
+                "x": 980,
+                "y": 160
+            }
+        }
     }
 }

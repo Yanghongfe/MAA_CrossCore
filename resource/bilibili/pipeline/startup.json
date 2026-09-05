@@ -1,6 +1,0 @@
-{
-    "启动游戏": {
-        "action": "StartApp",
-        "package": "com.megagame.crosscore.bilibili"
-    }
-}

@@ -3,17 +3,17 @@
         "$__mpe_code": {
             "prefix": "",
             "coordinateMode": "absolute-v1",
-            "lastSyncTime": 1788582035893,
+            "lastSyncTime": 1788452169837,
             "isModifiedExternally": false,
             "isDeleted": false,
-            "filePath": "C:\\Users\\thomas\\Desktop\\workwork\\MAA\\MAA_Practice\\assets\\resource\\pipeline\\base\\基建.json",
+            "filePath": "C:\\Users\\thomas\\Desktop\\成品攀比\\MAAlocalhost\\resource\\pipeline\\base\\基建.json",
             "savedViewport": {
-                "x": -6614,
-                "y": -160,
-                "zoom": 0.55
+                "x": -3029,
+                "y": 56,
+                "zoom": 0.26
             },
             "filename": "基建",
-            "version": "v1.9.3"
+            "version": "v1.9.2"
         }
     },
     "$__mpe_external_子任务_点击返回_基建": {
@@ -51,8 +51,8 @@
     "$__mpe_external_通用-返回主页_基建": {
         "$__mpe_code": {
             "position": {
-                "x": 14195,
-                "y": 2336
+                "x": 14102,
+                "y": 2335
             }
         }
     },
@@ -129,6 +129,58 @@
             }
         }
     },
+    "基建_1号物品售罄": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "基建_自己交付1",
+                "method": 4,
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    50,
+                    50,
+                    50
+                ],
+                "count": 300
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 14092,
+                "y": 485
+            }
+        }
+    },
+    "基建_2号物品售罄": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "基建_自己交付2",
+                "method": 4,
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    50,
+                    50,
+                    50
+                ],
+                "count": 300
+            }
+        },
+        "$__mpe_code": {
+            "position": {
+                "x": 14063,
+                "y": 1422
+            }
+        }
+    },
     "基建_交付": {
         "next": [
             "基地_交付",
@@ -191,7 +243,7 @@
         "post_delay": 2000,
         "next": [
             "基建_制作素材",
-            "基建_订单库",
+            "基建_自己交付",
             "基建_交易"
         ],
         "$__mpe_code": {
@@ -208,11 +260,8 @@
         },
         "next": [
             "基建_拜访好友结束",
-            "[JumpBack]基建_构建票18_可交付",
-            "[JumpBack]基建_构建票16_可交付",
-            "[JumpBack]基建_构建票10_可交付",
-            "[JumpBack]基建_构建票8_可交付",
-            "[JumpBack]基建_构建票6_可交付",
+            "[JumpBack]基建_自己交付1",
+            "[JumpBack]基建_自己交付2",
             "[JumpBack]基建_拜访下一位好友"
         ],
         "on_error": [
@@ -220,8 +269,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12481,
-                "y": 1021
+                "x": 13044,
+                "y": 1380
             }
         }
     },
@@ -641,11 +690,10 @@
         "action": {
             "type": "Click"
         },
-        "post_delay": 2500,
         "$__mpe_code": {
             "position": {
-                "x": 13185,
-                "y": 1785
+                "x": 13782,
+                "y": 1810
             }
         }
     },
@@ -680,8 +728,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12469,
-                "y": 1642
+                "x": 12730,
+                "y": 1549
             }
         }
     },
@@ -718,8 +766,8 @@
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12889,
-                "y": 1755
+                "x": 12999,
+                "y": 1723
             }
         }
     },
@@ -728,14 +776,12 @@
             "type": "TemplateMatch",
             "param": {
                 "roi": [
-                    11,
-                    452,
-                    217,
-                    151
+                    75,
+                    474,
+                    106,
+                    76
                 ],
-                "template": [
-                    "Infrastructures/好友交付记录.png"
-                ],
+                "template": "好友交付记录.png",
                 "threshold": 0.9
             }
         },
@@ -767,35 +813,12 @@
         },
         "post_delay": 1000,
         "next": [
-            "订单库_页面接续"
+            "基建_自己交付"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12174,
-                "y": 545
-            }
-        }
-    },
-    "基建_订单库": {
-        "recognition": {
-            "type": "DirectHit"
-        },
-        "action": {
-            "type": "Custom",
-            "param": {
-                "custom_action": "base_order_atomic",
-                "custom_action_param": {
-                    "operation": "init"
-                }
-            }
-        },
-        "next": [
-            "订单库_页面接续"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12174,
-                "y": 420
+                "x": 12184,
+                "y": 477
             }
         }
     },
@@ -1489,8 +1512,8 @@
         },
         "$__mpe_code": {
             "position": {
-                "x": 9452,
-                "y": 1939
+                "x": 9622,
+                "y": 1704
             }
         }
     },
@@ -1551,395 +1574,111 @@
             }
         }
     },
-    "基建_构建票6_可交付": {
-        "enabled": false,
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    {
-                        "recognition": {
-                            "param": {
-                                "roi": [
-                                    272,
-                                    89,
-                                    909,
-                                    603
-                                ],
-                                "template": [
-                                    "Infrastructures/构建票.png",
-                                    "Infrastructures/构建票金色.png"
-                                ],
-                                "threshold": 0.9
-                            },
-                            "type": "TemplateMatch"
-                        },
-                        "sub_name": "icon"
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "可交付"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-60, 168, -16, -42]
-                            },
-                            "type": "OCR"
-                        }
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "6"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-117, 133, 119, -29]
-                            },
-                            "type": "OCR"
-                        }
-                    }
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12901,
-                "y": 641
-            }
-        }
-    },
-    "基建_构建票8_可交付": {
-        "enabled": false,
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    {
-                        "recognition": {
-                            "param": {
-                                "roi": [
-                                    272,
-                                    89,
-                                    909,
-                                    603
-                                ],
-                                "template": [
-                                    "Infrastructures/构建票.png",
-                                    "Infrastructures/构建票金色.png"
-                                ],
-                                "threshold": 0.9
-                            },
-                            "type": "TemplateMatch"
-                        },
-                        "sub_name": "icon"
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "可交付"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-60, 168, -16, -42]
-                            },
-                            "type": "OCR"
-                        }
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "8"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-117, 133, 119, -29]
-                            },
-                            "type": "OCR"
-                        }
-                    }
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12901,
-                "y": 641
-            }
-        }
-    },
-    "基建_构建票10_可交付":  {
-        "enabled": false,
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    {
-                        "recognition": {
-                            "param": {
-                                "roi": [
-                                    272,
-                                    89,
-                                    909,
-                                    603
-                                ],
-                                "template": [
-                                    "Infrastructures/构建票.png",
-                                    "Infrastructures/构建票金色.png"
-                                ],
-                                "threshold": 0.9
-                            },
-                            "type": "TemplateMatch"
-                        },
-                        "sub_name": "icon"
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "可交付"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-60, 168, -16, -42]
-                            },
-                            "type": "OCR"
-                        }
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "10"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-117, 133, 119, -29]
-                            },
-                            "type": "OCR"
-                        }
-                    }
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12901,
-                "y": 641
-            }
-        }
-    },
-    "基建_构建票18_可交付":  {
-        "enabled": false,
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    {
-                        "recognition": {
-                            "param": {
-                                "roi": [
-                                    272,
-                                    89,
-                                    909,
-                                    603
-                                ],
-                                "template": [
-                                    "Infrastructures/构建票.png",
-                                    "Infrastructures/构建票金色.png"
-                                ],
-                                "threshold": 0.9
-                            },
-                            "type": "TemplateMatch"
-                        },
-                        "sub_name": "icon"
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "可交付"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-60, 168, -16, -42]
-                            },
-                            "type": "OCR"
-                        }
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "18"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-117, 133, 119, -29]
-                            },
-                            "type": "OCR"
-                        }
-                    }
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12901,
-                "y": 641
-            }
-        }
-    },
-    "基建_构建票16_可交付":  {
-        "enabled": false,
-        "recognition": {
-            "type": "And",
-            "param": {
-                "all_of": [
-                    {
-                        "recognition": {
-                            "param": {
-                                "roi": [
-                                    272,
-                                    89,
-                                    909,
-                                    603
-                                ],
-                                "template": [
-                                    "Infrastructures/构建票.png",
-                                    "Infrastructures/构建票金色.png"
-                                ],
-                                "threshold": 0.9
-                            },
-                            "type": "TemplateMatch"
-                        },
-                        "sub_name": "icon"
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "可交付"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-60, 168, -16, -42]
-                            },
-                            "type": "OCR"
-                        }
-                    },
-                    {
-                        "recognition": {
-                            "param": {
-                                "expected": [
-                                    "16"
-                                ],
-                                "roi": "icon",
-                                "roi_offset": [-117, 133, 119, -29]
-                            },
-                            "type": "OCR"
-                        }
-                    }
-                ],
-                "box_index": 1
-            }
-        },
-        "action": {
-            "type": "Click",
-            "param": {
-                "target": true
-            }
-        },
-        "post_delay": 1000,
-        "next": [
-            "基建_自己交付是",
-            "基建_自己交付否",
-            "[JumpBack]子任务_获得物品"
-        ],
-        "$__mpe_code": {
-            "position": {
-                "x": 12901,
-                "y": 641
-            }
-        }
-    },
-    
     "基建_自己交付": {
         "post_wait_freezes": {
             "time": 2000,
             "threshold": 0.95
         },
         "next": [
-            "[JumpBack]基建_构建票18_可交付",
-            "[JumpBack]基建_构建票16_可交付",
-            "[JumpBack]基建_构建票10_可交付",
-            "[JumpBack]基建_构建票8_可交付",
-            "[JumpBack]基建_构建票6_可交付",
+            "[JumpBack]基建_自己交付1",
+            "[JumpBack]基建_自己交付2",
             "基建_拜访好友",
             "通用-返回主页"
         ],
         "$__mpe_code": {
             "position": {
-                "x": 12308,
-                "y": 841
+                "x": 12388,
+                "y": 1043
             }
         }
     },
-
-
-
-
-
-
-
+    "基建_自己交付1": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    272,
+                    89,
+                    909,
+                    603
+                ],
+                "template": [
+                    "Infrastructures/构建订单3.png",
+                    "Infrastructures/构建订单_8-1.png",
+                    "Infrastructures/构建订单16-2.png"
+                ],
+                "threshold": 0.9
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    90,
+                    128,
+                    -90,
+                    -128
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_自己交付是",
+            "基建_自己交付否",
+            "[JumpBack]子任务_获得物品",
+            "基建_1号物品售罄"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13482,
+                "y": 476
+            }
+        }
+    },
+    "基建_自己交付2": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    272,
+                    89,
+                    909,
+                    603
+                ],
+                "template": [
+                    "Infrastructures/构建订单4.png",
+                    "Infrastructures/构建订单1.png"
+                ],
+                "threshold": 0.9
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": true,
+                "target_offset": [
+                    90,
+                    128,
+                    -90,
+                    -128
+                ]
+            }
+        },
+        "post_delay": 1000,
+        "next": [
+            "基建_自己交付是",
+            "基建_自己交付否",
+            "[JumpBack]子任务_获得物品",
+            "基建_2号物品售罄"
+        ],
+        "$__mpe_code": {
+            "position": {
+                "x": 13498,
+                "y": 1046
+            }
+        }
+    },
     "基建_自己交付否": {
         "recognition": {
             "type": "OCR",
@@ -1971,8 +1710,8 @@
         "post_delay": 1000,
         "$__mpe_code": {
             "position": {
-                "x": 13997,
-                "y": 1058
+                "x": 14282,
+                "y": 1114
             }
         }
     },
@@ -2006,8 +1745,8 @@
         "post_delay": 1000,
         "$__mpe_code": {
             "position": {
-                "x": 13998,
-                "y": 623
+                "x": 14431,
+                "y": 750
             }
         }
     },
